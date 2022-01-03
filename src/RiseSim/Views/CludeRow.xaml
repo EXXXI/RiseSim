@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="RiseSim.Views.CludeRow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="450">
+
+    <Border BorderThickness="0,0,0,1" BorderBrush="Black">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Width="60" Text="{Binding DispKind}" TextAlignment="Right"/>
+            <TextBlock Width="300" Text="{Binding DispName}"/>
+            <TextBlock Width="60" Text="{Binding Status}"></TextBlock>
+            <Button x:Name="deleteCludeButton" Width="30" Content="解除" Click="DeteleCludeButton_Click"></Button>
+        </StackPanel>
+    </Border>
+</UserControl>
