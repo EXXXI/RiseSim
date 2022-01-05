@@ -83,7 +83,7 @@ namespace RiseSim.ViewModels
         // 装備セットを丸ごとVMのリストにして返却
         static public ObservableCollection<EquipRowViewModel> SetToEquipRows(EquipSet set)
         {
-            ObservableCollection<EquipRowViewModel> list = new ObservableCollection<EquipRowViewModel>();
+            ObservableCollection<EquipRowViewModel> list = new();
             if (set != null)
             {
                 list.Add(new EquipRowViewModel("頭：", set.HeadName, EquipKind.head, set.HeadName));
@@ -102,12 +102,12 @@ namespace RiseSim.ViewModels
 
         internal void Exclude()
         {
-            MainViewModel.Instance.AddExclude(TrueName);
+            MainViewModel.Instance.AddExclude(TrueName, DispName);
 
         }
         internal void Include()
         {
-            MainViewModel.Instance.AddInclude(TrueName);
+            MainViewModel.Instance.AddInclude(TrueName, DispName);
         }
     }
 }

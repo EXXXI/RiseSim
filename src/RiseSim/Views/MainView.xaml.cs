@@ -61,8 +61,7 @@ namespace RiseSim.Views
 
         private void ResultGrid_CurrentCellChanged(object sender, EventArgs e)
         {
-            EquipSet? set = resultGrid.CurrentItem as EquipSet;
-            if (set != null)
+            if (resultGrid.CurrentItem is EquipSet set)
             {
                 ((MainViewModel)DataContext).ViewSetDetail(set);
             }
@@ -70,8 +69,7 @@ namespace RiseSim.Views
 
         private void MySetGrid_CurrentCellChanged(object sender, EventArgs e)
         {
-            EquipSet? set = mySetGrid.CurrentItem as EquipSet;
-            if (set != null)
+            if (mySetGrid.CurrentItem is EquipSet set)
             {
                 ((MainViewModel)DataContext).ViewMySetDetail(set);
             }

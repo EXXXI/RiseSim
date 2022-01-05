@@ -48,20 +48,36 @@ namespace RiseSim.ViewModels
             }
         }
 
+        private Equipment selectedEquip;
+
+        public Equipment SelectedEquip
+        {
+            get { return this.selectedEquip; }
+            set
+            {
+                this.SetProperty(ref this.selectedEquip, value);
+            }
+        }
+
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
             DispKind = dispKind;
             Equips = equips;
         }
 
-        internal void Exclude(string name)
+        internal void Exclude()
         {
-            MainViewModel.Instance.AddExclude(name);
-
+            if (SelectedEquip != null)
+            {
+                MainViewModel.Instance.AddExclude(SelectedEquip.Name, SelectedEquip.DispName);
+            }
         }
-        internal void Include(string name)
+        internal void Include()
         {
-            MainViewModel.Instance.AddInclude(name);
+            if (SelectedEquip != null)
+            {
+                MainViewModel.Instance.AddInclude(SelectedEquip.Name, SelectedEquip.DispName);
+            }
         }
     }
 }

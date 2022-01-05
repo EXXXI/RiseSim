@@ -8,7 +8,7 @@
              d:DesignHeight="27" d:DesignWidth="250">
     <StackPanel Orientation="Horizontal">
         <TextBlock Width="60" Text="{Binding DispKind}" TextAlignment="Right"/>
-        <ComboBox x:Name="equipCombo" Width="130" ItemsSource="{Binding Equips}" >
+        <ComboBox x:Name="equipCombo" Width="130" ItemsSource="{Binding Equips}" SelectedItem="{Binding SelectedEquip}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding DispName}" Margin="2.5"/>

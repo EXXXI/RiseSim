@@ -37,9 +37,9 @@
                         <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster}" SelectedItem="{Binding WeaponSlots}" Width="100" SelectedIndex="0">
                         </ComboBox>
                     </StackPanel>
-                    <Button x:Name="searchButton" Content="検索する" Click="SearchButton_Click" />
-                    <Button x:Name="searchMoreButton" Content="もっと検索する" Click="SearchMoreButton_Click" />
-                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Click="SearchExtraSkillButton_Click" />
+                    <Button x:Name="searchButton" Content="検索する" Click="SearchButton_Click" IsEnabled="{Binding IsFree}"/>
+                    <Button x:Name="searchMoreButton" Content="もっと検索する" Click="SearchMoreButton_Click" IsEnabled="{Binding IsFree}"/>
+                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Click="SearchExtraSkillButton_Click" IsEnabled="{Binding IsFree}" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="50" Text="頑張り度"/>
                         <TextBox x:Name="limitBox" Width="100" Text="{Binding Limit}"/>
@@ -61,12 +61,12 @@
                         <DataGridTextColumn Header="腰" Binding="{Binding WaistName}" />
                         <DataGridTextColumn Header="足" Binding="{Binding LegName}" />
                         <DataGridTextColumn Header="護石" Binding="{Binding CharmNameDisp}" />
-                        <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
                         <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
                         <DataGridTextColumn Header="水" Binding="{Binding Water}" />
                         <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
                         <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
                         <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
+                        <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
                         <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
                     </DataGrid.Columns>
                 </DataGrid>
@@ -194,9 +194,14 @@
                 <!-- マイセット一覧 -->
                 <DataGrid x:Name="mySetGrid"  Grid.Row="0" Grid.Column="0" ItemsSource="{Binding MySetList}" IsReadOnly="true" AutoGenerateColumns="False" CurrentCellChanged="MySetGrid_CurrentCellChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
                         <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
                         <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
+                        <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
+                        <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
+                        <DataGridTextColumn Header="水" Binding="{Binding Water}" />
+                        <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
+                        <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
+                        <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
                         <DataGridTextColumn Header="頭" Binding="{Binding HeadName}" />
                         <DataGridTextColumn Header="胴" Binding="{Binding BodyName}" />
                         <DataGridTextColumn Header="腕" Binding="{Binding ArmName}" />
@@ -204,11 +209,6 @@
                         <DataGridTextColumn Header="足" Binding="{Binding LegName}" />
                         <DataGridTextColumn Header="護石" Binding="{Binding CharmNameDisp}" />
                         <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
-                        <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
-                        <DataGridTextColumn Header="水" Binding="{Binding Water}" />
-                        <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
-                        <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
-                        <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
                     </DataGrid.Columns>
                 </DataGrid>
 

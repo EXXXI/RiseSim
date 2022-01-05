@@ -87,7 +87,7 @@ namespace RiseSim.ViewModels
             Equipment? equip = Masters.GetEquipByName(clude.Name);
             if (equip == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(clude.Name + "is not found.");
             }
             DispName = equip.DispName;
             TrueName = equip.Name;

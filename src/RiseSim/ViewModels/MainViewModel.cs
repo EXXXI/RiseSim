@@ -33,7 +33,7 @@ namespace RiseSim.ViewModels
         static public MainViewModel Instance { get; set; }
 
         // シミュ本体
-        public Simulator simulator { get; set; }
+        public Simulator Simulator { get; set; }
 
         // TODO: 外部ファイル化するべきか？
         // 定数
@@ -115,6 +115,18 @@ namespace RiseSim.ViewModels
                 this.SetProperty(ref this.limit, value);
             }
         }
+
+        // ビジー判定
+        private bool isFree = true;
+        public bool IsFree
+        {
+            get { return this.isFree; }
+            set
+            {
+                this.SetProperty(ref this.isFree, value);
+            }
+        }
+
 
         // 除外・固定画面の登録部品のVM
         private ObservableCollection<EquipSelectRowViewModel> equipSelectRowVMs;
@@ -256,11 +268,11 @@ namespace RiseSim.ViewModels
             Instance = this;
 
             // シミュ本体のインスタンス化
-            simulator = new Simulator();
-            simulator.LoadData();
+            Simulator = new Simulator();
+            Simulator.LoadData();
 
             // シミュ画面のスキル選択部品準備
-            ObservableCollection<SkillSelectorViewModel> selectorVMs = new ObservableCollection<SkillSelectorViewModel>();
+            ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
             for (int i = 0; i < SkillSelectorCount; i++)
             {
                 selectorVMs.Add(new SkillSelectorViewModel());
@@ -268,7 +280,7 @@ namespace RiseSim.ViewModels
             SkillSelectorVMs = selectorVMs;
 
             // 護石画面のスキル選択部品準備
-            ObservableCollection<SkillSelectorViewModel> charmSelectorVMs = new ObservableCollection<SkillSelectorViewModel>();
+            ObservableCollection<SkillSelectorViewModel> charmSelectorVMs = new();
             for (int i = 0; i < CharmMaxSkillCount; i++)
             {
                 charmSelectorVMs.Add(new SkillSelectorViewModel());
@@ -279,7 +291,7 @@ namespace RiseSim.ViewModels
             EquipRowVMs = EquipRowViewModel.SetToEquipRows(new EquipSet());
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
-            ObservableCollection<string> slots = new ObservableCollection<string>();
+            ObservableCollection<string> slots = new();
             for (int i = 0; i <= MaxSlotSize; i++)
             {
                 for (int j = 0; j <= i; j++)
@@ -299,37 +311,37 @@ namespace RiseSim.ViewModels
 
             // TODO:外部ファイル化するべきか？
             // ライセンス表示
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append("■このシミュのライセンス\n");
             sb.Append("GNU General Public License v3.0\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("■使わせていただいたOSS(+必要であればライセンス)\n");
             sb.Append("・GLPK for C#/CLI\n");
             sb.Append("プロジェクト：http://glpk-cli.sourceforge.net/\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("・GlpkWrapperCS(一部改変)\n");
             sb.Append("プロジェクト：https://github.com/YSRKEN/GlpkWrapperCS\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("・CSV\n");
             sb.Append("プロジェクト：https://github.com/stevehansen/csv/\n");
             sb.Append("ライセンス：https://raw.githubusercontent.com/stevehansen/csv/master/LICENSE\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("・Prism.Wpf\n");
             sb.Append("プロジェクト：https://github.com/PrismLibrary/Prism\n");
             sb.Append("ライセンス：https://www.nuget.org/packages/Prism.Wpf/8.1.97/license\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("■スペシャルサンクス\n");
             sb.Append("・5chモンハン板シミュスレの方々\n");
             sb.Append("特にVer.13の >> 480様の以下論文を大いに参考にしました\n");
             sb.Append("https://github.com/13-480/lp-doc\n");
-            sb.Append("\n");
+            sb.Append('\n');
             sb.Append("・先人のシミュ作成者様\n");
             sb.Append("特に頑シミュ様のUIに大きく影響を受けています\n");
             License = sb.ToString();
 
             // TODO:外部ファイル化するべきか？
             // ライセンスの雑な説明を表示
-            StringBuilder sbw = new StringBuilder();
+            StringBuilder sbw = new();
             sbw.Append("■←ライセンスって何？\n");
             sbw.Append("普通にスキルシミュとして使う分には気にしないでOK\n");
             sbw.Append("        \n");
@@ -346,10 +358,10 @@ namespace RiseSim.ViewModels
         }
 
         // 検索
-        internal void Search()
+        async internal void Search()
         {
             // スキル条件を整理
-            List<Skill> skills = new List<Skill>();
+            List<Skill> skills = new();
             foreach (var selectorVM in SkillSelectorVMs)
             {
                 if(selectorVM.SkillName != NoSkillName)
@@ -376,16 +388,9 @@ namespace RiseSim.ViewModels
                 searchLimit = int.Parse(DefaultLimit);
             }
 
-            // 検索
-            List<EquipSet> result = simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit);
-            SearchResult = new ObservableCollection<EquipSet>(result);
-
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
-            // ログ表示
+            // 開始ログ表示
             LogSb.Clear();
-            LogSb.Append("■検索完了：");
-            LogSb.Append(SearchResult.Count);
-            LogSb.Append("件\n");
+            LogSb.Append("■検索開始：\n");
             LogSb.Append("武器スロ");
             LogSb.Append(weaponSlot1);
             LogSb.Append('-');
@@ -401,10 +406,26 @@ namespace RiseSim.ViewModels
                 LogSb.Append('\n');
             }
             LogBoxText = LogSb.ToString();
+
+            // ビジーフラグ
+            IsFree = false;
+
+            // 検索
+            List<EquipSet> result = await Task.Run(() => Simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit));
+            SearchResult = new(result);
+
+            // ビジーフラグ解除
+            IsFree = true;
+
+            // 完了ログ表示
+            LogSb.Append("■検索完了：");
+            LogSb.Append(SearchResult.Count);
+            LogSb.Append("件\n");
+            LogBoxText = LogSb.ToString();
         }
 
         // もっと検索
-        internal void SearchMore()
+        async internal void SearchMore()
         {
             // 頑張り度を整理
             int searchLimit;
@@ -418,13 +439,21 @@ namespace RiseSim.ViewModels
                 searchLimit = int.Parse(DefaultLimit);
             }
 
+            // 開始ログ表示
+            LogSb.Clear();
+            LogSb.Append("■もっと検索開始：\n");
+
+            // ビジーフラグ
+            IsFree = false;
+
             // もっと検索
-            List<EquipSet> result = simulator.SearchMore(searchLimit);
+            List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
             SearchResult = new ObservableCollection<EquipSet>(result);
 
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
-            // ログ表示
-            LogSb.Clear();
+            // ビジーフラグ解除
+            IsFree = true;
+
+            // 完了ログ表示
             LogSb.Append("■もっと検索完了：");
             LogSb.Append(SearchResult.Count);
             LogSb.Append("件\n");
@@ -432,15 +461,24 @@ namespace RiseSim.ViewModels
         }
 
         // 追加スキル検索
-        internal void SearchExtraSkill()
+        async internal void SearchExtraSkill()
         {
+            // 開始ログ表示
+            LogSb.Clear();
+            LogSb.Append("■追加スキル検索開始：\n");
+
+            // ビジーフラグ
+            IsFree = false;
+
             // 追加スキル検索
-            List<Skill> result = simulator.SearchExtraSkill();
+            List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill());
+
+            // ビジーフラグ解除
+            IsFree = true;
 
             // TODO: もっといい方法はないか？インジケータとかも欲しい
             // ログ表示
-            LogSb.Clear();
-            LogSb.Append("■追加スキル検索結果\n");
+            LogSb.Append("■追加スキル検索完了\n");
             foreach (Skill skill in result)
             {
                 LogSb.Append(skill.Name);
@@ -459,79 +497,72 @@ namespace RiseSim.ViewModels
         }
 
         // 除外装備設定
-        internal void AddExclude(string name)
+        internal void AddExclude(string trueName, string dispName)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(trueName))
             {
                 // 装備無しなら何もせず終了
                 return;
             }
 
             // 除外
-            simulator.AddExclude(name);
+            Simulator.AddExclude(trueName);
 
             // 除外固定のマスタをリロード
             LoadCludes();
 
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
+            // TODO: もっといい方法はないか？
             // ログ表示
             LogSb.Append("■除外\n");
-            LogSb.Append(name);
-            LogSb.Append("\n");
+            LogSb.Append(dispName);
+            LogSb.Append('\n');
             LogBoxText = LogSb.ToString();
         }
 
         // 固定装備設定
-        internal void AddInclude(string name)
+        internal void AddInclude(string trueName, string dispName)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(trueName))
             {
                 // 装備無しなら何もせず終了
                 return;
             }
 
             // 固定
-            simulator.AddInclude(name);
+            Simulator.AddInclude(trueName);
 
             // 除外固定のマスタをリロード
             LoadCludes();
 
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
+            // TODO: もっといい方法はないか？
             // ログ表示
             LogSb.Append("■固定\n");
-            LogSb.Append(name);
-            LogSb.Append("\n");
+            LogSb.Append(dispName);
+            LogSb.Append('\n');
             LogBoxText = LogSb.ToString();
         }
 
         // 除外・固定の解除
-        internal void DeleteClude(string name)
+        internal void DeleteClude(string trueName)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(trueName))
             {
                 // 装備無しなら何もせず終了
                 return;
             }
 
             // 解除
-            simulator.DeleteClude(name);
+            Simulator.DeleteClude(trueName);
 
             // 除外固定のマスタをリロード
             LoadCludes();
-
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
-            // ログ表示
-            LogSb.Append("■除外固定解除\n");
-            LogSb.Append(name);
-            LogSb.Append("\n");
-            LogBoxText = LogSb.ToString();
         }
 
         // 護石追加
         internal void AddCharm()
         {
             // スキルを整理
-            List<Skill> skills = new List<Skill>();
+            List<Skill> skills = new();
             foreach (var vm in CharmSkillSelectorVMs)
             {
                 if (!vm.SkillName.Equals(NoSkillName))
@@ -547,7 +578,7 @@ namespace RiseSim.ViewModels
             int weaponSlot3 = int.Parse(splited[2]);
 
             // 護石追加
-            simulator.AddCharm(skills, weaponSlot1, weaponSlot2, weaponSlot3);
+            Simulator.AddCharm(skills, weaponSlot1, weaponSlot2, weaponSlot3);
 
             // 装備マスタをリロード
             LoadEquips();
@@ -563,13 +594,13 @@ namespace RiseSim.ViewModels
             }
 
             // 除外・固定設定があったら削除
-            simulator.DeleteClude(name);
+            Simulator.DeleteClude(name);
 
             // この護石を使っているマイセットがあったら削除
             DeleteMySetUsingCharm(name);
 
             // 護石削除
-            simulator.DeleteCharm(name);
+            Simulator.DeleteCharm(name);
 
             // マスタをリロード
             LoadCludes();
@@ -580,7 +611,7 @@ namespace RiseSim.ViewModels
         // 指定した護石を使っているマイセットがあったら削除
         private void DeleteMySetUsingCharm(string name)
         {
-            List<EquipSet> delMySets = new List<EquipSet>();
+            List<EquipSet> delMySets = new();
             foreach (var set in Masters.MySets)
             {
                 if (set.CharmName != null && set.CharmName.Equals(name))
@@ -590,7 +621,7 @@ namespace RiseSim.ViewModels
             }
             foreach (var set in delMySets)
             {
-                simulator.DeleteMySet(set);
+                Simulator.DeleteMySet(set);
             }
         }
 
@@ -612,16 +643,16 @@ namespace RiseSim.ViewModels
             }
 
             // 追加
-            simulator.AddMySet(set);
+            Simulator.AddMySet(set);
 
             // マイセットマスタのリロード
             LoadMySets();
 
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
+            // TODO: もっといい方法はないか？
             // ログ表示
             LogSb.Append("■マイセット登録\n");
             LogSb.Append(set.SimpleSetName);
-            LogSb.Append("\n");
+            LogSb.Append('\n');
             LogBoxText = LogSb.ToString();
         }
 
@@ -636,17 +667,10 @@ namespace RiseSim.ViewModels
             }
 
             // 削除
-            simulator.DeleteMySet(set);
+            Simulator.DeleteMySet(set);
 
             // マイセットマスタのリロード
             LoadMySets();
-
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
-            // ログ表示
-            LogSb.Append("■マイセット削除\n");
-            LogSb.Append(set.SimpleSetName);
-            LogSb.Append("\n");
-            LogBoxText = LogSb.ToString();
         }
 
         // マイセットのスキルをシミュ画面の検索条件に反映
@@ -688,7 +712,7 @@ namespace RiseSim.ViewModels
         private void LoadEquips()
         {
             // 除外固定画面用のVMの設定
-            ObservableCollection<EquipSelectRowViewModel> equipList = new ObservableCollection<EquipSelectRowViewModel>();
+            ObservableCollection<EquipSelectRowViewModel> equipList = new();
             equipList.Add(new EquipSelectRowViewModel("頭：", Masters.Heads));
             equipList.Add(new EquipSelectRowViewModel("胴：", Masters.Bodys));
             equipList.Add(new EquipSelectRowViewModel("腕：", Masters.Arms));
@@ -699,7 +723,7 @@ namespace RiseSim.ViewModels
             EquipSelectRowVMs = equipList;
 
             // 護石画面用のVMの設定
-            ObservableCollection<CharmRowViewModel> charmList = new ObservableCollection<CharmRowViewModel>();
+            ObservableCollection<CharmRowViewModel> charmList = new();
             foreach (var charm in Masters.Charms)
             {
                 charmList.Add(new CharmRowViewModel(charm));
@@ -711,7 +735,7 @@ namespace RiseSim.ViewModels
         private void LoadCludes()
         {
             // 除外固定画面用のVMの設定
-            ObservableCollection<CludeRowViewModel> cludeList = new ObservableCollection<CludeRowViewModel>();
+            ObservableCollection<CludeRowViewModel> cludeList = new();
             foreach (var clude in Masters.Cludes)
             {
                 cludeList.Add(new CludeRowViewModel(clude));

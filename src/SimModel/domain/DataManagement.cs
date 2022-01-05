@@ -87,7 +87,7 @@ namespace SimModel.domain
             if (!existClude)
             {
                 // 設定がない場合は新規作成
-                Clude clude = new Clude();
+                Clude clude = new();
                 clude.Name = name;
                 clude.Kind = kind;
                 // 追加
@@ -118,7 +118,7 @@ namespace SimModel.domain
         // 護石の追加
         static internal void AddCharm(List<Skill> skills, int slot1, int slot2, int slot3)
         {
-            Equipment equipment = new Equipment();
+            Equipment equipment = new();
             equipment.Name = Guid.NewGuid().ToString();
             equipment.Slot1 = slot1;
             equipment.Slot2 = slot2;

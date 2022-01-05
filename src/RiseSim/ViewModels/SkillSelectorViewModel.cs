@@ -77,7 +77,7 @@ namespace RiseSim.ViewModels
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
         public SkillSelectorViewModel()
         {
-            List<string> skillList = new List<string>();
+            List<string> skillList = new();
             skillList.Add(NoSkillName);
             foreach (var skill in Masters.Skills)
             {
@@ -90,7 +90,7 @@ namespace RiseSim.ViewModels
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
         internal void SetLevels()
         {
-            List<int> list = new List<int>();
+            List<int> list = new();
             int maxLevel = 0;
             foreach (var skill in Masters.Skills)
             {
