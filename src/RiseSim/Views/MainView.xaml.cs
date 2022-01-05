@@ -59,22 +59,6 @@ namespace RiseSim.Views
             ((MainViewModel)DataContext).SearchExtraSkill();
         }
 
-        private void ResultGrid_CurrentCellChanged(object sender, EventArgs e)
-        {
-            if (resultGrid.CurrentItem is EquipSet set)
-            {
-                ((MainViewModel)DataContext).ViewSetDetail(set);
-            }
-        }
-
-        private void MySetGrid_CurrentCellChanged(object sender, EventArgs e)
-        {
-            if (mySetGrid.CurrentItem is EquipSet set)
-            {
-                ((MainViewModel)DataContext).ViewMySetDetail(set);
-            }
-        }
-
         private void CharmAddButton_Click(object sender, RoutedEventArgs e)
         {
             ((MainViewModel)DataContext).AddCharm();

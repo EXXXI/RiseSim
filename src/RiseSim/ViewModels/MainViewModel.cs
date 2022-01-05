@@ -79,6 +79,8 @@ namespace RiseSim.ViewModels
             get { return this.detailSet; }
             set
             {
+                // TODO: ここで別のプロパティいじるのはなんか違うと思う
+                EquipRowVMs = EquipRowViewModel.SetToEquipRows(value);
                 this.SetProperty(ref this.detailSet, value);
             }
         }
@@ -201,6 +203,8 @@ namespace RiseSim.ViewModels
             get { return this.myDetailSet; }
             set
             {
+                // TODO: ここで別のプロパティいじるのはなんか違うと思う
+                MyEquipRowVMs = EquipRowViewModel.SetToEquipRows(value);
                 this.SetProperty(ref this.myDetailSet, value);
             }
         }
@@ -412,7 +416,7 @@ namespace RiseSim.ViewModels
 
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit));
-            SearchResult = new(result);
+            SearchResult = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
             IsFree = true;
@@ -487,13 +491,6 @@ namespace RiseSim.ViewModels
                 LogSb.Append('\n');
             }
             LogBoxText = LogSb.ToString();
-        }
-
-        // シミュ画面に装備詳細を表示する
-        internal void ViewSetDetail(EquipSet set)
-        {
-            EquipRowVMs = EquipRowViewModel.SetToEquipRows(set);
-            DetailSet = set;
         }
 
         // 除外装備設定
@@ -623,13 +620,6 @@ namespace RiseSim.ViewModels
             {
                 Simulator.DeleteMySet(set);
             }
-        }
-
-        // マイセット画面に装備詳細を表示する
-        internal void ViewMySetDetail(EquipSet set)
-        {
-            MyEquipRowVMs = EquipRowViewModel.SetToEquipRows(set);
-            MyDetailSet = set;
         }
 
         // マイセットを追加

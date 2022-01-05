@@ -51,7 +51,7 @@
 
 
                 <!-- 結果出力 -->
-                <DataGrid x:Name="resultGrid"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding SearchResult}" IsReadOnly="true" AutoGenerateColumns="False" CurrentCellChanged="ResultGrid_CurrentCellChanged">
+                <DataGrid x:Name="resultGrid"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding SearchResult}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
                         <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
@@ -192,7 +192,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- マイセット一覧 -->
-                <DataGrid x:Name="mySetGrid"  Grid.Row="0" Grid.Column="0" ItemsSource="{Binding MySetList}" IsReadOnly="true" AutoGenerateColumns="False" CurrentCellChanged="MySetGrid_CurrentCellChanged">
+                <DataGrid x:Name="mySetGrid"  Grid.Row="0" Grid.Column="0" ItemsSource="{Binding MySetList}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
                         <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
