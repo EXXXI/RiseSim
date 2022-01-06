@@ -45,9 +45,5 @@ namespace RiseSim.Views
             
         }
 
-        private void NameBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ((SkillSelectorViewModel)DataContext).SetLevels();
-        }
     }
 }

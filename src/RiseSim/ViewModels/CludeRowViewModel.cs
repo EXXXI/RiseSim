@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -27,60 +28,28 @@ namespace RiseSim.ViewModels
     internal class CludeRowViewModel : BindableBase
     {
         // 表示用装備種類
-        private string dispKind;
-        public string DispKind
-        {
-            get { return this.dispKind; }
-            set
-            {
-                this.SetProperty(ref this.dispKind, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispKind { get; } = new();
 
         // 表示用装備名
-        private string dispName;
-        public string DispName
-        {
-            get { return this.dispName; }
-            set
-            {
-                this.SetProperty(ref this.dispName, value);
-            }
-        }
-
-        // 管理用装備種類
-        private EquipKind trueKind;
-        public EquipKind TrueKind
-        {
-            get { return this.trueKind; }
-            set
-            {
-                this.SetProperty(ref this.trueKind, value);
-            }
-        }
-
-        // 管理用装備名
-        private string trueName;
-        public string TrueName
-        {
-            get { return this.trueName; }
-            set
-            {
-                this.SetProperty(ref this.trueName, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
         // 除外・固定状況
-        private string status;
-        public string Status
-        {
-            get { return this.status; }
-            set
-            {
-                this.SetProperty(ref this.status, value);
-            }
-        }
+        public ReactivePropertySlim<string> Status { get; } = new();
 
+        // 管理用装備種類
+        public EquipKind TrueKind { get; set; }
+
+        // 管理用装備名
+        public string TrueName { get; set; }
+
+        // 除外・固定解除コマンド
+        public ReactiveCommand DeleteCludeCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
+        {
+            DeleteCludeCommand.Subscribe(_ => DeleteClude());
+        }
 
         public CludeRowViewModel(Clude clude)
         {
@@ -89,31 +58,31 @@ namespace RiseSim.ViewModels
             {
                 throw new ArgumentException(clude.Name + "is not found.");
             }
-            DispName = equip.DispName;
+            DispName.Value = equip.DispName;
             TrueName = equip.Name;
             TrueKind = equip.Kind;
             switch (TrueKind)
             {
                 case EquipKind.head:
-                    DispKind = "頭：";
+                    DispKind.Value = "頭：";
                     break;
                 case EquipKind.body:
-                    DispKind = "胴：";
+                    DispKind.Value = "胴：";
                     break;
                 case EquipKind.arm:
-                    DispKind = "腕：";
+                    DispKind.Value = "腕：";
                     break;
                 case EquipKind.waist:
-                    DispKind = "腰：";
+                    DispKind.Value = "腰：";
                     break;
                 case EquipKind.leg:
-                    DispKind = "足：";
+                    DispKind.Value = "足：";
                     break;
                 case EquipKind.deco:
-                    DispKind = "装飾品：";
+                    DispKind.Value = "装飾品：";
                     break;
                 case EquipKind.charm:
-                    DispKind = "護石：";
+                    DispKind.Value = "護石：";
                     break;
                 default:
                     break;
@@ -121,14 +90,17 @@ namespace RiseSim.ViewModels
             switch (clude.Kind)
             {
                 case CludeKind.exclude:
-                    Status = "除外中";
+                    Status.Value = "除外中";
                     break;
                 case CludeKind.include:
-                    Status = "固定中";
+                    Status.Value = "固定中";
                     break;
                 default:
                     break;
             }
+
+            // コマンド設定
+            SetCommand();
         }
 
         internal void DeleteClude()

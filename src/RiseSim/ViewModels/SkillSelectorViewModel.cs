@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -31,48 +32,16 @@ namespace RiseSim.ViewModels
         private const string NoSkillName = "スキル選択";
 
         // スキル名一覧
-        private List<string> skills;
-        public List<string> Skills
-        {
-            get { return this.skills; }
-            set
-            {
-                this.SetProperty(ref this.skills, value);
-            }
-        }
+        public ReactivePropertySlim<List<string>> Skills { get; } = new();
 
         // 選択中スキルのレベル一覧
-        private List<int> skillLevels;
-        public List<int> SkillLevels
-        {
-            get { return this.skillLevels; }
-            set
-            {
-                this.SetProperty(ref this.skillLevels, value);
-            }
-        }
+        public ReactivePropertySlim<List<int>> SkillLevels { get; } = new();
 
         // 選択中スキル名
-        private string skillName;
-        public string SkillName
-        {
-            get { return this.skillName; }
-            set
-            {
-                this.SetProperty(ref this.skillName, value);
-            }
-        }
+        public ReactivePropertySlim<string> SkillName { get; } = new();
 
         // 選択中スキルレベル
-        private int skillLevel;
-        public int SkillLevel
-        {
-            get { return this.skillLevel; }
-            set
-            {
-                this.SetProperty(ref this.skillLevel, value);
-            }
-        }
+        public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
         public SkillSelectorViewModel()
@@ -83,8 +52,12 @@ namespace RiseSim.ViewModels
             {
                 skillList.Add(skill.Name);
             }
-            Skills = skillList;
-            SkillName = NoSkillName;
+            Skills.Value = skillList;
+            SkillName.Value = NoSkillName;
+
+            // スキル名変更時にレベル一覧を変更するように紐づけ
+            SkillName.Subscribe(_ => SetLevels());
+
         }
 
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
@@ -94,7 +67,7 @@ namespace RiseSim.ViewModels
             int maxLevel = 0;
             foreach (var skill in Masters.Skills)
             {
-                if (skill.Name.Equals(SkillName))
+                if (skill.Name.Equals(SkillName.Value))
                 {
                     maxLevel = skill.Level;
                 }
@@ -103,18 +76,18 @@ namespace RiseSim.ViewModels
             {
                 list.Add(i);
             }
-            SkillLevels = list;
+            SkillLevels.Value = list;
 
             if (list.Count > 0)
             {
                 // 初期値は最大レベルとする
-                SkillLevel = maxLevel;
+                SkillLevel.Value = maxLevel;
             }
         }
 
         internal void SetDefault()
         {
-            SkillName = NoSkillName;
+            SkillName.Value = NoSkillName;
         }
     }
 }

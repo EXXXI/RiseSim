@@ -245,9 +245,9 @@ namespace RiseSim.ViewModels
             List<Skill> skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if(selectorVM.SkillName != NoSkillName)
+                if(selectorVM.SkillName.Value != NoSkillName)
                 {
-                    skills.Add(new Skill(selectorVM.SkillName, selectorVM.SkillLevel));
+                    skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
                 }
             }
 
@@ -441,9 +441,9 @@ namespace RiseSim.ViewModels
             List<Skill> skills = new();
             foreach (var vm in CharmSkillSelectorVMs.Value)
             {
-                if (!vm.SkillName.Equals(NoSkillName))
+                if (!vm.SkillName.Value.Equals(NoSkillName))
                 {
-                    skills.Add(new Skill(vm.SkillName, vm.SkillLevel));
+                    skills.Add(new Skill(vm.SkillName.Value, vm.SkillLevel.Value));
                 }
             }
 
@@ -556,8 +556,8 @@ namespace RiseSim.ViewModels
             for (int i = 0; i < count; i++)
             {
                 // スキル情報反映
-                SkillSelectorVMs.Value[i].SkillName = MyDetailSet.Value.Skills[i].Name;
-                SkillSelectorVMs.Value[i].SkillLevel = MyDetailSet.Value.Skills[i].Level;
+                SkillSelectorVMs.Value[i].SkillName.Value = MyDetailSet.Value.Skills[i].Name;
+                SkillSelectorVMs.Value[i].SkillLevel.Value = MyDetailSet.Value.Skills[i].Level;
             }
             for (int i = count; i < SkillSelectorCount; i++)
             {

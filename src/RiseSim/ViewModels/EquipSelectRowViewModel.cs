@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -27,56 +28,47 @@ namespace RiseSim.ViewModels
     internal class EquipSelectRowViewModel : BindableBase
     {
         // 表示用装備種類
-        private string dispKind;
-        public string DispKind
-        {
-            get { return this.dispKind; }
-            set
-            {
-                this.SetProperty(ref this.dispKind, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispKind { get; } = new();
 
         // 装備一覧
-        private List<Equipment> equips;
-        public List<Equipment> Equips
-        {
-            get { return this.equips; }
-            set
-            {
-                this.SetProperty(ref this.equips, value);
-            }
-        }
+        public ReactivePropertySlim<List<Equipment>> Equips { get; } = new();
 
-        private Equipment selectedEquip;
+        // 選択中の装備
+        public ReactivePropertySlim<Equipment> SelectedEquip { get; } = new();
 
-        public Equipment SelectedEquip
+        // 除外コマンド
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        // 固定コマンド
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
         {
-            get { return this.selectedEquip; }
-            set
-            {
-                this.SetProperty(ref this.selectedEquip, value);
-            }
+            ExcludeCommand.Subscribe(_ => Exclude());
+            IncludeCommand.Subscribe(_ => Include());
         }
 
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
-            DispKind = dispKind;
-            Equips = equips;
+            DispKind.Value = dispKind;
+            Equips.Value = equips;
+
+            SetCommand();
         }
 
         internal void Exclude()
         {
             if (SelectedEquip != null)
             {
-                MainViewModel.Instance.AddExclude(SelectedEquip.Name, SelectedEquip.DispName);
+                MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
         internal void Include()
         {
             if (SelectedEquip != null)
             {
-                MainViewModel.Instance.AddInclude(SelectedEquip.Name, SelectedEquip.DispName);
+                MainViewModel.Instance.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
     }

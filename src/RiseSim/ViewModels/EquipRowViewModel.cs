@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using SimModel.service;
 using System;
@@ -29,55 +30,38 @@ namespace RiseSim.ViewModels
     internal class EquipRowViewModel : BindableBase
     {
         // 表示用装備種類
-        private string dispKind;
-        public string DispKind
-        {
-            get { return this.dispKind; }
-            set
-            {
-                this.SetProperty(ref this.dispKind, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispKind { get; } = new();
 
         // 表示用装備名
-        private string dispName;
-        public string DispName
-        {
-            get { return this.dispName; }
-            set
-            {
-                this.SetProperty(ref this.dispName, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
         // 管理用装備種類
-        private EquipKind trueKind;
-        public EquipKind TrueKind
-        {
-            get { return this.trueKind; }
-            set
-            {
-                this.SetProperty(ref this.trueKind, value);
-            }
-        }
+        public EquipKind TrueKind { get; set; }
 
         // 管理用装備名
-        private string trueName;
-        public string TrueName
+        public string TrueName { get; set; }
+
+        // 除外コマンド
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        // 固定コマンド
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
         {
-            get { return this.trueName; }
-            set
-            {
-                this.SetProperty(ref this.trueName, value);
-            }
+            ExcludeCommand.Subscribe(_ => Exclude());
+            IncludeCommand.Subscribe(_ => Include());
         }
 
         public EquipRowViewModel(string dispKind, string dispName, EquipKind trueKind, string trueName)
         {
-            DispKind = dispKind;
-            DispName = dispName;
+            DispKind.Value = dispKind;
+            DispName.Value = dispName;
             TrueKind = trueKind;
             TrueName = trueName;
+
+            SetCommand();
         }
 
         // 装備セットを丸ごとVMのリストにして返却
@@ -102,12 +86,12 @@ namespace RiseSim.ViewModels
 
         internal void Exclude()
         {
-            MainViewModel.Instance.AddExclude(TrueName, DispName);
+            MainViewModel.Instance.AddExclude(TrueName, DispName.Value);
 
         }
         internal void Include()
         {
-            MainViewModel.Instance.AddInclude(TrueName, DispName);
+            MainViewModel.Instance.AddInclude(TrueName, DispName.Value);
         }
     }
 }

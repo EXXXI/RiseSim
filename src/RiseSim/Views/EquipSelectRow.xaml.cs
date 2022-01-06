@@ -42,15 +42,5 @@ namespace RiseSim.Views
         {
             InitializeComponent();
         }
-
-        private void ExcludeButton_Click(object sender, RoutedEventArgs e)
-        {
-                ((EquipSelectRowViewModel)DataContext).Exclude();
-        }
-
-        private void IncludeButton_Click(object sender, RoutedEventArgs e)
-        {
-                ((EquipSelectRowViewModel)DataContext).Include();
-        }
     }
 }

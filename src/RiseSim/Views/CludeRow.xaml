@@ -9,10 +9,10 @@
 
     <Border BorderThickness="0,0,0,1" BorderBrush="Black">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Width="60" Text="{Binding DispKind}" TextAlignment="Right"/>
-            <TextBlock Width="300" Text="{Binding DispName}"/>
-            <TextBlock Width="60" Text="{Binding Status}"></TextBlock>
-            <Button x:Name="deleteCludeButton" Width="30" Content="解除" Click="DeteleCludeButton_Click"></Button>
+            <TextBlock Width="60" Text="{Binding DispKind.Value}" TextAlignment="Right"/>
+            <TextBlock Width="300" Text="{Binding DispName.Value}"/>
+            <TextBlock Width="60" Text="{Binding Status.Value}"></TextBlock>
+            <Button x:Name="deleteCludeButton" Width="30" Content="解除" Command="{Binding DeleteCludeCommand}"></Button>
         </StackPanel>
     </Border>
 </UserControl>
