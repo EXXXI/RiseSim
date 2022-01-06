@@ -41,10 +41,5 @@ namespace RiseSim.Views
         {
             InitializeComponent();
         }
-
-        private void DeteleCludeButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((CludeRowViewModel)DataContext).DeleteClude();
-        }
     }
 }

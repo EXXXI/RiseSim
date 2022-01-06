@@ -42,23 +42,5 @@ namespace RiseSim.Views
         {
             InitializeComponent();
         }
-
-        private void ExcludeButton_Click(object sender, RoutedEventArgs e)
-        {
-            Equipment? equip = equipCombo.SelectedItem as Equipment;
-            if (equip != null)
-            {
-                ((EquipSelectRowViewModel)DataContext).Exclude(equip.Name);
-            }
-        }
-
-        private void IncludeButton_Click(object sender, RoutedEventArgs e)
-        {
-            Equipment? equip = equipCombo.SelectedItem as Equipment;
-            if (equip != null)
-            {
-                ((EquipSelectRowViewModel)DataContext).Include(equip.Name);
-            }
-        }
     }
 }

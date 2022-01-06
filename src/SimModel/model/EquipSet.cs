@@ -88,7 +88,7 @@ namespace SimModel.model
         public string SimpleSetNameWithoutDecos { 
             get 
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 sb.Append(HeadName);
                 sb.Append(',');
                 sb.Append(BodyName);
@@ -110,7 +110,7 @@ namespace SimModel.model
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 sb.Append(SimpleSetNameWithoutDecos);
 
                 foreach (string name in DecoNames)
@@ -128,7 +128,7 @@ namespace SimModel.model
         {
             get
             {
-                List<int> list = new List<int>();
+                List<int> list = new();
                 if (!string.IsNullOrWhiteSpace(HeadName))
                 {
                     list.Add(Masters.GetEquipIndexByName(HeadName));
@@ -162,7 +162,7 @@ namespace SimModel.model
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 bool isFirst = true;
                 foreach (var decoName in DecoNames)
                 {
@@ -219,7 +219,7 @@ namespace SimModel.model
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 bool first = true;
                 foreach (var skill in Skills)
                 {

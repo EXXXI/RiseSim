@@ -14,9 +14,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-using RiseSim.ViewModels;
-using SimModel.model;
-using SimModel.service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,59 +39,6 @@ namespace RiseSim.Views
         {
             InitializeComponent();
 
-        }
-
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).Search();
-        }
-
-        private void SearchMoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).SearchMore();
-        }
-
-        private void SearchExtraSkillButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).SearchExtraSkill();
-        }
-
-        private void ResultGrid_CurrentCellChanged(object sender, EventArgs e)
-        {
-            EquipSet? set = resultGrid.CurrentItem as EquipSet;
-            if (set != null)
-            {
-                ((MainViewModel)DataContext).ViewSetDetail(set);
-            }
-        }
-
-        private void MySetGrid_CurrentCellChanged(object sender, EventArgs e)
-        {
-            EquipSet? set = mySetGrid.CurrentItem as EquipSet;
-            if (set != null)
-            {
-                ((MainViewModel)DataContext).ViewMySetDetail(set);
-            }
-        }
-
-        private void CharmAddButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).AddCharm();
-        }
-
-        private void MySetAddButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).AddMySet();
-        }
-
-        private void MySetDeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).DeleteMySet();
-        }
-
-        private void MySetToConditionButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainViewModel)DataContext).InputMySetCondition();
         }
     }
 }

@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -27,31 +28,25 @@ namespace RiseSim.ViewModels
     internal class CharmRowViewModel : BindableBase
     {
         // 表示用護石名
-        private string dispName;
-        public string DispName
-        {
-            get { return this.dispName; }
-            set
-            {
-                this.SetProperty(ref this.dispName, value);
-            }
-        }
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
         // 管理用護石名(GUID)
-        private string trueName;
-        public string TrueName
+        public string TrueName { get; set; }
+
+        // 護石削除コマンド
+        public ReactiveCommand DeleteCharmCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
         {
-            get { return this.trueName; }
-            set
-            {
-                this.SetProperty(ref this.trueName, value);
-            }
+            DeleteCharmCommand.Subscribe(_ => DeleteCharm());
         }
 
         public CharmRowViewModel(Equipment charm)
         {
             TrueName = charm.Name;
-            DispName = charm.DispName;
+            DispName.Value = charm.DispName;
+            SetCommand();
         }
 
         internal void DeleteCharm()

@@ -28,7 +28,7 @@ namespace SimModel.service
     public class Simulator
     {
         // 検索インスタンス
-        private Searcher searcher { get; set; }
+        private Searcher Searcher { get; set; }
 
         // データ読み込み
         public void LoadData()
@@ -52,7 +52,7 @@ namespace SimModel.service
         // 新規検索
         public List<EquipSet> Search(List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit)
         {
-            SearchCondition condition = new SearchCondition();
+            SearchCondition condition = new();
             condition.Skills = new List<Skill>();
             foreach (var skill in skillList)
             {
@@ -62,36 +62,36 @@ namespace SimModel.service
             condition.WeaponSlot2 = weaponSlot2;
             condition.WeaponSlot3 = weaponSlot3;
 
-            searcher = new Searcher(condition);
-            searcher.ExecSearch(limit);
+            Searcher = new Searcher(condition);
+            Searcher.ExecSearch(limit);
 
-            return searcher.ResultSets;
+            return Searcher.ResultSets;
         }
 
         // 条件そのまま追加検索
         public List<EquipSet> SearchMore(int limit)
         {
             // まだ検索がされていない場合、0件で返す
-            if(searcher == null)
+            if(Searcher == null)
             {
                 return new List<EquipSet>();
             }
 
-            searcher.ExecSearch(limit);
+            Searcher.ExecSearch(limit);
 
-            return searcher.ResultSets;
+            return Searcher.ResultSets;
         }
 
         // 追加スキル検索
         public List<Skill> SearchExtraSkill()
         {
             // まだ検索がされていない場合、0件で返す
-            if (searcher == null)
+            if (Searcher == null)
             {
                 return new List<Skill>();
             }
 
-            List<Skill> exSkills = new List<Skill>();
+            List<Skill> exSkills = new();
 
             // 全スキル全レベルを走査
             foreach (var skill in Masters.Skills)
@@ -99,17 +99,17 @@ namespace SimModel.service
                 for (int i = 1; i <= skill.Level; i++)
                 {
                     // 現在の検索条件をコピー
-                    SearchCondition condition = new SearchCondition(searcher.Condition);
+                    SearchCondition condition = new(Searcher.Condition);
 
                     // スキルを検索条件に追加
-                    Skill exSkill = new Skill(skill.Name, i);
+                    Skill exSkill = new(skill.Name, i);
                     bool isNewSkill = condition.AddSkill(new Skill(skill.Name, i));
 
                     // 新規スキルor既存だが上位Lvのスキルの場合のみ検索を実行
                     if (isNewSkill)
                     {
                         // 頑張り度1で検索
-                        Searcher exSearcher = new Searcher(condition);
+                        Searcher exSearcher = new(condition);
                         exSearcher.ExecSearch(1);
 
                         // 1件でもヒットすれば追加スキル一覧に追加

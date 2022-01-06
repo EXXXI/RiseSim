@@ -69,39 +69,37 @@ namespace SimModel.domain
 
             while (ResultSets.Count < target)
             {
-                using (MipProblem problem = new MipProblem())
+                using MipProblem problem = new();
+                problem.Name = "search";
+                problem.ObjDir = ObjectDirection.Maximize;
+
+                // 制約式設定
+                SetRows(problem);
+
+                // 変数設定
+                SetColumns(problem);
+
+                // 目的関数設定(防御力)
+                SetCoef(problem);
+
+                // 係数設定(防具データ)
+                SetDatas(problem);
+
+                // 計算
+                var result = problem.BranchAndCut();
+                if (!result.Equals(SolverResult.OK))
                 {
-                    problem.Name = "search";
-                    problem.ObjDir = ObjectDirection.Maximize;
+                    // もう結果がヒットしない場合終了
+                    break;
+                }
 
-                    // 制約式設定
-                    SetRows(problem);
-
-                    // 変数設定
-                    SetColumns(problem);
-
-                    // 目的関数設定(防御力)
-                    SetCoef(problem);
-
-                    // 係数設定(防具データ)
-                    SetDatas(problem);
-
-                    // 計算
-                    var result = problem.BranchAndCut();
-                    if (!result.Equals(SolverResult.OK))
-                    {
-                        // もう結果がヒットしない場合終了
-                        break;
-                    }
-
-                    // 計算結果整理
-                    bool hasData = MakeSet(problem);
-                    if (!hasData)
-                    {
-                        // TODO: 何故発生する？
-                        // 空データが出現したら終了
-                        break;
-                    }
+                // 計算結果整理
+                bool hasData = MakeSet(problem);
+                if (!hasData)
+                {
+                    // TODO: 何故発生する？
+                    // 空データが出現したら終了
+                    break;
                 }
             }
         }
@@ -248,9 +246,9 @@ namespace SimModel.domain
         // 係数設定(防具データ)
         private void SetDatas(MipProblem problem)
         {
-            List<int> iaList = new List<int>();
-            List<int> jaList = new List<int>();
-            List<double> arList = new List<double>();
+            List<int> iaList = new();
+            List<int> jaList = new();
+            List<double> arList = new();
 
             // 防具データ
             int columnIndex = 0;
@@ -401,7 +399,7 @@ namespace SimModel.domain
         // 計算結果整理
         private bool MakeSet(MipProblem problem)
         {
-            EquipSet equipSet = new EquipSet();
+            EquipSet equipSet = new();
             bool hasData = false;
             for (int i = 0; i < problem.ColumnsCount; i++)
             {
@@ -481,7 +479,7 @@ namespace SimModel.domain
         // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
         private void RemoveDuplicateSet(EquipSet newSet)
         {
-            List<EquipSet> removeList = new List<EquipSet>();
+            List<EquipSet> removeList = new();
             foreach (var set in ResultSets)
             {
                 if (!IsDuplicateEquipName(newSet.HeadName, set.HeadName))

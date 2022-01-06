@@ -7,9 +7,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="220">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="60" Text="{Binding DispKind}" TextAlignment="Right"/>
-        <TextBlock Width="100" Text="{Binding DispName}"/>
-        <Button x:Name="excludeButton" Width="30" Content="除外" Click="ExcludeButton_Click"></Button>
-        <Button x:Name="includeButton" Width="30" Content="固定" Click="IncludeButton_Click"></Button>
+        <TextBlock Width="60" Text="{Binding DispKind.Value}" TextAlignment="Right"/>
+        <TextBlock Width="100" Text="{Binding DispName.Value}"/>
+        <Button x:Name="excludeButton" Width="30" Content="除外" Command="{Binding ExcludeCommand}"></Button>
+        <Button x:Name="includeButton" Width="30" Content="固定" Command="{Binding IncludeCommand}"></Button>
     </StackPanel>
 </UserControl>

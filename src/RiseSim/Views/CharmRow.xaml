@@ -8,8 +8,8 @@
              d:DesignHeight="20" d:DesignWidth="330">
     <Border BorderThickness="0,0,0,1" BorderBrush="Black">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Width="300" Text="{Binding DispName}"/>
-            <Button x:Name="deleteCharmButton" Width="30" Content="削除" Click="DeteleCharmButton_Click"></Button>
+            <TextBlock Width="300" Text="{Binding DispName.Value}"/>
+            <Button x:Name="deleteCharmButton" Width="30" Content="削除" Command="{Binding DeleteCharmCommand}"></Button>
         </StackPanel>
     </Border>
 </UserControl>

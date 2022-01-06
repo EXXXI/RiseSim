@@ -24,7 +24,7 @@
                 <!-- 条件入力 -->
                 <StackPanel Grid.Row="0" Grid.Column="0">
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding SkillSelectorVMs}">
+                        <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:SkillSelector/>
@@ -34,24 +34,24 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="50" Text="武器スロ"/>
-                        <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster}" SelectedItem="{Binding WeaponSlots}" Width="100" SelectedIndex="0">
+                        <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value}" SelectedItem="{Binding WeaponSlots.Value}" Width="100" SelectedIndex="0">
                         </ComboBox>
                     </StackPanel>
-                    <Button x:Name="searchButton" Content="検索する" Click="SearchButton_Click" />
-                    <Button x:Name="searchMoreButton" Content="もっと検索する" Click="SearchMoreButton_Click" />
-                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Click="SearchExtraSkillButton_Click" />
+                    <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
+                    <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
+                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="50" Text="頑張り度"/>
-                        <TextBox x:Name="limitBox" Width="100" Text="{Binding Limit}"/>
+                        <TextBox x:Name="limitBox" Width="100" Text="{Binding Limit.Value}"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- ログ出力 -->
-                <TextBox x:Name="logBox" Grid.Column="0" Text="{Binding LogBoxText}" Grid.Row="1"/>
+                <TextBox x:Name="logBox" Grid.Column="0" Text="{Binding LogBoxText.Value}" Grid.Row="1"/>
 
 
                 <!-- 結果出力 -->
-                <DataGrid x:Name="resultGrid"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding SearchResult}" IsReadOnly="true" AutoGenerateColumns="False" CurrentCellChanged="ResultGrid_CurrentCellChanged">
+                <DataGrid x:Name="resultGrid"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding SearchResult.Value}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
                         <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
@@ -61,25 +61,25 @@
                         <DataGridTextColumn Header="腰" Binding="{Binding WaistName}" />
                         <DataGridTextColumn Header="足" Binding="{Binding LegName}" />
                         <DataGridTextColumn Header="護石" Binding="{Binding CharmNameDisp}" />
-                        <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
                         <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
                         <DataGridTextColumn Header="水" Binding="{Binding Water}" />
                         <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
                         <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
                         <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
+                        <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
                         <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <!-- 装備詳細出力 -->
                 <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-                    <Button x:Name="mySetAddButton" Content="この装備をマイセットに登録する" Click="MySetAddButton_Click" />
+                    <Button x:Name="mySetAddButton" Content="この装備をマイセットに登録する" Command="{Binding AddMySetCommand}" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
-                        <TextBlock Width="100" Text="{Binding DetailSet.WeaponSlotDisp}"/>
+                        <TextBlock Width="100" Text="{Binding DetailSet.Value.WeaponSlotDisp}"/>
                     </StackPanel>
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding EquipRowVMs}">
+                        <ItemsControl ItemsSource="{Binding EquipRowVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:EquipRow/>
@@ -107,7 +107,7 @@
 
                 <!-- 登録 -->
                 <StackPanel Grid.Row="0" Grid.Column="0">
-                    <ItemsControl ItemsSource="{Binding EquipSelectRowVMs}">
+                    <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <local:EquipSelectRow/>
@@ -119,7 +119,7 @@
                 <!-- 一覧 -->
                 <ScrollViewer Grid.Row="0" Grid.Column="1">
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding CludeRowVMs}">
+                        <ItemsControl ItemsSource="{Binding CludeRowVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:CludeRow/>
@@ -147,7 +147,7 @@
                 <!-- 登録 -->
                 <StackPanel Grid.Row="0" Grid.Column="0">
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding CharmSkillSelectorVMs}">
+                        <ItemsControl ItemsSource="{Binding CharmSkillSelectorVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:SkillSelector/>
@@ -157,16 +157,16 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="50" Text="スロット"/>
-                        <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster}"  SelectedItem="{Binding CharmWeaponSlots}" Width="100" SelectedIndex="0">
+                        <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster.Value}"  SelectedItem="{Binding CharmWeaponSlots.Value}" Width="100" SelectedIndex="0">
                         </ComboBox>
                     </StackPanel>
-                    <Button x:Name="charmAddButton" Content="登録する" Click="CharmAddButton_Click" />
+                    <Button x:Name="charmAddButton" Content="登録する" Command="{Binding AddCharmCommand}" />
                 </StackPanel>
 
                 <!-- 一覧 -->
                 <ScrollViewer Grid.Row="0" Grid.Column="1">
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding CharmRowVMs}">
+                        <ItemsControl ItemsSource="{Binding CharmRowVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:CharmRow/>
@@ -192,11 +192,16 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- マイセット一覧 -->
-                <DataGrid x:Name="mySetGrid"  Grid.Row="0" Grid.Column="0" ItemsSource="{Binding MySetList}" IsReadOnly="true" AutoGenerateColumns="False" CurrentCellChanged="MySetGrid_CurrentCellChanged">
+                <DataGrid x:Name="mySetGrid"  Grid.Row="0" Grid.Column="0" ItemsSource="{Binding MySetList.Value}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
                         <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
                         <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
+                        <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
+                        <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
+                        <DataGridTextColumn Header="水" Binding="{Binding Water}" />
+                        <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
+                        <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
+                        <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
                         <DataGridTextColumn Header="頭" Binding="{Binding HeadName}" />
                         <DataGridTextColumn Header="胴" Binding="{Binding BodyName}" />
                         <DataGridTextColumn Header="腕" Binding="{Binding ArmName}" />
@@ -204,24 +209,19 @@
                         <DataGridTextColumn Header="足" Binding="{Binding LegName}" />
                         <DataGridTextColumn Header="護石" Binding="{Binding CharmNameDisp}" />
                         <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
-                        <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
-                        <DataGridTextColumn Header="水" Binding="{Binding Water}" />
-                        <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
-                        <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
-                        <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
                     </DataGrid.Columns>
                 </DataGrid>
 
                 <!-- 装備詳細出力 -->
                 <StackPanel Grid.Row="0" Grid.Column="1">
-                    <Button x:Name="mySetDeleteButton" Content="この装備をマイセットから削除する" Click="MySetDeleteButton_Click" />
-                    <Button x:Name="mySetToConditionButton" Content="この装備のスキルを検索条件に入力する" Click="MySetToConditionButton_Click" />
+                    <Button x:Name="mySetDeleteButton" Content="この装備をマイセットから削除する" Command="{Binding DeleteMySetCommand}"/>
+                    <Button x:Name="mySetToConditionButton" Content="この装備のスキルを検索条件に入力する" Command="{Binding InputMySetConditionCommand}"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
-                        <TextBlock Width="100" Text="{Binding MyDetailSet.WeaponSlotDisp}"/>
+                        <TextBlock Width="100" Text="{Binding MyDetailSet.Value.WeaponSlotDisp}"/>
                     </StackPanel>
                     <StackPanel>
-                        <ItemsControl ItemsSource="{Binding MyEquipRowVMs}">
+                        <ItemsControl ItemsSource="{Binding MyEquipRowVMs.Value}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <local:EquipRow/>
@@ -244,9 +244,9 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="220" />
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="license" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" Text="{Binding License}" IsReadOnly="True">
+                <TextBox x:Name="license" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" Text="{Binding License.Value}" IsReadOnly="True">
                 </TextBox>
-                <TextBox x:Name="whatIsThis" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Text="{Binding WhatIsLicense}" IsReadOnly="True">
+                <TextBox x:Name="whatIsThis" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Text="{Binding WhatIsLicense.Value}" IsReadOnly="True">
                 </TextBox>
             </Grid>
         </TabItem>

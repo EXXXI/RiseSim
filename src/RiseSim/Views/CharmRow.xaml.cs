@@ -41,10 +41,5 @@ namespace RiseSim.Views
         {
             InitializeComponent();
         }
-
-        private void DeteleCharmButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((CharmRowViewModel)DataContext).DeleteCharm();
-        }
     }
 }

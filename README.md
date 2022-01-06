@@ -69,6 +69,12 @@ GNU General Public License v3.0
 
 ライセンス：<https://www.nuget.org/packages/Prism.Wpf/8.1.97/license>
 
+### ReactiveProperty
+
+プロジェクト：<https://github.com/runceel/ReactiveProperty>
+
+ライセンス：<https://github.com/runceel/ReactiveProperty/blob/main/LICENSE.txt>
+
 ## スペシャルサンクス
 
 ### 5chモンハン板シミュスレの方々
