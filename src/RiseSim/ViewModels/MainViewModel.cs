@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.model;
 using SimModel.service;
 using System;
@@ -35,6 +36,9 @@ namespace RiseSim.ViewModels
         // シミュ本体
         public Simulator Simulator { get; set; }
 
+        // ログ用StringBuilderインスタンス
+        private StringBuilder LogSb { get; } = new StringBuilder();
+
         // TODO: 外部ファイル化するべきか？
         // 定数
         // スキル選択部品の個数
@@ -51,219 +55,86 @@ namespace RiseSim.ViewModels
 
 
         // シミュ画面のスキル選択部品のVM
-        private ObservableCollection<SkillSelectorViewModel> skillSelectorVMs;
-        public ObservableCollection<SkillSelectorViewModel> SkillSelectorVMs
-        {
-            get { return this.skillSelectorVMs; }
-            set
-            {
-                this.SetProperty(ref this.skillSelectorVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> SkillSelectorVMs { get; } = new();
 
         // シミュ画面の検索結果一覧
-        private ObservableCollection<EquipSet> searchResult;
-        public ObservableCollection<EquipSet> SearchResult
-        {
-            get { return this.searchResult; }
-            set
-            {
-                this.SetProperty(ref this.searchResult, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<EquipSet>> SearchResult { get; } = new();
 
         // シミュ画面の検索結果の選択行
-        private EquipSet detailSet;
-        public EquipSet DetailSet
-        {
-            get { return this.detailSet; }
-            set
-            {
-                // TODO: ここで別のプロパティいじるのはなんか違うと思う
-                EquipRowVMs = EquipRowViewModel.SetToEquipRows(value);
-                this.SetProperty(ref this.detailSet, value);
-            }
-        }
+        public ReactivePropertySlim<EquipSet> DetailSet { get; } = new();
 
         // シミュ画面の装備詳細の各行のVM
-        private ObservableCollection<EquipRowViewModel> equipRowVMs;
-        public ObservableCollection<EquipRowViewModel> EquipRowVMs
-        {
-            get { return this.equipRowVMs; }
-            set
-            {
-                this.SetProperty(ref this.equipRowVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> EquipRowVMs { get; } = new();
 
         // シミュ画面の武器スロ指定
-        private string weaponSlots;
-        public string WeaponSlots
-        {
-            get { return this.weaponSlots; }
-            set
-            {
-                this.SetProperty(ref this.weaponSlots, value);
-            }
-        }
+        public ReactivePropertySlim<string> WeaponSlots { get; } = new();
 
         // シミュ画面の頑張り度(検索件数)
-        private string limit;
-        public string Limit
-        {
-            get { return this.limit; }
-            set
-            {
-                this.SetProperty(ref this.limit, value);
-            }
-        }
+        public ReactivePropertySlim<string> Limit { get; } = new();
 
         // ビジー判定
-        private bool isFree = true;
-        public bool IsFree
-        {
-            get { return this.isFree; }
-            set
-            {
-                this.SetProperty(ref this.isFree, value);
-            }
-        }
-
+        public ReactivePropertySlim<bool> IsFree { get; } = new(true);
 
         // 除外・固定画面の登録部品のVM
-        private ObservableCollection<EquipSelectRowViewModel> equipSelectRowVMs;
-        public ObservableCollection<EquipSelectRowViewModel> EquipSelectRowVMs
-        {
-            get { return this.equipSelectRowVMs; }
-            set
-            {
-                this.SetProperty(ref this.equipSelectRowVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<EquipSelectRowViewModel>> EquipSelectRowVMs { get; } = new();
 
         // 除外・固定画面の一覧表示の各行のVM
-        private ObservableCollection<CludeRowViewModel> cludeRowVMs;
-        public ObservableCollection<CludeRowViewModel> CludeRowVMs
-        {
-            get { return this.cludeRowVMs; }
-            set
-            {
-                this.SetProperty(ref this.cludeRowVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<CludeRowViewModel>> CludeRowVMs { get; } = new();
 
         // 護石画面のスキル選択部品のVM
-        private ObservableCollection<SkillSelectorViewModel> charmSkillSelectorVMs;
-        public ObservableCollection<SkillSelectorViewModel> CharmSkillSelectorVMs
-        {
-            get { return this.charmSkillSelectorVMs; }
-            set
-            {
-                this.SetProperty(ref this.charmSkillSelectorVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> CharmSkillSelectorVMs { get; } = new();
 
         // 護石画面の一覧用部品のVM
-        private ObservableCollection<CharmRowViewModel> charmRowVMs;
-        public ObservableCollection<CharmRowViewModel> CharmRowVMs
-        {
-            get { return this.charmRowVMs; }
-            set
-            {
-                this.SetProperty(ref this.charmRowVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<CharmRowViewModel>> CharmRowVMs { get; } = new();
 
         // 護石画面のスロット指定
-        private string charmWeaponSlots;
-        public string CharmWeaponSlots
-        {
-            get { return this.charmWeaponSlots; }
-            set
-            {
-                this.SetProperty(ref this.charmWeaponSlots, value);
-            }
-        }
+        public ReactivePropertySlim<string> CharmWeaponSlots { get; } = new();
 
         // マイセット一覧
-        private ObservableCollection<EquipSet> mySetList;
-        public ObservableCollection<EquipSet> MySetList
-        {
-            get { return this.mySetList; }
-            set
-            {
-                this.SetProperty(ref this.mySetList, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<EquipSet>> MySetList { get; } = new();
 
         // マイセットの選択行データ
-        private EquipSet myDetailSet;
-        public EquipSet MyDetailSet
-        {
-            get { return this.myDetailSet; }
-            set
-            {
-                // TODO: ここで別のプロパティいじるのはなんか違うと思う
-                MyEquipRowVMs = EquipRowViewModel.SetToEquipRows(value);
-                this.SetProperty(ref this.myDetailSet, value);
-            }
-        }
+        public ReactivePropertySlim<EquipSet> MyDetailSet { get; } = new();
 
         // マイセット画面の装備詳細の各行のVM
-        private ObservableCollection<EquipRowViewModel> myEquipRowVMs;
-        public ObservableCollection<EquipRowViewModel> MyEquipRowVMs
-        {
-            get { return this.myEquipRowVMs; }
-            set
-            {
-                this.SetProperty(ref this.myEquipRowVMs, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> MyEquipRowVMs { get; } = new();
 
         // ライセンス画面の内容
-        private string license;
-        public string License
-        {
-            get { return this.license; }
-            set
-            {
-                this.SetProperty(ref this.license, value);
-            }
-        }
+        public ReactivePropertySlim<string> License { get; } = new();
 
         // ライセンス画面の雑な要約
-        private string whatIsLicense;
-        public string WhatIsLicense
-        {
-            get { return this.whatIsLicense; }
-            set
-            {
-                this.SetProperty(ref this.whatIsLicense, value);
-            }
-        }
+        public ReactivePropertySlim<string> WhatIsLicense { get; } = new();
 
         // スロット選択の選択肢
-        private ObservableCollection<string> slotMaster;
-        public ObservableCollection<string> SlotMaster
-        {
-            get { return this.slotMaster; }
-            set
-            {
-                this.SetProperty(ref this.slotMaster, value);
-            }
-        }
+        public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
 
         // ログ表示
-        private StringBuilder LogSb { get; } = new StringBuilder();
-        private string logBoxText;
-        public string LogBoxText
+        public ReactivePropertySlim<string> LogBoxText { get; } = new();
+
+
+        // コマンド
+        // 検索
+        public AsyncReactiveCommand SearchCommand { get; private set; } 
+        public AsyncReactiveCommand SearchMoreCommand { get; private set; } 
+        public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; } 
+        public ReactiveCommand AddCharmCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand DeleteMySetCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand InputMySetConditionCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
         {
-            get { return this.logBoxText; }
-            set
-            {
-                this.SetProperty(ref this.logBoxText, value);
-            }
+            SearchCommand = IsFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search());
+            SearchMoreCommand = IsFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
+            SearchExtraSkillCommand = IsFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
+            AddCharmCommand.Subscribe(_ => AddCharm());
+            AddMySetCommand.Subscribe(_ => AddMySet());
+            DeleteMySetCommand.Subscribe(_ => DeleteMySet());
+            InputMySetConditionCommand.Subscribe(_ => InputMySetCondition());
         }
+
+
 
         // コンストラクタ：起動時処理
         public MainViewModel()
@@ -281,7 +152,7 @@ namespace RiseSim.ViewModels
             {
                 selectorVMs.Add(new SkillSelectorViewModel());
             }
-            SkillSelectorVMs = selectorVMs;
+            SkillSelectorVMs.Value = selectorVMs;
 
             // 護石画面のスキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> charmSelectorVMs = new();
@@ -289,10 +160,13 @@ namespace RiseSim.ViewModels
             {
                 charmSelectorVMs.Add(new SkillSelectorViewModel());
             }
-            CharmSkillSelectorVMs = charmSelectorVMs;
+            CharmSkillSelectorVMs.Value = charmSelectorVMs;
 
-            // シミュ画面装備詳細に空の装備を表示
-            EquipRowVMs = EquipRowViewModel.SetToEquipRows(new EquipSet());
+            // シミュ画面の検索結果と装備詳細を紐づけ
+            DetailSet.Subscribe(set => EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set));
+
+            // マイセット画面の一覧と装備詳細を紐づけ
+            MyDetailSet.Subscribe(set => MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set));
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
             ObservableCollection<string> slots = new();
@@ -306,12 +180,12 @@ namespace RiseSim.ViewModels
                     }
                 }
             }
-            SlotMaster = slots;
-            WeaponSlots = "0-0-0";
-            CharmWeaponSlots = "0-0-0";
+            SlotMaster.Value = slots;
+            WeaponSlots.Value = "0-0-0";
+            CharmWeaponSlots.Value = "0-0-0";
 
             // 頑張り度を設定
-            Limit = DefaultLimit;
+            Limit.Value = DefaultLimit;
 
             // TODO:外部ファイル化するべきか？
             // ライセンス表示
@@ -341,7 +215,7 @@ namespace RiseSim.ViewModels
             sb.Append('\n');
             sb.Append("・先人のシミュ作成者様\n");
             sb.Append("特に頑シミュ様のUIに大きく影響を受けています\n");
-            License = sb.ToString();
+            License.Value = sb.ToString();
 
             // TODO:外部ファイル化するべきか？
             // ライセンスの雑な説明を表示
@@ -355,18 +229,21 @@ namespace RiseSim.ViewModels
             sbw.Append("・シミュとして使う分には好きに使ってOK\n");
             sbw.Append("・このシミュのせいで何か起きても開発者は責任取らんよ\n");
             sbw.Append("・改変や再配布するときはよく調べてルールに従ってね\n");
-            WhatIsLicense = sbw.ToString();
+            WhatIsLicense.Value = sbw.ToString();
+
+            // 各コマンドを設定
+            SetCommand();
 
             // マスタファイル読み込み
             LoadMasters();
         }
 
         // 検索
-        async internal void Search()
+        async internal Task Search()
         {
             // スキル条件を整理
             List<Skill> skills = new();
-            foreach (var selectorVM in SkillSelectorVMs)
+            foreach (var selectorVM in SkillSelectorVMs.Value)
             {
                 if(selectorVM.SkillName != NoSkillName)
                 {
@@ -375,7 +252,7 @@ namespace RiseSim.ViewModels
             }
 
             // 武器スロ条件を整理
-            string[] splited = WeaponSlots.Split('-');
+            string[] splited = WeaponSlots.Value.Split('-');
             int weaponSlot1 = int.Parse(splited[0]);
             int weaponSlot2 = int.Parse(splited[1]);
             int weaponSlot3 = int.Parse(splited[2]);
@@ -384,7 +261,7 @@ namespace RiseSim.ViewModels
             int searchLimit;
             try
             {
-                searchLimit = int.Parse(Limit);
+                searchLimit = int.Parse(Limit.Value);
             }
             catch (Exception)
             {
@@ -409,33 +286,33 @@ namespace RiseSim.ViewModels
                 LogSb.Append(skill.Level);
                 LogSb.Append('\n');
             }
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
 
             // ビジーフラグ
-            IsFree = false;
+            IsFree.Value = false;
 
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit));
-            SearchResult = new ObservableCollection<EquipSet>(result);
+            SearchResult.Value = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
-            IsFree = true;
+            IsFree.Value = true;
 
             // 完了ログ表示
             LogSb.Append("■検索完了：");
-            LogSb.Append(SearchResult.Count);
+            LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // もっと検索
-        async internal void SearchMore()
+        async internal Task SearchMore()
         {
             // 頑張り度を整理
             int searchLimit;
             try
             {
-                searchLimit = int.Parse(Limit);
+                searchLimit = int.Parse(Limit.Value);
             }
             catch (Exception)
             {
@@ -446,39 +323,41 @@ namespace RiseSim.ViewModels
             // 開始ログ表示
             LogSb.Clear();
             LogSb.Append("■もっと検索開始：\n");
+            LogBoxText.Value = LogSb.ToString();
 
             // ビジーフラグ
-            IsFree = false;
+            IsFree.Value = false;
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
-            SearchResult = new ObservableCollection<EquipSet>(result);
+            SearchResult.Value = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
-            IsFree = true;
+            IsFree.Value = true;
 
             // 完了ログ表示
             LogSb.Append("■もっと検索完了：");
-            LogSb.Append(SearchResult.Count);
+            LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // 追加スキル検索
-        async internal void SearchExtraSkill()
+        async internal Task SearchExtraSkill()
         {
             // 開始ログ表示
             LogSb.Clear();
             LogSb.Append("■追加スキル検索開始：\n");
+            LogBoxText.Value = LogSb.ToString();
 
             // ビジーフラグ
-            IsFree = false;
+            IsFree.Value = false;
 
             // 追加スキル検索
             List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill());
 
             // ビジーフラグ解除
-            IsFree = true;
+            IsFree.Value = true;
 
             // TODO: もっといい方法はないか？インジケータとかも欲しい
             // ログ表示
@@ -490,7 +369,7 @@ namespace RiseSim.ViewModels
                 LogSb.Append(skill.Level);
                 LogSb.Append('\n');
             }
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // 除外装備設定
@@ -513,7 +392,7 @@ namespace RiseSim.ViewModels
             LogSb.Append("■除外\n");
             LogSb.Append(dispName);
             LogSb.Append('\n');
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // 固定装備設定
@@ -536,7 +415,7 @@ namespace RiseSim.ViewModels
             LogSb.Append("■固定\n");
             LogSb.Append(dispName);
             LogSb.Append('\n');
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // 除外・固定の解除
@@ -560,7 +439,7 @@ namespace RiseSim.ViewModels
         {
             // スキルを整理
             List<Skill> skills = new();
-            foreach (var vm in CharmSkillSelectorVMs)
+            foreach (var vm in CharmSkillSelectorVMs.Value)
             {
                 if (!vm.SkillName.Equals(NoSkillName))
                 {
@@ -569,7 +448,7 @@ namespace RiseSim.ViewModels
             }
 
             // スロットを整理
-            string[] splited = CharmWeaponSlots.Split('-');
+            string[] splited = CharmWeaponSlots.Value.Split('-');
             int weaponSlot1 = int.Parse(splited[0]);
             int weaponSlot2 = int.Parse(splited[1]);
             int weaponSlot3 = int.Parse(splited[2]);
@@ -625,7 +504,7 @@ namespace RiseSim.ViewModels
         // マイセットを追加
         internal void AddMySet()
         {
-            EquipSet set = DetailSet;
+            EquipSet set = DetailSet.Value;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
@@ -643,13 +522,13 @@ namespace RiseSim.ViewModels
             LogSb.Append("■マイセット登録\n");
             LogSb.Append(set.SimpleSetName);
             LogSb.Append('\n');
-            LogBoxText = LogSb.ToString();
+            LogBoxText.Value = LogSb.ToString();
         }
 
         // マイセットを削除
         internal void DeleteMySet()
         {
-            EquipSet set = MyDetailSet;
+            EquipSet set = MyDetailSet.Value;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
@@ -673,21 +552,21 @@ namespace RiseSim.ViewModels
             }
 
             // スキル入力部品の数以上には実行しない(できない)
-            int count = Math.Min(SkillSelectorCount, MyDetailSet.Skills.Count);
+            int count = Math.Min(SkillSelectorCount, MyDetailSet.Value.Skills.Count);
             for (int i = 0; i < count; i++)
             {
                 // スキル情報反映
-                SkillSelectorVMs[i].SkillName = MyDetailSet.Skills[i].Name;
-                SkillSelectorVMs[i].SkillLevel = MyDetailSet.Skills[i].Level;
+                SkillSelectorVMs.Value[i].SkillName = MyDetailSet.Value.Skills[i].Name;
+                SkillSelectorVMs.Value[i].SkillLevel = MyDetailSet.Value.Skills[i].Level;
             }
             for (int i = count; i < SkillSelectorCount; i++)
             {
                 // 使わない行は選択状態をリセット
-                SkillSelectorVMs[i].SetDefault();
+                SkillSelectorVMs.Value[i].SetDefault();
             }
 
             // スロット情報反映
-            WeaponSlots = MyDetailSet.WeaponSlotDisp;
+            WeaponSlots.Value = MyDetailSet.Value.WeaponSlotDisp;
         }
 
         // マスタ情報を全てVMにロード
@@ -710,7 +589,7 @@ namespace RiseSim.ViewModels
             equipList.Add(new EquipSelectRowViewModel("足：", Masters.Legs));
             equipList.Add(new EquipSelectRowViewModel("護石：", Masters.Charms));
             equipList.Add(new EquipSelectRowViewModel("装飾品：", Masters.Decos));
-            EquipSelectRowVMs = equipList;
+            EquipSelectRowVMs.Value = equipList;
 
             // 護石画面用のVMの設定
             ObservableCollection<CharmRowViewModel> charmList = new();
@@ -718,7 +597,7 @@ namespace RiseSim.ViewModels
             {
                 charmList.Add(new CharmRowViewModel(charm));
             }
-            CharmRowVMs = charmList;
+            CharmRowVMs.Value = charmList;
         }
 
         // 除外固定のマスタ情報をVMにロード
@@ -730,14 +609,14 @@ namespace RiseSim.ViewModels
             {
                 cludeList.Add(new CludeRowViewModel(clude));
             }
-            CludeRowVMs = cludeList;
+            CludeRowVMs.Value = cludeList;
         }
 
         // マイセットのマスタ情報をVMにロード
         private void LoadMySets()
         {
             // マイセット画面用のVMの設定
-            MySetList = new ObservableCollection<EquipSet>(Masters.MySets); ;
+            MySetList.Value = new ObservableCollection<EquipSet>(Masters.MySets); ;
         }
     }
 }
