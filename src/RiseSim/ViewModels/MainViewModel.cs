@@ -208,6 +208,10 @@ namespace RiseSim.ViewModels
             sb.Append("プロジェクト：https://github.com/PrismLibrary/Prism\n");
             sb.Append("ライセンス：https://www.nuget.org/packages/Prism.Wpf/8.1.97/license\n");
             sb.Append('\n');
+            sb.Append("・ReactiveProperty\n");
+            sb.Append("プロジェクト：https://github.com/runceel/ReactiveProperty\n");
+            sb.Append("ライセンス：https://github.com/runceel/ReactiveProperty/blob/main/LICENSE.txt\n");
+            sb.Append('\n');
             sb.Append("■スペシャルサンクス\n");
             sb.Append("・5chモンハン板シミュスレの方々\n");
             sb.Append("特にVer.13の >> 480様の以下論文を大いに参考にしました\n");
