@@ -105,7 +105,7 @@ namespace RiseSim.ViewModels
 
         internal void DeleteClude()
         {
-            MainViewModel.Instance.DeleteClude(TrueName);
+            MainViewModel.Instance.DeleteClude(TrueName, DispName.Value);
         }
     }
 }

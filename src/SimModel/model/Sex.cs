@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace SimModel.model
 {
-    // TODO: 利用していないので、そのうち検索条件に含めたい
+    // TODO: 性別、そのうち検索条件に含めたい
     // 装備の性別制限
     public enum Sex
     {

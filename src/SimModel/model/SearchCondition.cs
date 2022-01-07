@@ -37,7 +37,7 @@ namespace SimModel.model
         // 武器スロ3つ目
         public int WeaponSlot3 { get; set; }
 
-        /* TODO: 今後追加するかも？
+        /* TODO: 耐性等の検索条件、今後追加する？
         public int Def { get; set; }
         public int? Fire { get; set; }
         public int? Water { get; set; }

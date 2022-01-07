@@ -26,24 +26,24 @@ namespace SimModel.domain
     static internal class DataManagement
     {
         // 除外設定を追加
-        static internal void AddExclude(string name)
+        static internal Clude? AddExclude(string name)
         {
             Equipment? equip = Masters.GetEquipByName(name);
             if (equip == null)
             {
-                return;
+                return null;
             }
-            AddClude(name, CludeKind.exclude);
+            return AddClude(name, CludeKind.exclude);
         }
 
         // 固定設定を追加
-        static internal void AddInclude(string name)
+        static internal Clude? AddInclude(string name)
         {
             Equipment? equip = Masters.GetEquipByName(name);
             if (equip == null || equip.Kind == EquipKind.deco)
             {
                 // 装飾品は固定しない
-                return;
+                return null;
             }
 
             // 同じ装備種類の固定装備があった場合、固定を解除する
@@ -67,12 +67,13 @@ namespace SimModel.domain
             }
 
             // 追加
-            AddClude(name, CludeKind.include);
+            return AddClude(name, CludeKind.include);
         }
 
         // 除外・固定の追加
-        static private void AddClude(string name, CludeKind kind)
+        static private Clude? AddClude(string name, CludeKind kind)
         {
+            Clude? ret = null;
 
             bool existClude = false;
             foreach (var clude in Masters.Cludes)
@@ -82,6 +83,7 @@ namespace SimModel.domain
                     // 既に設定がある場合は上書き
                     clude.Kind = kind;
                     existClude = true;
+                    ret = clude;
                 }
             }
             if (!existClude)
@@ -92,10 +94,14 @@ namespace SimModel.domain
                 clude.Kind = kind;
                 // 追加
                 Masters.Cludes.Add(clude);
+                ret = clude;
             }
 
             // マスタへ反映
             CsvOperation.SaveCludeCSV();
+
+            // 追加した設定
+            return ret;
         }
 
         // 除外・固定設定の削除
@@ -116,7 +122,7 @@ namespace SimModel.domain
         }
 
         // 護石の追加
-        static internal void AddCharm(List<Skill> skills, int slot1, int slot2, int slot3)
+        static internal Equipment AddCharm(List<Skill> skills, int slot1, int slot2, int slot3)
         {
             Equipment equipment = new();
             equipment.Name = Guid.NewGuid().ToString();
@@ -131,6 +137,9 @@ namespace SimModel.domain
 
             // マスタへ反映
             CsvOperation.SaveCharmCSV();
+
+            // 追加した護石
+            return equipment;
         }
 
         // 護石の削除
@@ -151,13 +160,15 @@ namespace SimModel.domain
         }
 
         // マイセットの追加
-        static internal void AddMySet(EquipSet set)
+        static internal EquipSet AddMySet(EquipSet set)
         {
             // 追加
             Masters.MySets.Add(set);
 
             // マスタへ反映
             CsvOperation.SaveMySetCSV();
+
+            return set;
         }
 
         // マイセットの削除

@@ -59,14 +59,14 @@ namespace RiseSim.ViewModels
 
         internal void Exclude()
         {
-            if (SelectedEquip != null)
+            if (SelectedEquip.Value != null)
             {
                 MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
         internal void Include()
         {
-            if (SelectedEquip != null)
+            if (SelectedEquip.Value != null)
             {
                 MainViewModel.Instance.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }

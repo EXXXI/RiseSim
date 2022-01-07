@@ -126,15 +126,15 @@ namespace SimModel.service
 
 
         // 除外装備登録
-        public void AddExclude(string name)
+        public Clude? AddExclude(string name)
         {
-            DataManagement.AddExclude(name);
+            return DataManagement.AddExclude(name);
         }
 
         // 固定装備登録
-        public void AddInclude(string name)
+        public Clude? AddInclude(string name)
         {
-            DataManagement.AddInclude(name);
+            return DataManagement.AddInclude(name);
         }
 
         // 除外・固定解除
@@ -144,9 +144,9 @@ namespace SimModel.service
         }
 
         // 護石追加
-        public void AddCharm(List<Skill> skill, int slot1, int slot2, int slot3)
+        public Equipment AddCharm(List<Skill> skill, int slot1, int slot2, int slot3)
         {
-            DataManagement.AddCharm(skill, slot1, slot2, slot3);
+            return DataManagement.AddCharm(skill, slot1, slot2, slot3);
         }
 
         // 護石削除
@@ -156,9 +156,9 @@ namespace SimModel.service
         }
 
         // マイセット登録
-        public void AddMySet(EquipSet set)
+        public EquipSet AddMySet(EquipSet set)
         {
-            DataManagement.AddMySet(set);
+            return DataManagement.AddMySet(set);
         }
 
         // マイセット削除
