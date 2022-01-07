@@ -15,6 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="conf\viewConfig.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="MHR_DECO.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
