@@ -97,7 +97,7 @@ namespace SimModel.domain
                 bool hasData = MakeSet(problem);
                 if (!hasData)
                 {
-                    // TODO: 何故発生する？
+                    // TODO: 計算結果の空データ、何故発生する？
                     // 空データが出現したら終了
                     break;
                 }
@@ -215,7 +215,7 @@ namespace SimModel.domain
             }
         }
 
-        // TODO: 防御力以外も対応する？
+        // TODO: 目的関数、防御力以外も対応する？
         // 目的関数設定(防御力)
         private static void SetCoef(MipProblem problem)
         {

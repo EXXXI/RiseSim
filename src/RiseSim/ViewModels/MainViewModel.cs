@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -75,8 +76,8 @@ namespace RiseSim.ViewModels
         public ReactivePropertySlim<string> Limit { get; } = new();
 
         // ビジー判定
-        public ReactivePropertySlim<bool> IsFree { get; } = new(true);
-
+        public ReactivePropertySlim<bool> IsBusy { get; } = new(false);
+        public ReadOnlyReactivePropertySlim<bool> IsFree { get; private set; }
         // 除外・固定画面の登録部品のVM
         public ReactivePropertySlim<ObservableCollection<EquipSelectRowViewModel>> EquipSelectRowVMs { get; } = new();
 
@@ -112,6 +113,9 @@ namespace RiseSim.ViewModels
 
         // ログ表示
         public ReactivePropertySlim<string> LogBoxText { get; } = new();
+
+        // ステータスバー表示
+        public ReactivePropertySlim<string> StatusBarText { get; } = new();
 
 
         // コマンド
@@ -169,6 +173,9 @@ namespace RiseSim.ViewModels
 
             // マイセット画面の一覧と装備詳細を紐づけ
             MyDetailSet.Subscribe(set => MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set));
+
+            // ビジー状態のプロパティを紐づけ
+            IsFree = IsBusy.Select(x => !x).ToReadOnlyReactivePropertySlim();
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
             ObservableCollection<string> slots = new();
@@ -240,6 +247,9 @@ namespace RiseSim.ViewModels
 
             // マスタファイル読み込み
             LoadMasters();
+
+            // ログ表示
+            StatusBarText.Value = "モンハンライズスキルシミュレータ for Windows";
         }
 
         // 検索
@@ -291,22 +301,24 @@ namespace RiseSim.ViewModels
                 LogSb.Append('\n');
             }
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "検索中・・・";
 
             // ビジーフラグ
-            IsFree.Value = false;
+            IsBusy.Value = true;
 
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit));
             SearchResult.Value = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
-            IsFree.Value = true;
+            IsBusy.Value = false;
 
             // 完了ログ表示
             LogSb.Append("■検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "検索完了";
         }
 
         // もっと検索
@@ -328,22 +340,24 @@ namespace RiseSim.ViewModels
             LogSb.Clear();
             LogSb.Append("■もっと検索開始：\n");
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "もっと検索中・・・";
 
             // ビジーフラグ
-            IsFree.Value = false;
+            IsBusy.Value = true;
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
             SearchResult.Value = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
-            IsFree.Value = true;
+            IsBusy.Value = false;
 
             // 完了ログ表示
             LogSb.Append("■もっと検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "もっと検索完了";
         }
 
         // 追加スキル検索
@@ -353,17 +367,18 @@ namespace RiseSim.ViewModels
             LogSb.Clear();
             LogSb.Append("■追加スキル検索開始：\n");
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "追加スキル検索中・・・";
 
             // ビジーフラグ
-            IsFree.Value = false;
+            IsBusy.Value = true;
 
             // 追加スキル検索
             List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill());
 
             // ビジーフラグ解除
-            IsFree.Value = true;
+            IsBusy.Value = false;
 
-            // TODO: もっといい方法はないか？インジケータとかも欲しい
+            // TODO: 追加スキルの一覧、もっといい方法はないか？
             // ログ表示
             LogSb.Append("■追加スキル検索完了\n");
             foreach (Skill skill in result)
@@ -374,6 +389,7 @@ namespace RiseSim.ViewModels
                 LogSb.Append('\n');
             }
             LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "追加スキル検索完了";
         }
 
         // 除外装備設定
@@ -391,12 +407,8 @@ namespace RiseSim.ViewModels
             // 除外固定のマスタをリロード
             LoadCludes();
 
-            // TODO: もっといい方法はないか？
             // ログ表示
-            LogSb.Append("■除外\n");
-            LogSb.Append(dispName);
-            LogSb.Append('\n');
-            LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "除外：" + dispName;
         }
 
         // 固定装備設定
@@ -414,16 +426,12 @@ namespace RiseSim.ViewModels
             // 除外固定のマスタをリロード
             LoadCludes();
 
-            // TODO: もっといい方法はないか？
             // ログ表示
-            LogSb.Append("■固定\n");
-            LogSb.Append(dispName);
-            LogSb.Append('\n');
-            LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "固定：" + dispName;
         }
 
         // 除外・固定の解除
-        internal void DeleteClude(string trueName)
+        internal void DeleteClude(string trueName, string dispName)
         {
             if (string.IsNullOrEmpty(trueName))
             {
@@ -436,6 +444,9 @@ namespace RiseSim.ViewModels
 
             // 除外固定のマスタをリロード
             LoadCludes();
+
+            // ログ表示
+            StatusBarText.Value = "解除：" + dispName;
         }
 
         // 護石追加
@@ -458,34 +469,41 @@ namespace RiseSim.ViewModels
             int weaponSlot3 = int.Parse(splited[2]);
 
             // 護石追加
-            Simulator.AddCharm(skills, weaponSlot1, weaponSlot2, weaponSlot3);
+            Equipment added = Simulator.AddCharm(skills, weaponSlot1, weaponSlot2, weaponSlot3);
 
             // 装備マスタをリロード
             LoadEquips();
+
+            // ログ表示
+            StatusBarText.Value = "護石追加：" + added.DispName;
+
         }
 
         // 護石削除
-        internal void DeleteCharm(string name)
+        internal void DeleteCharm(string trueName, string dispName)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(trueName))
             {
                 // 装備無しなら何もせず終了
                 return;
             }
 
             // 除外・固定設定があったら削除
-            Simulator.DeleteClude(name);
+            Simulator.DeleteClude(trueName);
 
             // この護石を使っているマイセットがあったら削除
-            DeleteMySetUsingCharm(name);
+            DeleteMySetUsingCharm(trueName);
 
             // 護石削除
-            Simulator.DeleteCharm(name);
+            Simulator.DeleteCharm(trueName);
 
             // マスタをリロード
             LoadCludes();
             LoadMySets();
             LoadEquips();
+
+            // ログ表示
+            StatusBarText.Value = "護石削除：" + dispName;
         }
 
         // 指定した護石を使っているマイセットがあったら削除
@@ -521,12 +539,8 @@ namespace RiseSim.ViewModels
             // マイセットマスタのリロード
             LoadMySets();
 
-            // TODO: もっといい方法はないか？
             // ログ表示
-            LogSb.Append("■マイセット登録\n");
-            LogSb.Append(set.SimpleSetName);
-            LogSb.Append('\n');
-            LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "マイセット登録：" + set.SimpleSetName;
         }
 
         // マイセットを削除
@@ -544,16 +558,22 @@ namespace RiseSim.ViewModels
 
             // マイセットマスタのリロード
             LoadMySets();
+
+            // ログ表示
+            StatusBarText.Value = "マイセット解除：" + set.SimpleSetName;
         }
 
         // マイセットのスキルをシミュ画面の検索条件に反映
         internal void InputMySetCondition()
         {
-            if (MyDetailSet == null)
+            if (MyDetailSet.Value == null)
             {
                 // マイセットの詳細画面が空の場合何もせず終了
                 return;
             }
+
+            // ログ表示用
+            StringBuilder sb = new StringBuilder();
 
             // スキル入力部品の数以上には実行しない(できない)
             int count = Math.Min(SkillSelectorCount, MyDetailSet.Value.Skills.Count);
@@ -562,6 +582,13 @@ namespace RiseSim.ViewModels
                 // スキル情報反映
                 SkillSelectorVMs.Value[i].SkillName.Value = MyDetailSet.Value.Skills[i].Name;
                 SkillSelectorVMs.Value[i].SkillLevel.Value = MyDetailSet.Value.Skills[i].Level;
+
+                // ログ表示用
+                sb.Append(MyDetailSet.Value.Skills[i].Name);
+                sb.Append("Lv");
+                sb.Append(MyDetailSet.Value.Skills[i].Level);
+                sb.Append(',');
+
             }
             for (int i = count; i < SkillSelectorCount; i++)
             {
@@ -571,6 +598,9 @@ namespace RiseSim.ViewModels
 
             // スロット情報反映
             WeaponSlots.Value = MyDetailSet.Value.WeaponSlotDisp;
+
+            // ログ表示
+            StatusBarText.Value = "検索条件反映：" + sb.ToString();
         }
 
         // マスタ情報を全てVMにロード

@@ -51,7 +51,7 @@ namespace RiseSim.ViewModels
 
         internal void DeleteCharm()
         {
-            MainViewModel.Instance.DeleteCharm(TrueName);
+            MainViewModel.Instance.DeleteCharm(TrueName, DispName.Value);
         }
     }
 }
