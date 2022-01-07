@@ -16,6 +16,7 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
+using RiseSim.Const;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,8 @@ namespace RiseSim.ViewModels
 {
     class SkillSelectorViewModel : BindableBase
     {
-        // TODO: 他のファイルでも利用しているので一元化したい
         // スキル未選択時の表示
-        private const string NoSkillName = "スキル選択";
+        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
 
         // スキル名一覧
         public ReactivePropertySlim<List<string>> Skills { get; } = new();

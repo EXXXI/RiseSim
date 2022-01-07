@@ -16,6 +16,7 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
+using RiseSim.Const;
 using SimModel.model;
 using SimModel.service;
 using System;
@@ -39,19 +40,20 @@ namespace RiseSim.ViewModels
         // ログ用StringBuilderインスタンス
         private StringBuilder LogSb { get; } = new StringBuilder();
 
-        // TODO: 外部ファイル化するべきか？
-        // 定数
         // スキル選択部品の個数
-        private const int SkillSelectorCount = 15;
+        private int SkillSelectorCount { get; } = ViewConfig.Instance.SkillSelectorCount;
+
         // 護石のスキル個数
-        private const int CharmMaxSkillCount = 2;
+        private int CharmMaxSkillCount { get; } = ViewConfig.Instance.CharmMaxSkillCount;
+
         // スロットの最大の大きさ
-        private const int MaxSlotSize = 3;
+        private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
+
         // デフォルトの頑張り度
-        private const string DefaultLimit = "100";
-        // TODO: 他のファイルでも利用しているので一元化したい
+        private string DefaultLimit { get; } = ViewConfig.Instance.DefaultLimit;
+
         // スキル未選択時の表示
-        private const string NoSkillName = "スキル選択";
+        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
 
 
         // シミュ画面のスキル選択部品のVM
@@ -187,7 +189,6 @@ namespace RiseSim.ViewModels
             // 頑張り度を設定
             Limit.Value = DefaultLimit;
 
-            // TODO:外部ファイル化するべきか？
             // ライセンス表示
             StringBuilder sb = new();
             sb.Append("■このシミュのライセンス\n");
@@ -221,7 +222,6 @@ namespace RiseSim.ViewModels
             sb.Append("特に頑シミュ様のUIに大きく影響を受けています\n");
             License.Value = sb.ToString();
 
-            // TODO:外部ファイル化するべきか？
             // ライセンスの雑な説明を表示
             StringBuilder sbw = new();
             sbw.Append("■←ライセンスって何？\n");
