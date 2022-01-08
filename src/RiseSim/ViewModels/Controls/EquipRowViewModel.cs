@@ -25,7 +25,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RiseSim.ViewModels
+namespace RiseSim.ViewModels.Controls
 {
     internal class EquipRowViewModel : BindableBase
     {

@@ -14,44 +14,32 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-using Prism.Mvvm;
-using Reactive.Bindings;
-using SimModel.model;
+using RiseSim.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace RiseSim.ViewModels
+namespace RiseSim.Views.Controls
 {
-    internal class CharmRowViewModel : BindableBase
+    /// <summary>
+    /// CludeRow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class CludeRow : UserControl
     {
-        // 表示用護石名
-        public ReactivePropertySlim<string> DispName { get; } = new();
-
-        // 管理用護石名(GUID)
-        public string TrueName { get; set; }
-
-        // 護石削除コマンド
-        public ReactiveCommand DeleteCharmCommand { get; } = new ReactiveCommand();
-
-        // コマンドを設定
-        private void SetCommand()
+        public CludeRow()
         {
-            DeleteCharmCommand.Subscribe(_ => DeleteCharm());
-        }
-
-        public CharmRowViewModel(Equipment charm)
-        {
-            TrueName = charm.Name;
-            DispName.Value = charm.DispName;
-            SetCommand();
-        }
-
-        internal void DeleteCharm()
-        {
-            MainViewModel.Instance.DeleteCharm(TrueName, DispName.Value);
+            InitializeComponent();
         }
     }
 }
