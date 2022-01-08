@@ -31,19 +31,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RiseSim.Views
+namespace RiseSim.Views.Controls
 {
     /// <summary>
-    /// SkillSelector.xaml の相互作用ロジック
+    /// EquipSelectRow.xaml の相互作用ロジック
     /// </summary>
-    public partial class SkillSelector : UserControl
+    public partial class EquipSelectRow : UserControl
     {
-
-        public SkillSelector()
+        public EquipSelectRow()
         {
             InitializeComponent();
-            
         }
-
     }
 }

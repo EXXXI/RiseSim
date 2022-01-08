@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using RiseSim.ViewModels;
+using SimModel.model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +31,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RiseSim.Views
+namespace RiseSim.Views.Controls
 {
     /// <summary>
-    /// EquipRow.xaml の相互作用ロジック
+    /// SkillSelector.xaml の相互作用ロジック
     /// </summary>
-    public partial class EquipRow : UserControl
+    public partial class SkillSelector : UserControl
     {
-        public EquipRow()
+
+        public SkillSelector()
         {
             InitializeComponent();
+            
         }
+
     }
 }

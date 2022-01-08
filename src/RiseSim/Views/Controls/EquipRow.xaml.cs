@@ -30,14 +30,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RiseSim.Views
+namespace RiseSim.Views.Controls
 {
     /// <summary>
-    /// CharmRow.xaml の相互作用ロジック
+    /// EquipRow.xaml の相互作用ロジック
     /// </summary>
-    public partial class CharmRow : UserControl
+    public partial class EquipRow : UserControl
     {
-        public CharmRow()
+        public EquipRow()
         {
             InitializeComponent();
         }

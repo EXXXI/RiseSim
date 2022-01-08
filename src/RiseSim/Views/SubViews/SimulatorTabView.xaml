@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="RiseSim.Views.SubViews.SimulatorTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views.SubViews"
+             xmlns:ctrl="clr-namespace:RiseSim.Views.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+
+        <!-- グリッド設定 -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="220" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 条件入力 -->
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ctrl:SkillSelector/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="50" Text="武器スロ"/>
+                <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value}" SelectedItem="{Binding WeaponSlots.Value}" Width="100" SelectedIndex="0">
+                </ComboBox>
+            </StackPanel>
+            <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
+            <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
+            <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="50" Text="頑張り度"/>
+                <TextBox x:Name="limitBox" Width="100" Text="{Binding Limit.Value}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- ログ出力 -->
+        <TextBox x:Name="logBox" Grid.Column="0" Text="{Binding LogBoxText.Value}" Grid.Row="1"/>
+
+
+        <!-- 結果出力 -->
+        <DataGrid x:Name="resultGrid"  Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding SearchResult.Value}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="防御" Binding="{Binding Maxdef}" />
+                <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp}" />
+                <DataGridTextColumn Header="頭" Binding="{Binding HeadName}" />
+                <DataGridTextColumn Header="胴" Binding="{Binding BodyName}" />
+                <DataGridTextColumn Header="腕" Binding="{Binding ArmName}" />
+                <DataGridTextColumn Header="腰" Binding="{Binding WaistName}" />
+                <DataGridTextColumn Header="足" Binding="{Binding LegName}" />
+                <DataGridTextColumn Header="護石" Binding="{Binding CharmNameDisp}" />
+                <DataGridTextColumn Header="火" Binding="{Binding Fire}" />
+                <DataGridTextColumn Header="水" Binding="{Binding Water}" />
+                <DataGridTextColumn Header="雷" Binding="{Binding Thunder}" />
+                <DataGridTextColumn Header="氷" Binding="{Binding Ice}" />
+                <DataGridTextColumn Header="龍" Binding="{Binding Dragon}" />
+                <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV}" />
+                <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- 装備詳細出力 -->
+        <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
+            <Button x:Name="mySetAddButton" Content="この装備をマイセットに登録する" Command="{Binding AddMySetCommand}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
+                <TextBlock Width="100" Text="{Binding DetailSet.Value.WeaponSlotDisp}"/>
+            </StackPanel>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding EquipRowVMs.Value}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ctrl:EquipRow/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

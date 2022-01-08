@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RiseSim.ViewModels
+namespace RiseSim.ViewModels.Controls
 {
     class SkillSelectorViewModel : BindableBase
     {
