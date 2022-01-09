@@ -78,11 +78,13 @@ namespace RiseSim.ViewModels.Controls
             }
             SkillLevels.Value = list;
 
-            if (list.Count > 0)
+            if (list.Count == 0)
             {
-                // 初期値は最大レベルとする
-                SkillLevel.Value = maxLevel;
+                // スキルが選択されていないときは0とする
+                list.Add(0);
             }
+            // 初期値は最大レベルとする
+            SkillLevel.Value = maxLevel;
         }
 
         internal void SetDefault()
