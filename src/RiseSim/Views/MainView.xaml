@@ -15,23 +15,23 @@
         
         <TabControl>
             <TabItem Header="シミュレータ">
-                <subviews:SimulatorTabView DataContext="{Binding SimulatorTabVM.Value}"/>
+                <subviews:SimulatorTabView DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="除外・固定設定">
-                <subviews:CludeTabView DataContext="{Binding CludeTabVM.Value}"/>
+                <subviews:CludeTabView DataContext="{Binding CludeTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="護石設定">
-                <subviews:CharmTabView DataContext="{Binding CharmTabVM.Value}"/>
+                <subviews:CharmTabView DataContext="{Binding CharmTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="マイセット">
-                <subviews:MySetTabView DataContext="{Binding MySetTabVM.Value}"/>
+                <subviews:MySetTabView DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="ライセンス・謝辞">
-                <subviews:LicenseTabView DataContext="{Binding LicenseTabVM.Value}"/>
+                <subviews:LicenseTabView DataContext="{Binding LicenseTabVM.Value, Mode=OneWay}"/>
             </TabItem>
         </TabControl>
 
@@ -42,8 +42,8 @@
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="{Binding StatusBarText.Value}"/>
-            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsBusy.Value}"/>
+            <TextBlock Text="{Binding StatusBarText.Value, Mode=OneWay}"/>
+            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsBusy.Value, Mode=OneWay}"/>
         </Grid>
     </Grid>
 </Window>

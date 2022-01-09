@@ -9,9 +9,9 @@
 
     <Border BorderThickness="0,0,0,1" BorderBrush="Black">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Width="60" Text="{Binding DispKind.Value}" TextAlignment="Right"/>
-            <TextBlock Width="300" Text="{Binding DispName.Value}"/>
-            <TextBlock Width="60" Text="{Binding Status.Value}"></TextBlock>
+            <TextBlock Width="60" Text="{Binding DispKind.Value, Mode=OneWay}" TextAlignment="Right"/>
+            <TextBlock Width="300" Text="{Binding DispName.Value, Mode=OneWay}"/>
+            <TextBlock Width="60" Text="{Binding Status.Value, Mode=OneWay}"></TextBlock>
             <Button x:Name="deleteCludeButton" Width="30" Content="解除" Command="{Binding DeleteCludeCommand}"></Button>
         </StackPanel>
     </Border>

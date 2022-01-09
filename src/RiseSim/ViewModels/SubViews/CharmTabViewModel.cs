@@ -147,7 +147,7 @@ namespace RiseSim.ViewModels.SubViews
             List<EquipSet> delMySets = new();
             foreach (var set in Masters.MySets)
             {
-                if (set.CharmName != null && set.CharmName.Equals(name))
+                if (set.Charm.Name != null && set.Charm.Name.Equals(name))
                 {
                     delMySets.Add(set);
                 }

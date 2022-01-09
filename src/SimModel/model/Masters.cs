@@ -56,7 +56,7 @@ namespace SimModel.model
         public static List<EquipSet> MySets { get; set; } = new();
 
         // 装備名から装備を取得
-        public static Equipment? GetEquipByName(string name)
+        public static Equipment GetEquipByName(string name)
         {
             foreach (var equip in Heads)
             {
@@ -108,7 +108,7 @@ namespace SimModel.model
                 }
             }
             
-            return null;
+            return new Equipment();
         }
 
         // 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得

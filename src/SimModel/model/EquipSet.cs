@@ -25,26 +25,26 @@ namespace SimModel.model
     // 装備セット
     public class EquipSet
     {
-        // 頭装備名
-        public string HeadName { get; set; } = "";
+        // 頭装備
+        public Equipment Head { get; set; } = new Equipment(EquipKind.head);
 
-        // 胴装備名
-        public string BodyName { get; set; } = "";
+        // 胴装備
+        public Equipment Body { get; set; } = new Equipment(EquipKind.body);
 
-        // 腕装備名
-        public string ArmName { get; set; } = "";
+        // 腕装備
+        public Equipment Arm { get; set; } = new Equipment(EquipKind.arm);
 
-        // 腰装備名
-        public string WaistName { get; set; } = "";
+        // 腰装備
+        public Equipment Waist { get; set; } = new Equipment(EquipKind.waist);
 
-        // 足装備名
-        public string LegName { get; set; } = "";
+        // 足装備
+        public Equipment Leg { get; set; } = new Equipment(EquipKind.leg);
 
-        // 護石名
-        public string CharmName { get; set; } = "";
+        // 護石
+        public Equipment Charm { get; set; } = new Equipment(EquipKind.charm);
 
-        // 装飾品名(リスト)
-        public List<string> DecoNames { get; set; } = new();
+        // 装飾品(リスト)
+        public List<Equipment> Decos { get; set; } = new();
 
         // 武器スロ1つ目
         public int WeaponSlot1 { get; set; }
@@ -56,67 +56,183 @@ namespace SimModel.model
         public int WeaponSlot3 { get; set; }
 
 
-        // 以下、Calcメソッド対象
-
+        // 合計パラメータ計算用装備一覧
+        private List<Equipment> Equipments
+        {
+            get 
+            { 
+                List<Equipment> ret = new List<Equipment>();
+                ret.Add(Head);
+                ret.Add(Body);
+                ret.Add(Arm);
+                ret.Add(Waist);
+                ret.Add(Leg);
+                ret.Add(Charm);
+                foreach (var deco in Decos)
+                {
+                    ret.Add(deco);
+                }
+                return ret;
+            }
+        }
 
         // 初期防御力
-        public int Mindef { get; set; }
+        public int Mindef 
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Mindef;
+                }
+                return ret;
+            }
+        }
 
         // 最大防御力
-        public int Maxdef { get; set; }
+        public int Maxdef
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Maxdef;
+                }
+                return ret;
+            }
+        }
 
         // 火耐性
-        public int Fire { get; set; }
+        public int Fire
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Fire;
+                }
+                return ret;
+            }
+        }
 
         // 水耐性
-        public int Water { get; set; }
+        public int Water
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Water;
+                }
+                return ret;
+            }
+        }
 
         // 雷耐性
-        public int Thunder { get; set; }
+        public int Thunder
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Thunder;
+                }
+                return ret;
+            }
+        }
 
         // 氷耐性
-        public int Ice { get; set; }
+        public int Ice
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Ice;
+                }
+                return ret;
+            }
+        }
 
         // 龍耐性
-        public int Dragon { get; set; }
+        public int Dragon
+        {
+            get
+            {
+                int ret = 0;
+                foreach (var equip in Equipments)
+                {
+                    ret += equip.Dragon;
+                }
+                return ret;
+            }
+        }
 
         // スキル(リスト)
-        public List<Skill> Skills { get; set; } = new();
+        public List<Skill> Skills
+        {
+            get
+            {
+                List<Skill> ret = new List<Skill>();
+                foreach (var equip in Equipments)
+                {
+                    JoinSkill(ret, equip.Skills);
+                }
+                ret.Sort((a, b) => b.Level - a.Level);
+                return ret;
+            }
+        }
 
 
-        // CSV表記(装飾品を除く)
-        public string SimpleSetNameWithoutDecos { 
+        // 制約式名称用の、装飾品を除いたCSV表記
+        public string GlpkRowName { 
             get 
             {
                 StringBuilder sb = new();
-                sb.Append(HeadName);
+                sb.Append(Head.Name);
                 sb.Append(',');
-                sb.Append(BodyName);
+                sb.Append(Body.Name);
                 sb.Append(',');
-                sb.Append(ArmName);
+                sb.Append(Arm.Name);
                 sb.Append(',');
-                sb.Append(WaistName);
+                sb.Append(Waist.Name);
                 sb.Append(',');
-                sb.Append(LegName);
+                sb.Append(Leg.Name);
                 sb.Append(',');
-                sb.Append(CharmName);
+                sb.Append(Charm.Name);
 
                 return sb.ToString();
             }
         }
 
-        // CSV表記
+        // 表示用CSV表記
         public string SimpleSetName
         {
             get
             {
                 StringBuilder sb = new();
-                sb.Append(SimpleSetNameWithoutDecos);
+                sb.Append(Head.DispName);
+                sb.Append(',');
+                sb.Append(Body.DispName);
+                sb.Append(',');
+                sb.Append(Arm.DispName);
+                sb.Append(',');
+                sb.Append(Waist.DispName);
+                sb.Append(',');
+                sb.Append(Leg.DispName);
+                sb.Append(',');
+                sb.Append(Charm.DispName);
 
-                foreach (string name in DecoNames)
+                foreach (Equipment deco in Decos)
                 {
                     sb.Append(',');
-                    sb.Append(name);
+                    sb.Append(deco.DispName);
                 }
 
                 return sb.ToString();
@@ -129,79 +245,64 @@ namespace SimModel.model
             get
             {
                 List<int> list = new();
-                if (!string.IsNullOrWhiteSpace(HeadName))
+                if (!string.IsNullOrWhiteSpace(Head.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(HeadName));
+                    list.Add(Masters.GetEquipIndexByName(Head.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(BodyName))
+                if (!string.IsNullOrWhiteSpace(Body.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(BodyName));
+                    list.Add(Masters.GetEquipIndexByName(Body.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(ArmName))
+                if (!string.IsNullOrWhiteSpace(Arm.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(ArmName));
+                    list.Add(Masters.GetEquipIndexByName(Arm.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(WaistName))
+                if (!string.IsNullOrWhiteSpace(Waist.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(WaistName));
+                    list.Add(Masters.GetEquipIndexByName(Waist.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(LegName))
+                if (!string.IsNullOrWhiteSpace(Leg.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(LegName));
+                    list.Add(Masters.GetEquipIndexByName(Leg.Name));
                 }
-                if (!string.IsNullOrWhiteSpace(CharmName))
+                if (!string.IsNullOrWhiteSpace(Charm.Name))
                 {
-                    list.Add(Masters.GetEquipIndexByName(CharmName));
+                    list.Add(Masters.GetEquipIndexByName(Charm.Name));
                 }
                 return list;
             }
         }
 
-        // 装飾品のCSV表記
+        // 装飾品のCSV表記 Set可能
         public string DecoNameCSV
         {
             get
             {
                 StringBuilder sb = new();
                 bool isFirst = true;
-                foreach (var decoName in DecoNames)
+                foreach (var deco in Decos)
                 {
                     if (!isFirst)
                     {
                         sb.Append(',');
                     }
-                    sb.Append(decoName);
+                    sb.Append(deco.Name);
                     isFirst = false;
                 }
                 return sb.ToString();
             }
             set
             {
-                DecoNames = new List<string>();
+                Decos = new List<Equipment>();
                 string[] splitted = value.Split(',');
                 foreach (var decoName in splitted)
                 {
-                    DecoNames.Add(decoName);
+                    Equipment? deco = Masters.GetEquipByName(decoName);
+                    if (deco != null)
+                    {
+                        Decos.Add(deco);
+                    }
                 }
-            }
-        }
-
-        // 護石の表示用装備名
-        public string CharmNameDisp
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(CharmName))
-                {
-                    return "";
-                }
-
-                Equipment? charm = Masters.GetEquipByName(CharmName);
-                if (charm == null)
-                {
-                    return "";
-                }
-                return charm.DispName;
             }
         }
 
@@ -236,45 +337,58 @@ namespace SimModel.model
             }
         }
 
-        // 計算項目の計算
-        internal void Calc()
+        public string Description
         {
-            Mindef = 0;
-            Maxdef = 0;
-            Fire = 0;
-            Water = 0;
-            Thunder = 0;
-            Ice = 0;
-            Dragon = 0;
-            Skills = new List<Skill>();
-            CalcOneEquip(HeadName);
-            CalcOneEquip(BodyName);
-            CalcOneEquip(ArmName);
-            CalcOneEquip(WaistName);
-            CalcOneEquip(LegName);
-            CalcOneEquip(CharmName);
-            foreach (var decoName in DecoNames)
+            get
             {
-                CalcOneEquip(decoName);
-            }
-            Skills.Sort((a, b) => b.Level - a.Level);
-
-        }
-
-        // 1防具の性能を反映
-        private void CalcOneEquip(string name)
-        {
-            Equipment? equip = Masters.GetEquipByName(name);
-            if (equip != null)
-            {
-                Mindef += equip.Mindef;
-                Maxdef += equip.Maxdef;
-                Fire += equip.Fire;
-                Water += equip.Water;
-                Thunder += equip.Thunder;
-                Ice += equip.Ice;
-                Dragon += equip.Dragon;
-                JoinSkill(Skills, equip.Skills);
+                StringBuilder sb = new();
+                sb.Append("武器スロ：");
+                sb.Append(WeaponSlotDisp);
+                sb.Append('\n');
+                sb.Append("防御:");
+                sb.Append(Mindef);
+                sb.Append('→');
+                sb.Append(Maxdef);
+                sb.Append(',');
+                sb.Append("火:");
+                sb.Append(Fire);
+                sb.Append(',');
+                sb.Append("水:");
+                sb.Append(Water);
+                sb.Append(',');
+                sb.Append("雷:");
+                sb.Append(Thunder);
+                sb.Append(',');
+                sb.Append("氷:");
+                sb.Append(Ice);
+                sb.Append(',');
+                sb.Append("龍:");
+                sb.Append(Dragon);
+                sb.Append('\n');
+                sb.Append(Head.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(Body.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(Arm.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(Waist.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(Leg.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(Charm.SimpleDescription);
+                sb.Append('\n');
+                sb.Append(EquipKind.deco.StrWithColon());
+                sb.Append(DecoNameCSV);
+                sb.Append('\n');
+                sb.Append("-----------");
+                foreach (var skill in Skills)
+                {
+                    sb.Append('\n');
+                    sb.Append(skill.Name);
+                    sb.Append("Lv");
+                    sb.Append(skill.Level);
+                }
+                return sb.ToString();
             }
         }
 

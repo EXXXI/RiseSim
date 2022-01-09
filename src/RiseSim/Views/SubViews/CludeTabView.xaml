@@ -20,7 +20,7 @@
 
         <!-- 登録 -->
         <StackPanel Grid.Row="0" Grid.Column="0">
-            <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value}">
+            <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value, Mode=OneWay}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ctrl:EquipSelectRow/>
@@ -32,7 +32,7 @@
         <!-- 一覧 -->
         <ScrollViewer Grid.Row="0" Grid.Column="1">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding CludeRowVMs.Value}">
+                <ItemsControl ItemsSource="{Binding CludeRowVMs.Value, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ctrl:CludeRow/>

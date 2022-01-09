@@ -70,11 +70,23 @@ namespace SimModel.model
         // 装備種類
         public EquipKind Kind { get; set; }
 
+        // デフォルトコンストラクタ
+        public Equipment()
+        {
+
+        }
+
+        // 装備種類指定コンストラクタ
+        public Equipment(EquipKind kind)
+        {
+            Kind = kind;
+        }
+
         // 表示用装備名(護石のみ特殊処理)
         public string DispName { 
             get
             {
-                if (!Kind.Equals(EquipKind.charm))
+                if (!Kind.Equals(EquipKind.charm) || string.IsNullOrWhiteSpace(Name))
                 {
                     return Name;
                 }
@@ -89,7 +101,6 @@ namespace SimModel.model
                             sb.Append(',');
                         }
                         sb.Append(skill.Name);
-                        sb.Append(' ');
                         sb.Append(skill.Level);
                         isFirst = false;
                     }
@@ -106,6 +117,85 @@ namespace SimModel.model
                     return sb.ToString();
                 }
             } 
+        }
+
+
+        // 装備の説明
+        public string Description
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    return "";
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append(DispName);
+                if (!Kind.Equals(EquipKind.deco) && !Kind.Equals(EquipKind.charm))
+                {
+                    sb.Append(',');
+                    sb.Append(Slot1);
+                    sb.Append('-');
+                    sb.Append(Slot2);
+                    sb.Append('-');
+                    sb.Append(Slot3);
+                    sb.Append('\n');
+                    sb.Append("防御:");
+                    sb.Append(Mindef);
+                    sb.Append('→');
+                    sb.Append(Maxdef);
+                    sb.Append(',');
+                    sb.Append("火:");
+                    sb.Append(Fire);
+                    sb.Append(',');
+                    sb.Append("水:");
+                    sb.Append(Water);
+                    sb.Append(',');
+                    sb.Append("雷:");
+                    sb.Append(Thunder);
+                    sb.Append(',');
+                    sb.Append("氷:");
+                    sb.Append(Ice);
+                    sb.Append(',');
+                    sb.Append("龍:");
+                    sb.Append(Dragon);
+                }
+                foreach (var skill in Skills)
+                {
+                    sb.Append('\n');
+                    sb.Append(skill.Name);
+                    sb.Append("Lv");
+                    sb.Append(skill.Level);
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        // 装備の簡易説明(名前とスロットのみ)
+        public string SimpleDescription
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(Kind.StrWithColon());
+                if (!string.IsNullOrWhiteSpace(Name))
+                {
+                    sb.Append(DispName);
+                    if (!Kind.Equals(EquipKind.deco) && !Kind.Equals(EquipKind.charm))
+                    {
+                        sb.Append(',');
+                        sb.Append(Slot1);
+                        sb.Append('-');
+                        sb.Append(Slot2);
+                        sb.Append('-');
+                        sb.Append(Slot3);
+                    }
+                }
+
+                return sb.ToString();
+            }
         }
     }
 }

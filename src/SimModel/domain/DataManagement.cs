@@ -124,13 +124,12 @@ namespace SimModel.domain
         // 護石の追加
         static internal Equipment AddCharm(List<Skill> skills, int slot1, int slot2, int slot3)
         {
-            Equipment equipment = new();
+            Equipment equipment = new(EquipKind.charm);
             equipment.Name = Guid.NewGuid().ToString();
             equipment.Slot1 = slot1;
             equipment.Slot2 = slot2;
             equipment.Slot3 = slot3;
             equipment.Skills = skills;
-            equipment.Kind = EquipKind.charm;
 
             // 追加
             Masters.Charms.Add(equipment);
