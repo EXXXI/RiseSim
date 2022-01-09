@@ -38,13 +38,13 @@ namespace RiseSim.ViewModels.SubViews
         {
             // 除外固定画面用のVMの設定
             ObservableCollection<EquipSelectRowViewModel> equipList = new();
-            equipList.Add(new EquipSelectRowViewModel("頭：", Masters.Heads));
-            equipList.Add(new EquipSelectRowViewModel("胴：", Masters.Bodys));
-            equipList.Add(new EquipSelectRowViewModel("腕：", Masters.Arms));
-            equipList.Add(new EquipSelectRowViewModel("腰：", Masters.Waists));
-            equipList.Add(new EquipSelectRowViewModel("足：", Masters.Legs));
-            equipList.Add(new EquipSelectRowViewModel("護石：", Masters.Charms));
-            equipList.Add(new EquipSelectRowViewModel("装飾品：", Masters.Decos));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.head.StrWithColon(), Masters.Heads));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.body.StrWithColon(), Masters.Bodys));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.arm.StrWithColon(), Masters.Arms));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.waist.StrWithColon(), Masters.Waists));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.leg.StrWithColon(), Masters.Legs));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.charm.StrWithColon(), Masters.Charms));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.deco.StrWithColon(), Masters.Decos));
             EquipSelectRowVMs.Value = equipList;
         }
 

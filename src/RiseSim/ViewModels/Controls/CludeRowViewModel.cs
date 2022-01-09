@@ -61,32 +61,7 @@ namespace RiseSim.ViewModels.Controls
             DispName.Value = equip.DispName;
             TrueName = equip.Name;
             TrueKind = equip.Kind;
-            switch (TrueKind)
-            {
-                case EquipKind.head:
-                    DispKind.Value = "頭：";
-                    break;
-                case EquipKind.body:
-                    DispKind.Value = "胴：";
-                    break;
-                case EquipKind.arm:
-                    DispKind.Value = "腕：";
-                    break;
-                case EquipKind.waist:
-                    DispKind.Value = "腰：";
-                    break;
-                case EquipKind.leg:
-                    DispKind.Value = "足：";
-                    break;
-                case EquipKind.deco:
-                    DispKind.Value = "装飾品：";
-                    break;
-                case EquipKind.charm:
-                    DispKind.Value = "護石：";
-                    break;
-                default:
-                    break;
-            }
+            DispKind.Value = TrueKind.StrWithColon();
             switch (clude.Kind)
             {
                 case CludeKind.exclude:

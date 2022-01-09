@@ -97,7 +97,7 @@ namespace SimModel.domain
             var x = CsvReader.ReadFromText(csv);
             foreach (ICsvLine line in x)
             {
-                Equipment equip = new Equipment();
+                Equipment equip = new Equipment(kind);
                 equip.Name = line[@"名前"];
                 equip.Sex = (Sex)Parse(line[@"性別(0=両,1=男,2=女)"]);
                 equip.Rare = Parse(line[@"レア度"]);
@@ -122,8 +122,7 @@ namespace SimModel.domain
                     }
                     skills.Add(new Skill(skill, Parse(level)));
                 }
-                equip.Skills = skills;
-                equip.Kind = kind;    
+                equip.Skills = skills; 
 
                 equipments.Add(equip);
             }
@@ -138,7 +137,7 @@ namespace SimModel.domain
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                Equipment equip = new Equipment();
+                Equipment equip = new Equipment(EquipKind.deco);
                 equip.Name = line[@"名前"];
                 equip.Sex = Sex.all;
                 equip.Rare = Parse(line[@"レア度"]);
@@ -164,7 +163,6 @@ namespace SimModel.domain
                     skills.Add(new Skill(skill, Parse(level)));
                 }
                 equip.Skills = skills;
-                equip.Kind = EquipKind.deco;
 
                 Masters.Decos.Add(equip);
             }
@@ -236,7 +234,7 @@ namespace SimModel.domain
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                Equipment charm = new Equipment();
+                Equipment charm = new Equipment(EquipKind.charm);
                 charm.Slot1 = Parse(line[@"スロット1"]);
                 charm.Slot2 = Parse(line[@"スロット2"]);
                 charm.Slot3 = Parse(line[@"スロット3"]);
@@ -251,7 +249,6 @@ namespace SimModel.domain
                 {
                     charm.Skills.Add(skill2);
                 }
-                charm.Kind = EquipKind.charm;
 
                 // 内部管理IDがない場合は付与する
                 try
@@ -279,7 +276,7 @@ namespace SimModel.domain
                 string weaponSlot1 = set.WeaponSlot1.ToString();
                 string weaponSlot2 = set.WeaponSlot2.ToString();
                 string weaponSlot3 = set.WeaponSlot3.ToString();
-                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.HeadName, set.BodyName, set.ArmName, set.WaistName, set.LegName, set.CharmName, set.DecoNameCSV });
+                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.Head.Name, set.Body.Name, set.Arm.Name, set.Waist.Name, set.Leg.Name, set.Charm.Name, set.DecoNameCSV });
             }
             string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品" };
             string export = CsvWriter.WriteToText(header, body);
@@ -299,16 +296,13 @@ namespace SimModel.domain
                 set.WeaponSlot1 = Parse(line[@"武器スロ1"]);
                 set.WeaponSlot2 = Parse(line[@"武器スロ2"]);
                 set.WeaponSlot3 = Parse(line[@"武器スロ3"]);
-                set.HeadName = line[@"頭"];
-                set.BodyName = line[@"胴"];
-                set.ArmName = line[@"腕"];
-                set.WaistName = line[@"腰"];
-                set.LegName = line[@"足"];
-                set.CharmName = line[@"護石"];
+                set.Head = Masters.GetEquipByName(line[@"頭"]);
+                set.Body = Masters.GetEquipByName(line[@"胴"]);
+                set.Arm = Masters.GetEquipByName(line[@"腕"]);
+                set.Waist = Masters.GetEquipByName(line[@"腰"]);
+                set.Leg = Masters.GetEquipByName(line[@"足"]);
+                set.Charm = Masters.GetEquipByName(line[@"護石"]);
                 set.DecoNameCSV = line[@"装飾品"];
-
-                // 非保存領域の再計算
-                set.Calc();
 
                 Masters.MySets.Add(set);
             }

@@ -146,7 +146,7 @@ namespace SimModel.domain
             FirstResultExcludeRowIndex = problem.RowsCount;
             foreach (var set in ResultSets)
             {
-                problem.AddRow(set.SimpleSetNameWithoutDecos);
+                problem.AddRow(set.GlpkRowName);
                 problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Upper, 0.0, set.EquipIndexsWithOutDecos.Count - 1);
             }
 
@@ -422,29 +422,29 @@ namespace SimModel.domain
                     switch (equip.Kind)
                     {
                         case EquipKind.head:
-                            equipSet.HeadName = name;
+                            equipSet.Head = equip;
                             break;
                         case EquipKind.body:
-                            equipSet.BodyName = name;
+                            equipSet.Body = equip;
                             break;
                         case EquipKind.arm:
-                            equipSet.ArmName = name;
+                            equipSet.Arm = equip;
                             break;
                         case EquipKind.waist:
-                            equipSet.WaistName = name;
+                            equipSet.Waist = equip;
                             break;
                         case EquipKind.leg:
-                            equipSet.LegName = name;
+                            equipSet.Leg = equip;
                             break;
                         case EquipKind.deco:
                             for (int j = 0; j < problem.MipColumnValue[i]; j++)
                             {
                                 // 装飾品は個数を確認し、その数追加
-                                equipSet.DecoNames.Add(name);
+                                equipSet.Decos.Add(equip);
                             }
                             break;
                         case EquipKind.charm:
-                            equipSet.CharmName = name;
+                            equipSet.Charm = equip;
                             break;
                         default:
                             break;
@@ -458,9 +458,6 @@ namespace SimModel.domain
                 equipSet.WeaponSlot1 = Condition.WeaponSlot1;
                 equipSet.WeaponSlot2 = Condition.WeaponSlot2;
                 equipSet.WeaponSlot3 = Condition.WeaponSlot3;
-
-                // 装備セットの各種情報を計算
-                equipSet.Calc();
 
                 // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
                 RemoveDuplicateSet(equipSet);
@@ -482,27 +479,27 @@ namespace SimModel.domain
             List<EquipSet> removeList = new();
             foreach (var set in ResultSets)
             {
-                if (!IsDuplicateEquipName(newSet.HeadName, set.HeadName))
+                if (!IsDuplicateEquipName(newSet.Head.Name, set.Head.Name))
                 {
                     continue;
                 }
-                if (!IsDuplicateEquipName(newSet.BodyName, set.BodyName))
+                if (!IsDuplicateEquipName(newSet.Body.Name, set.Body.Name))
                 {
                     continue;
                 }
-                if (!IsDuplicateEquipName(newSet.ArmName, set.ArmName))
+                if (!IsDuplicateEquipName(newSet.Arm.Name, set.Arm.Name))
                 {
                     continue;
                 }
-                if (!IsDuplicateEquipName(newSet.WaistName, set.WaistName))
+                if (!IsDuplicateEquipName(newSet.Waist.Name, set.Waist.Name))
                 {
                     continue;
                 }
-                if (!IsDuplicateEquipName(newSet.LegName, set.LegName))
+                if (!IsDuplicateEquipName(newSet.Leg.Name, set.Leg.Name))
                 {
                     continue;
                 }
-                if (!IsDuplicateEquipName(newSet.CharmName, set.CharmName))
+                if (!IsDuplicateEquipName(newSet.Charm.Name, set.Charm.Name))
                 {
                     continue;
                 }

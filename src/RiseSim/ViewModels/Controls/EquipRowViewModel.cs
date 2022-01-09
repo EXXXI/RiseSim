@@ -35,6 +35,9 @@ namespace RiseSim.ViewModels.Controls
         // 表示用装備名
         public ReactivePropertySlim<string> DispName { get; } = new();
 
+        // 装備説明
+        public ReactivePropertySlim<string> Description { get; } = new();
+
         // 管理用装備種類
         public EquipKind TrueKind { get; set; }
 
@@ -54,6 +57,17 @@ namespace RiseSim.ViewModels.Controls
             IncludeCommand.Subscribe(_ => Include());
         }
 
+        public EquipRowViewModel(Equipment equip)
+        {
+            DispName.Value = equip.DispName;
+            TrueKind = equip.Kind;
+            TrueName = equip.Name;
+            Description.Value = equip.Description;
+            DispKind.Value = TrueKind.StrWithColon();
+
+            SetCommand();
+        }
+
         public EquipRowViewModel(string dispKind, string dispName, EquipKind trueKind, string trueName)
         {
             DispKind.Value = dispKind;
@@ -70,15 +84,15 @@ namespace RiseSim.ViewModels.Controls
             ObservableCollection<EquipRowViewModel> list = new();
             if (set != null)
             {
-                list.Add(new EquipRowViewModel("頭：", set.HeadName, EquipKind.head, set.HeadName));
-                list.Add(new EquipRowViewModel("胴：", set.BodyName, EquipKind.body, set.BodyName));
-                list.Add(new EquipRowViewModel("腕：", set.ArmName, EquipKind.arm, set.ArmName));
-                list.Add(new EquipRowViewModel("腰：", set.WaistName, EquipKind.waist, set.WaistName));
-                list.Add(new EquipRowViewModel("足：", set.LegName, EquipKind.leg, set.LegName));
-                list.Add(new EquipRowViewModel("護石：", set.CharmNameDisp, EquipKind.charm, set.CharmName));
-                foreach (var deco in set.DecoNames)
+                list.Add(new EquipRowViewModel(set.Head));
+                list.Add(new EquipRowViewModel(set.Body));
+                list.Add(new EquipRowViewModel(set.Arm));
+                list.Add(new EquipRowViewModel(set.Waist));
+                list.Add(new EquipRowViewModel(set.Leg));
+                list.Add(new EquipRowViewModel(set.Charm));
+                foreach (var deco in set.Decos)
                 {
-                    list.Add(new EquipRowViewModel("装飾品：", deco, EquipKind.deco, deco));
+                    list.Add(new EquipRowViewModel(deco));
                 }
             }
             return list;

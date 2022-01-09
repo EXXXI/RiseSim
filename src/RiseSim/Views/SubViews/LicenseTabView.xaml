@@ -14,9 +14,9 @@
             <ColumnDefinition />
             <ColumnDefinition Width="220" />
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="license" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" Text="{Binding License.Value}" IsReadOnly="True">
+        <TextBox x:Name="license" TextWrapping="Wrap" Grid.Row="0" Grid.Column="0" Text="{Binding License.Value, Mode=OneWay}" IsReadOnly="True">
         </TextBox>
-        <TextBox x:Name="whatIsThis" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Text="{Binding WhatIsLicense.Value}" IsReadOnly="True">
+        <TextBox x:Name="whatIsThis" TextWrapping="Wrap" Grid.Row="0" Grid.Column="1" Text="{Binding WhatIsLicense.Value, Mode=OneWay}" IsReadOnly="True">
         </TextBox>
     </Grid>
 </UserControl>

@@ -21,7 +21,7 @@
         <!-- 登録 -->
         <StackPanel Grid.Row="0" Grid.Column="0">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding CharmSkillSelectorVMs.Value}">
+                <ItemsControl ItemsSource="{Binding CharmSkillSelectorVMs.Value, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ctrl:SkillSelector/>
@@ -31,7 +31,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="50" Text="スロット"/>
-                <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster.Value}"  SelectedItem="{Binding CharmWeaponSlots.Value}" Width="100" SelectedIndex="0">
+                <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}"  SelectedItem="{Binding CharmWeaponSlots.Value}" Width="100" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
             <Button x:Name="charmAddButton" Content="登録する" Command="{Binding AddCharmCommand}" />
@@ -40,7 +40,7 @@
         <!-- 一覧 -->
         <ScrollViewer Grid.Row="0" Grid.Column="1">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding CharmRowVMs.Value}">
+                <ItemsControl ItemsSource="{Binding CharmRowVMs.Value, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <ctrl:CharmRow/>

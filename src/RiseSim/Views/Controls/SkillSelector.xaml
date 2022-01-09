@@ -7,8 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="22" d:DesignWidth="150">
     <StackPanel Orientation="Horizontal">
-        <ComboBox Name="nameBox" Width="100" ItemsSource="{Binding Skills.Value}" SelectedIndex="0" SelectedItem="{Binding SkillName.Value}">
+        <ComboBox Name="nameBox" Width="100" ItemsSource="{Binding Skills.Value, Mode=OneWay}" SelectedIndex="0" SelectedItem="{Binding SkillName.Value}">
         </ComboBox>
-        <ComboBox Name="levelBox" Width="50" ItemsSource="{Binding SkillLevels.Value}" SelectedItem="{Binding SkillLevel.Value}" />
+        <ComboBox Name="levelBox" Width="50" ItemsSource="{Binding SkillLevels.Value, Mode=OneWay}" SelectedItem="{Binding SkillLevel.Value}" />
     </StackPanel>
 </UserControl>

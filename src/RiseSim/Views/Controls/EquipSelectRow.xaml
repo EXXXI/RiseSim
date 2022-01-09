@@ -7,11 +7,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="27" d:DesignWidth="250">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="60" Text="{Binding DispKind.Value}" TextAlignment="Right" VerticalAlignment="Center"/>
-        <ComboBox x:Name="equipCombo" Height="27" Width="130" ItemsSource="{Binding Equips.Value}" SelectedItem="{Binding SelectedEquip.Value}">
+        <TextBlock Width="60" Text="{Binding DispKind.Value, Mode=OneWay}" TextAlignment="Right" VerticalAlignment="Center"/>
+        <ComboBox x:Name="equipCombo" Height="27" Width="130" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DispName}" Margin="2.5"/>
+                    <TextBlock Text="{Binding DispName, Mode=OneWay}" Margin="2.5"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
