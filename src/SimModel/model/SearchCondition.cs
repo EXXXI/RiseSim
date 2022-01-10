@@ -37,15 +37,26 @@ namespace SimModel.model
         // 武器スロ3つ目
         public int WeaponSlot3 { get; set; }
 
-        /* TODO: 耐性等の検索条件、今後追加する？
-        public int Def { get; set; }
+        // 防御力
+        public int? Def { get; set; }
+
+        // 火耐性
         public int? Fire { get; set; }
+
+        // 水耐性
         public int? Water { get; set; }
+
+        // 雷耐性
         public int? Thunder { get; set; }
+
+        // 氷耐性
         public int? Ice { get; set; }
+
+        // 龍耐性
         public int? Dragon { get; set; }
+
+        // 性別
         public Sex Sex { get; set; }
-        */
 
         public SearchCondition()
         {
@@ -63,6 +74,13 @@ namespace SimModel.model
             WeaponSlot1 = condition.WeaponSlot1;
             WeaponSlot2 = condition.WeaponSlot2;
             WeaponSlot3 = condition.WeaponSlot3;
+            Def = condition.Def;
+            Fire = condition.Fire;
+            Water = condition.Water;
+            Thunder = condition.Thunder;
+            Ice = condition.Ice;
+            Dragon = condition.Dragon;
+            Sex = condition.Sex;
         }
 
         // スキル追加(同名スキルはレベルが高い方のみを採用)

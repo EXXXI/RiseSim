@@ -26,7 +26,7 @@ namespace SimModel.model
     public class Equipment
     {
         // 管理用装備名
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = string.Empty;
 
         // 性別制限
         public Sex Sex { get; set; }
@@ -127,7 +127,7 @@ namespace SimModel.model
             {
                 if (string.IsNullOrWhiteSpace(Name))
                 {
-                    return "";
+                    return string.Empty;
                 }
 
                 StringBuilder sb = new StringBuilder();

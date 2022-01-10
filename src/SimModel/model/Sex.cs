@@ -22,12 +22,27 @@ using System.Threading.Tasks;
 
 namespace SimModel.model
 {
-    // TODO: 性別、そのうち検索条件に含めたい
-    // 装備の性別制限
+    // 性別
     public enum Sex
     {
         all = 0,
         male = 1,
         female = 2
+    }
+
+    public static class SexExt
+    {
+        public static string Str(this Sex kind)
+        {
+            switch (kind)
+            {
+                case Sex.male:
+                    return "男性";
+                case Sex.female:
+                    return "女性";
+                default:
+                    return string.Empty;
+            }
+        }
     }
 }

@@ -62,6 +62,25 @@
                     <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}" SelectedItem="{Binding WeaponSlots.Value}" Width="115" SelectedIndex="0">
                     </ComboBox>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Width="40" Text="防御力"/>
+                    <TextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></TextBox>
+                    <TextBlock Width="30" Text="性別"/>
+                    <ComboBox ItemsSource="{Binding SexMaster.Value, Mode=OneWay}" SelectedItem="{Binding SelectedSex.Value}" Width="53" SelectedIndex="0">
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Width="12" Text="火"/>
+                    <TextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></TextBox>
+                    <TextBlock Width="12" Text="水"/>
+                    <TextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></TextBox>
+                    <TextBlock Width="12" Text="雷"/>
+                    <TextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></TextBox>
+                    <TextBlock Width="12" Text="氷"/>
+                    <TextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></TextBox>
+                    <TextBlock Width="12" Text="龍"/>
+                    <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
+                </StackPanel>
                 <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                 <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
                 <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />

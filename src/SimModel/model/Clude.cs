@@ -26,7 +26,7 @@ namespace SimModel.model
     public class Clude
     {
         // 装備名
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = string.Empty;
 
         // 除外or固定
         public CludeKind Kind { get; set; }
