@@ -37,6 +37,13 @@ namespace SimModel.domain
         const int Slot2RowIndex = 7;
         const int Slot3RowIndex = 8;
         const int Slot4RowIndex = 9;
+        const int SexRowIndex = 10;
+        const int DefRowIndex = 11;
+        const int FireRowIndex = 12;
+        const int WaterRowIndex = 13;
+        const int ThunderRowIndex = 14;
+        const int IceRowIndex = 15;
+        const int DragonRowIndex = 16;
 
         // 検索条件
         public SearchCondition Condition { get; set; }
@@ -133,6 +140,24 @@ namespace SimModel.domain
             problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[2], 0.0);
             problem.AddRow("Slot4");
             problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[3], 0.0);
+
+            // 性別(自分と違う方を除外する)
+            problem.AddRow("Sex");
+            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Fixed, 0.0, 0.0);
+
+            // 防御・耐性
+            problem.AddRow("Def");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Def == null ? BoundsType.Free : BoundsType.Lower, Condition.Def ?? 0.0 , 0.0);
+            problem.AddRow("Fire");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Fire == null ? BoundsType.Free : BoundsType.Lower, Condition.Fire ?? 0.0, 0.0);
+            problem.AddRow("Water");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Water == null ? BoundsType.Free : BoundsType.Lower, Condition.Water ?? 0.0, 0.0);
+            problem.AddRow("Thunder");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Thunder == null ? BoundsType.Free : BoundsType.Lower, Condition.Thunder ?? 0.0, 0.0);
+            problem.AddRow("Ice");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Ice == null ? BoundsType.Free : BoundsType.Lower, Condition.Ice ?? 0.0, 0.0);
+            problem.AddRow("Dragon");
+            problem.SetRowBounds(problem.RowsCount - 1, Condition.Dragon == null ? BoundsType.Free : BoundsType.Lower, Condition.Dragon ?? 0.0, 0.0);
 
             // スキル条件
             FirstSkillRowIndex = problem.RowsCount;
@@ -380,6 +405,34 @@ namespace SimModel.domain
             iaList.Add(Slot4RowIndex);
             jaList.Add(columnIndex);
             arList.Add(slotCond[3]);
+
+            // 性別情報(自分と違う方を除外する)
+            if (!equip.Sex.Equals(Sex.all) && !equip.Sex.Equals(Condition.Sex))
+            {
+                iaList.Add(SexRowIndex);
+                jaList.Add(columnIndex);
+                arList.Add(1);
+            }
+
+            // 防御・耐性情報
+            iaList.Add(DefRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Maxdef);
+            iaList.Add(FireRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Fire);
+            iaList.Add(WaterRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Water);
+            iaList.Add(ThunderRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Thunder);
+            iaList.Add(IceRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Ice);
+            iaList.Add(DragonRowIndex);
+            jaList.Add(columnIndex);
+            arList.Add(equip.Dragon);
 
             // スキル情報
             foreach (var condSkill in Condition.Skills)

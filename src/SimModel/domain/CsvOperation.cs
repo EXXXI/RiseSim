@@ -211,10 +211,10 @@ namespace SimModel.domain
             List<string[]> body = new List<string[]>();
             foreach (var charm in Masters.Charms)
             {
-                string skillName1 = charm.Skills.Count > 0 ? charm.Skills[0].Name : "";
-                string skillLevel1 = charm.Skills.Count > 0 ? charm.Skills[0].Level.ToString() : "";
-                string skillName2 = charm.Skills.Count > 1 ? charm.Skills[1].Name : "";
-                string skillLevel2 = charm.Skills.Count > 1 ? charm.Skills[1].Level.ToString() : "";
+                string skillName1 = charm.Skills.Count > 0 ? charm.Skills[0].Name : string.Empty;
+                string skillLevel1 = charm.Skills.Count > 0 ? charm.Skills[0].Level.ToString() : string.Empty;
+                string skillName2 = charm.Skills.Count > 1 ? charm.Skills[1].Name : string.Empty;
+                string skillLevel2 = charm.Skills.Count > 1 ? charm.Skills[1].Level.ToString() : string.Empty;
                 string slot1 = charm.Slot1.ToString();
                 string slot2 = charm.Slot2.ToString();
                 string slot3 = charm.Slot3.ToString();

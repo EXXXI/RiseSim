@@ -60,6 +60,27 @@ namespace RiseSim.ViewModels.SubViews
         // 武器スロ指定
         public ReactivePropertySlim<string> WeaponSlots { get; } = new();
 
+        // 性別指定
+        public ReactivePropertySlim<string> SelectedSex { get; } = new();
+
+        // 防御力指定
+        public ReactivePropertySlim<string> Def { get; } = new(string.Empty);
+
+        // 火耐性指定
+        public ReactivePropertySlim<string> Fire { get; } = new(string.Empty);
+
+        // 水耐性指定
+        public ReactivePropertySlim<string> Water { get; } = new(string.Empty);
+
+        // 雷耐性指定
+        public ReactivePropertySlim<string> Thunder { get; } = new(string.Empty);
+
+        // 氷耐性指定
+        public ReactivePropertySlim<string> Ice { get; } = new(string.Empty);
+
+        // 龍耐性指定
+        public ReactivePropertySlim<string> Dragon { get; } = new(string.Empty);
+
         // 頑張り度(検索件数)
         public ReactivePropertySlim<string> Limit { get; } = new();
 
@@ -68,6 +89,9 @@ namespace RiseSim.ViewModels.SubViews
 
         // スロット選択の選択肢
         public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
+
+        // 性別選択の選択肢
+        public ReactivePropertySlim<ObservableCollection<string>> SexMaster { get; } = new();
 
 
         // コマンド
@@ -124,6 +148,14 @@ namespace RiseSim.ViewModels.SubViews
             SlotMaster.Value = slots;
             WeaponSlots.Value = "0-0-0";
 
+            // TODO: 性別の初期値は保存したいかも
+            // 性別の選択肢
+            ObservableCollection<string> sexes = new();
+            sexes.Add(Sex.male.Str());
+            sexes.Add(Sex.female.Str());
+            SexMaster.Value = sexes;
+            SelectedSex.Value = Sex.male.Str();
+
             // 頑張り度を設定
             Limit.Value = DefaultLimit;
 
@@ -166,6 +198,22 @@ namespace RiseSim.ViewModels.SubViews
                 searchLimit = int.Parse(DefaultLimit);
             }
 
+            // 性別を整理
+            Sex sex = Sex.male;
+            if (SelectedSex.Value.Equals(Sex.female.Str()))
+            {
+                sex = Sex.female;
+            }
+
+            // 防御力・耐性を整理
+            int? def = ParseOrNull(Def.Value);
+            int? fire = ParseOrNull(Fire.Value);
+            int? water = ParseOrNull(Water.Value);
+            int? thunder = ParseOrNull(Thunder.Value);
+            int? ice = ParseOrNull(Ice.Value);
+            int? dragon = ParseOrNull(Dragon.Value);
+
+
             // 開始ログ表示
             LogSb.Clear();
             LogSb.Append("■検索開始：\n");
@@ -188,7 +236,8 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = true;
 
             // 検索
-            List<EquipSet> result = await Task.Run(() => Simulator.Search(skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit));
+            List<EquipSet> result = await Task.Run(() => Simulator.Search(
+                skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon));
             SearchResult.Value = new ObservableCollection<EquipSet>(result);
 
             // ビジーフラグ解除
@@ -364,6 +413,12 @@ namespace RiseSim.ViewModels.SubViews
                 vm.SetDefault();
             }
             WeaponSlots.Value = "0-0-0";
+            Def.Value = string.Empty;
+            Fire.Value = string.Empty;
+            Water.Value = string.Empty;
+            Thunder.Value = string.Empty;
+            Ice.Value = string.Empty;
+            Dragon.Value = string.Empty;
         }
 
         // スキルを検索条件に追加
@@ -428,6 +483,16 @@ namespace RiseSim.ViewModels.SubViews
 
             // 同名スキルも空欄もない場合、何もせずに終了
             return;
+        }
+
+        // 
+        private int? ParseOrNull(string param)
+        {
+            if (int.TryParse(param, out int result))
+            {
+                return result;
+            }
+            return null;
         }
     }
 }

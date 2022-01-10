@@ -54,7 +54,7 @@ namespace SimModel.model
                 case EquipKind.charm:
                     return "護石";
                 default:
-                    return "";
+                    return string.Empty;
             }
         }
         public static string StrWithColon(this EquipKind kind)
