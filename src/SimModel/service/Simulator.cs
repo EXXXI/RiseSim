@@ -46,12 +46,14 @@ namespace SimModel.service
             CsvOperation.LoadCludeCSV();
             CsvOperation.LoadCharmCSV();
             CsvOperation.LoadMySetCSV();
+            CsvOperation.LoadRecentSkillCSV();
 
         }
 
         // 新規検索
         public List<EquipSet> Search(List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit)
         {
+            // 検索条件を整理
             SearchCondition condition = new();
             condition.Skills = new List<Skill>();
             foreach (var skill in skillList)
@@ -62,8 +64,12 @@ namespace SimModel.service
             condition.WeaponSlot2 = weaponSlot2;
             condition.WeaponSlot3 = weaponSlot3;
 
+            // 検索
             Searcher = new Searcher(condition);
             Searcher.ExecSearch(limit);
+
+            // 最近使ったスキル更新
+            UpdateRecentSkill(condition.Skills);
 
             return Searcher.ResultSets;
         }
@@ -166,6 +172,13 @@ namespace SimModel.service
         {
             DataManagement.DeleteMySet(set);
         }
+
+        // 最近使ったスキル更新
+        public void UpdateRecentSkill(List<Skill> skills)
+        {
+            DataManagement.UpdateRecentSkill(skills);
+        }
+
 
     }
 }

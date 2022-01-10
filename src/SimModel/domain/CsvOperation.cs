@@ -38,6 +38,7 @@ namespace SimModel.domain
         private const string CludeCsv = "save/clude.csv";
         private const string CharmCsv = "save/charm.csv";
         private const string MySetCsv = "save/myset.csv";
+        private const string RecentSkillCsv = "save/recentSkill.csv";
 
         // スキルマスタ読み込み
         static internal void LoadSkillCSV()
@@ -305,6 +306,32 @@ namespace SimModel.domain
                 set.DecoNameCSV = line[@"装飾品"];
 
                 Masters.MySets.Add(set);
+            }
+        }
+
+        // 最近使ったスキル書き込み
+        internal static void SaveRecentSkillCSV()
+        {
+            List<string[]> body = new List<string[]>();
+            foreach (var name in Masters.RecentSkillNames)
+            {
+                body.Add(new string[] { name });
+            }
+            string[] header = new string[] { "スキル名" };
+            string export = CsvWriter.WriteToText(header, body);
+            File.WriteAllText(RecentSkillCsv, export);
+        }
+
+        // 最近使ったスキル読み込み
+        internal static void LoadRecentSkillCSV()
+        {
+            Masters.RecentSkillNames = new();
+
+            string csv = ReadAllText(RecentSkillCsv);
+
+            foreach (ICsvLine line in CsvReader.ReadFromText(csv))
+            {
+                Masters.RecentSkillNames.Add(line[@"スキル名"]);
             }
         }
 

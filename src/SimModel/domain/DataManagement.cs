@@ -179,5 +179,50 @@ namespace SimModel.domain
             // マスタへ反映
             CsvOperation.SaveMySetCSV();
         }
+
+        // 最近使ったスキルの更新
+        internal static void UpdateRecentSkill(List<Skill> skills)
+        {
+            // TODO:外部ファイルで定数化したい
+            int maxRecentSkillCount = 20;
+
+            List<string> newNames = new List<string>();
+
+            // 今回の検索条件をリストに追加
+            foreach (var skill in skills)
+            {
+                newNames.Add(skill.Name);
+            }
+
+            // 今までの検索条件をリストに追加
+            foreach (var oldName in Masters.RecentSkillNames)
+            {
+                bool isDuplicate = false;
+                foreach (var newName in newNames)
+                {
+                    if (newName.Equals(oldName))
+                    {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if (!isDuplicate)
+                {
+                    newNames.Add(oldName);
+                }
+
+                // 最大数に達したらそこで終了
+                if (maxRecentSkillCount <= newNames.Count)
+                {
+                    break;
+                }
+            }
+
+            // 新しいリストに入れ替え
+            Masters.RecentSkillNames = newNames;
+
+            // マスタへ反映
+            CsvOperation.SaveRecentSkillCSV();
+        }
     }
 }

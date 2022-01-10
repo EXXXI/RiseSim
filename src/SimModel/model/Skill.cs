@@ -32,5 +32,18 @@ namespace SimModel.model
 
         // スキルレベル
         public int Level { get; set; } = 0;
+
+        // 表示用文字列
+        public string Description 
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    return string.Empty;
+                }
+                return Name + "Lv" + Level;
+            }
+        }
     }
 }

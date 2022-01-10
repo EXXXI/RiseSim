@@ -55,6 +55,10 @@ namespace SimModel.model
         // マイセットマスタ
         public static List<EquipSet> MySets { get; set; } = new();
 
+        // 最近使ったスキルマスタ
+        public static List<string> RecentSkillNames { get; set; } = new();
+
+
         // 装備名から装備を取得
         public static Equipment GetEquipByName(string name)
         {

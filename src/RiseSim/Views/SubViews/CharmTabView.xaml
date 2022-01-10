@@ -14,7 +14,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="165"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -31,7 +31,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="50" Text="スロット"/>
-                <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}"  SelectedItem="{Binding CharmWeaponSlots.Value}" Width="100" SelectedIndex="0">
+                <ComboBox x:Name="charmWeaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}"  SelectedItem="{Binding CharmWeaponSlots.Value}" Width="115" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
             <Button x:Name="charmAddButton" Content="登録する" Command="{Binding AddCharmCommand}" />
