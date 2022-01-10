@@ -43,6 +43,16 @@ namespace RiseSim.ViewModels.Controls
         // 選択中スキルレベル
         public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
+        // クリアコマンド
+        public ReactiveCommand ClearCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
+        {
+            ClearCommand.Subscribe(_ => SetDefault());
+        }
+
+
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
         public SkillSelectorViewModel()
         {
@@ -58,6 +68,8 @@ namespace RiseSim.ViewModels.Controls
             // スキル名変更時にレベル一覧を変更するように紐づけ
             SkillName.Subscribe(_ => SetLevels());
 
+            // コマンドを設定
+            SetCommand();
         }
 
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
@@ -78,11 +90,13 @@ namespace RiseSim.ViewModels.Controls
             }
             SkillLevels.Value = list;
 
-            if (list.Count > 0)
+            if (list.Count == 0)
             {
-                // 初期値は最大レベルとする
-                SkillLevel.Value = maxLevel;
+                // スキルが選択されていないときは0とする
+                list.Add(0);
             }
+            // 初期値は最大レベルとする
+            SkillLevel.Value = maxLevel;
         }
 
         internal void SetDefault()

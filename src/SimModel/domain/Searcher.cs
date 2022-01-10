@@ -60,12 +60,11 @@ namespace SimModel.domain
             ResultSets = new List<EquipSet>();
         }
 
-        // 検索
-        public void ExecSearch(int limit)
+        // 検索 全件検索完了した場合trueを返す
+        public bool ExecSearch(int limit)
         {
             // 目標検索件数
             int target = ResultSets.Count + limit;
-
 
             while (ResultSets.Count < target)
             {
@@ -90,7 +89,7 @@ namespace SimModel.domain
                 if (!result.Equals(SolverResult.OK))
                 {
                     // もう結果がヒットしない場合終了
-                    break;
+                    return true;
                 }
 
                 // 計算結果整理
@@ -99,9 +98,10 @@ namespace SimModel.domain
                 {
                     // TODO: 計算結果の空データ、何故発生する？
                     // 空データが出現したら終了
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
 
         // 制約式設定

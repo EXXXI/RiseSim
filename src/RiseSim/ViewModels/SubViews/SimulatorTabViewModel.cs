@@ -48,6 +48,12 @@ namespace RiseSim.ViewModels.SubViews
         // 検索結果の選択行
         public ReactivePropertySlim<EquipSet> DetailSet { get; } = new();
 
+        // 追加スキル検索結果
+        public ReactivePropertySlim<List<Skill>> ExtraSkills { get; } = new();
+
+        // 最近使ったスキル
+        public ReactivePropertySlim<List<string>> RecentSkillNames { get; } = new();
+
         // 装備詳細の各行のVM
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> EquipRowVMs { get; } = new();
 
@@ -69,7 +75,9 @@ namespace RiseSim.ViewModels.SubViews
         public AsyncReactiveCommand SearchMoreCommand { get; private set; }
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
         public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
-
+        public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand AddExtraSkillCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand AddRecentSkillCommand { get; } = new ReactiveCommand();
         // コマンドを設定
         private void SetCommand()
         {
@@ -78,6 +86,9 @@ namespace RiseSim.ViewModels.SubViews
             SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             AddMySetCommand.Subscribe(_ => AddMySet());
+            ClearAllCommand.Subscribe(_ => ClearSearchCondition());
+            AddExtraSkillCommand.Subscribe(x => AddSkill(x as Skill));
+            AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
         }
 
         public SimulatorTabViewModel()
@@ -116,6 +127,10 @@ namespace RiseSim.ViewModels.SubViews
             // 頑張り度を設定
             Limit.Value = DefaultLimit;
 
+            // 最近使ったスキル読み込み
+            LoadRecentSkills();
+
+            // コマンドを設定
             SetCommand();
         }
 
@@ -163,9 +178,7 @@ namespace RiseSim.ViewModels.SubViews
             LogSb.Append('\n');
             foreach (Skill skill in skills)
             {
-                LogSb.Append(skill.Name);
-                LogSb.Append(" Lv");
-                LogSb.Append(skill.Level);
+                LogSb.Append(skill.Description);
                 LogSb.Append('\n');
             }
             LogBoxText.Value = LogSb.ToString();
@@ -181,10 +194,22 @@ namespace RiseSim.ViewModels.SubViews
             // ビジーフラグ解除
             IsBusy.Value = false;
 
+            // 最近使ったスキル再読み込み
+            LoadRecentSkills();
+
             // 完了ログ表示
             LogSb.Append("■検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
+            if (Simulator.IsSearchedAll)
+            {
+                LogSb.Append("これで全件です\n");
+            }
+            else
+            {
+                LogSb.Append("結果が多いため検索を打ち切りました\n");
+                LogSb.Append("続きを検索するには「もっと検索」をクリックしてください\n");
+            }
             LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "検索完了";
         }
@@ -224,6 +249,15 @@ namespace RiseSim.ViewModels.SubViews
             LogSb.Append("■もっと検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
+            if (Simulator.IsSearchedAll)
+            {
+                LogSb.Append("これで全件です\n");
+            }
+            else
+            {
+                LogSb.Append("結果が多いため検索を打ち切りました\n");
+                LogSb.Append("続きを検索するには「もっと検索」をクリックしてください\n");
+            }
             LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "もっと検索完了";
         }
@@ -242,18 +276,16 @@ namespace RiseSim.ViewModels.SubViews
 
             // 追加スキル検索
             List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill());
+            ExtraSkills.Value = result;
 
             // ビジーフラグ解除
             IsBusy.Value = false;
 
-            // TODO: 追加スキルの一覧、もっといい方法はないか？
             // ログ表示
             LogSb.Append("■追加スキル検索完了\n");
             foreach (Skill skill in result)
             {
-                LogSb.Append(skill.Name);
-                LogSb.Append(" Lv");
-                LogSb.Append(skill.Level);
+                LogSb.Append(skill.Description);
                 LogSb.Append('\n');
             }
             LogBoxText.Value = LogSb.ToString();
@@ -301,9 +333,7 @@ namespace RiseSim.ViewModels.SubViews
                 SkillSelectorVMs.Value[i].SkillLevel.Value = mySet.Skills[i].Level;
 
                 // ログ表示用
-                sb.Append(mySet.Skills[i].Name);
-                sb.Append("Lv");
-                sb.Append(mySet.Skills[i].Level);
+                sb.Append(mySet.Skills[i].Description);
                 sb.Append(',');
 
             }
@@ -318,6 +348,86 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             StatusBarText.Value = "検索条件反映：" + sb.ToString();
+        }
+
+        // 最近使ったスキル読み込み
+        private void LoadRecentSkills()
+        {
+            RecentSkillNames.Value = Masters.RecentSkillNames;
+        }
+
+        // 全ての検索条件をクリア
+        private void ClearSearchCondition()
+        {
+            foreach (var vm in SkillSelectorVMs.Value)
+            {
+                vm.SetDefault();
+            }
+            WeaponSlots.Value = "0-0-0";
+        }
+
+        // スキルを検索条件に追加
+        private void AddSkill(Skill? skill)
+        {
+            if (skill == null)
+            {
+                return;
+            }
+
+            // 同名スキルがあった場合、レベルを上書きして終了
+            foreach (var vm in SkillSelectorVMs.Value)
+            {
+                if (skill.Name.Equals(vm.SkillName.Value))
+                {
+                    vm.SkillLevel.Value = skill.Level;
+                    return;
+                }
+            }
+
+            // 同名スキルがない場合、空欄にスキルを追加して終了
+            foreach (var vm in SkillSelectorVMs.Value)
+            {
+                if (NoSkillName.Equals(vm.SkillName.Value))
+                {
+                    vm.SkillName.Value = skill.Name;
+                    vm.SkillLevel.Value = skill.Level;
+                    return;
+                }
+            }
+
+            // 同名スキルも空欄もない場合、何もせずに終了
+            return;
+        }       
+        
+        // スキルを検索条件に追加
+        private void AddSkill(string? name)
+        {
+            if (name == null)
+            {
+                return;
+            }
+
+            // 同名スキルがあった場合終了
+            foreach (var vm in SkillSelectorVMs.Value)
+            {
+                if (name.Equals(vm.SkillName.Value))
+                {
+                    return;
+                }
+            }
+
+            // 同名スキルがない場合、空欄にスキルを追加して終了
+            foreach (var vm in SkillSelectorVMs.Value)
+            {
+                if (NoSkillName.Equals(vm.SkillName.Value))
+                {
+                    vm.SkillName.Value = name;
+                    return;
+                }
+            }
+
+            // 同名スキルも空欄もない場合、何もせずに終了
+            return;
         }
     }
 }

@@ -14,6 +14,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using SimModel.Const;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SimModel.domain
 {
     static internal class DataManagement
     {
+        static public int MaxRecentSkillCount { get; } = LogicConfig.Instance.MaxRecentSkillCount;
+
         // 除外設定を追加
         static internal Clude? AddExclude(string name)
         {
@@ -178,6 +181,48 @@ namespace SimModel.domain
 
             // マスタへ反映
             CsvOperation.SaveMySetCSV();
+        }
+
+        // 最近使ったスキルの更新
+        internal static void UpdateRecentSkill(List<Skill> skills)
+        {
+            List<string> newNames = new List<string>();
+
+            // 今回の検索条件をリストに追加
+            foreach (var skill in skills)
+            {
+                newNames.Add(skill.Name);
+            }
+
+            // 今までの検索条件をリストに追加
+            foreach (var oldName in Masters.RecentSkillNames)
+            {
+                bool isDuplicate = false;
+                foreach (var newName in newNames)
+                {
+                    if (newName.Equals(oldName))
+                    {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if (!isDuplicate)
+                {
+                    newNames.Add(oldName);
+                }
+
+                // 最大数に達したらそこで終了
+                if (MaxRecentSkillCount <= newNames.Count)
+                {
+                    break;
+                }
+            }
+
+            // 新しいリストに入れ替え
+            Masters.RecentSkillNames = newNames;
+
+            // マスタへ反映
+            CsvOperation.SaveRecentSkillCSV();
         }
     }
 }

@@ -164,9 +164,7 @@ namespace SimModel.model
                 foreach (var skill in Skills)
                 {
                     sb.Append('\n');
-                    sb.Append(skill.Name);
-                    sb.Append("Lv");
-                    sb.Append(skill.Level);
+                    sb.Append(skill.Description);
                 }
 
                 return sb.ToString();
