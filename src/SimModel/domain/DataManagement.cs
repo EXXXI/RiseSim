@@ -14,6 +14,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using SimModel.Const;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SimModel.domain
 {
     static internal class DataManagement
     {
+        static public int MaxRecentSkillCount { get; } = LogicConfig.Instance.MaxRecentSkillCount;
+
         // 除外設定を追加
         static internal Clude? AddExclude(string name)
         {
@@ -183,9 +186,6 @@ namespace SimModel.domain
         // 最近使ったスキルの更新
         internal static void UpdateRecentSkill(List<Skill> skills)
         {
-            // TODO:外部ファイルで定数化したい
-            int maxRecentSkillCount = 20;
-
             List<string> newNames = new List<string>();
 
             // 今回の検索条件をリストに追加
@@ -212,7 +212,7 @@ namespace SimModel.domain
                 }
 
                 // 最大数に達したらそこで終了
-                if (maxRecentSkillCount <= newNames.Count)
+                if (MaxRecentSkillCount <= newNames.Count)
                 {
                     break;
                 }

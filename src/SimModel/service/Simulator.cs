@@ -30,6 +30,9 @@ namespace SimModel.service
         // 検索インスタンス
         private Searcher Searcher { get; set; }
 
+        // 全件検索完了フラグ
+        public bool IsSearchedAll { get; set; }
+
         // データ読み込み
         public void LoadData()
         {
@@ -66,7 +69,7 @@ namespace SimModel.service
 
             // 検索
             Searcher = new Searcher(condition);
-            Searcher.ExecSearch(limit);
+            IsSearchedAll = Searcher.ExecSearch(limit);
 
             // 最近使ったスキル更新
             UpdateRecentSkill(condition.Skills);
@@ -83,7 +86,7 @@ namespace SimModel.service
                 return new List<EquipSet>();
             }
 
-            Searcher.ExecSearch(limit);
+            IsSearchedAll = Searcher.ExecSearch(limit);
 
             return Searcher.ResultSets;
         }

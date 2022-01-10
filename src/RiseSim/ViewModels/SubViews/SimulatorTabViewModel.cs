@@ -201,6 +201,15 @@ namespace RiseSim.ViewModels.SubViews
             LogSb.Append("■検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
+            if (Simulator.IsSearchedAll)
+            {
+                LogSb.Append("これで全件です\n");
+            }
+            else
+            {
+                LogSb.Append("結果が多いため検索を打ち切りました\n");
+                LogSb.Append("続きを検索するには「もっと検索」をクリックしてください\n");
+            }
             LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "検索完了";
         }
@@ -240,6 +249,15 @@ namespace RiseSim.ViewModels.SubViews
             LogSb.Append("■もっと検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
+            if (Simulator.IsSearchedAll)
+            {
+                LogSb.Append("これで全件です\n");
+            }
+            else
+            {
+                LogSb.Append("結果が多いため検索を打ち切りました\n");
+                LogSb.Append("続きを検索するには「もっと検索」をクリックしてください\n");
+            }
             LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "もっと検索完了";
         }
@@ -263,7 +281,6 @@ namespace RiseSim.ViewModels.SubViews
             // ビジーフラグ解除
             IsBusy.Value = false;
 
-            // TODO: 追加スキルの一覧、もっといい方法はないか？
             // ログ表示
             LogSb.Append("■追加スキル検索完了\n");
             foreach (Skill skill in result)
