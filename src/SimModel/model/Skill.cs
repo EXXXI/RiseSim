@@ -21,17 +21,18 @@ namespace SimModel.model
     // スキル
     public class Skill
     {
-        public Skill(string name, int level)
-        {
-            Name = name;
-            Level = level;
-        }
 
         // スキル名
         public string Name { get; set; }
 
         // スキルレベル
         public int Level { get; set; } = 0;
+
+        public Skill(string name, int level)
+        {
+            Name = name;
+            Level = level;
+        }
 
         // 表示用文字列
         public string Description 

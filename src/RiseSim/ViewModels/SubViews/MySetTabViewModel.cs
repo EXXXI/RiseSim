@@ -1,5 +1,6 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
+using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.model;
 using SimModel.service;
@@ -20,10 +21,10 @@ namespace RiseSim.ViewModels.SubViews
 
 
         // マイセット一覧
-        public ReactivePropertySlim<ObservableCollection<EquipSet>> MySetList { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<BindableEquipSet>> MySetList { get; } = new();
 
         // マイセットの選択行データ
-        public ReactivePropertySlim<EquipSet> MyDetailSet { get; } = new();
+        public ReactivePropertySlim<BindableEquipSet> MyDetailSet { get; } = new();
 
         // マイセット画面の装備詳細の各行のVM
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> MyEquipRowVMs { get; } = new();
@@ -57,7 +58,7 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットを削除
         internal void DeleteMySet()
         {
-            EquipSet set = MyDetailSet.Value;
+            EquipSet set = MyDetailSet.Value.Original;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
@@ -77,14 +78,18 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットのスキルをシミュ画面の検索条件に反映
         internal void InputMySetCondition()
         {
-            MainViewModel.Instance.InputMySetCondition(MyDetailSet.Value);
+            MainViewModel.Instance.InputMySetCondition(MyDetailSet.Value.Original);
         }
 
         // マイセットのマスタ情報をVMにロード
         internal void LoadMySets()
         {
             // マイセット画面用のVMの設定
-            MySetList.Value = new ObservableCollection<EquipSet>(Masters.MySets); ;
+            MySetList.Value = new ObservableCollection<BindableEquipSet>();
+            foreach (var set in Masters.MySets)
+            {
+                MySetList.Value.Add(new BindableEquipSet(set));
+            }
         }
     }
 }

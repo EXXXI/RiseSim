@@ -16,6 +16,7 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
+using RiseSim.ViewModels.BindableWrapper;
 using SimModel.model;
 using SimModel.service;
 using System;
@@ -57,7 +58,7 @@ namespace RiseSim.ViewModels.Controls
             IncludeCommand.Subscribe(_ => Include());
         }
 
-        public EquipRowViewModel(Equipment equip)
+        public EquipRowViewModel(BindableEquipment equip)
         {
             DispName.Value = equip.DispName;
             TrueKind = equip.Kind;
@@ -79,7 +80,7 @@ namespace RiseSim.ViewModels.Controls
         }
 
         // 装備セットを丸ごとVMのリストにして返却
-        static public ObservableCollection<EquipRowViewModel> SetToEquipRows(EquipSet set)
+        static public ObservableCollection<EquipRowViewModel> SetToEquipRows(BindableEquipSet set)
         {
             ObservableCollection<EquipRowViewModel> list = new();
             if (set != null)

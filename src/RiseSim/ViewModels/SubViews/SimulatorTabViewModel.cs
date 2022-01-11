@@ -1,6 +1,7 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.Const;
+using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.model;
 using SimModel.service;
@@ -43,10 +44,10 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> SkillSelectorVMs { get; } = new();
 
         // 検索結果一覧
-        public ReactivePropertySlim<ObservableCollection<EquipSet>> SearchResult { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<BindableEquipSet>> SearchResult { get; } = new();
 
         // 検索結果の選択行
-        public ReactivePropertySlim<EquipSet> DetailSet { get; } = new();
+        public ReactivePropertySlim<BindableEquipSet> DetailSet { get; } = new();
 
         // 追加スキル検索結果
         public ReactivePropertySlim<List<Skill>> ExtraSkills { get; } = new();
@@ -238,7 +239,11 @@ namespace RiseSim.ViewModels.SubViews
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(
                 skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon));
-            SearchResult.Value = new ObservableCollection<EquipSet>(result);
+            SearchResult.Value = new ObservableCollection<BindableEquipSet>();
+            foreach (var set in result)
+            {
+                SearchResult.Value.Add(new BindableEquipSet(set));
+            }
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -289,8 +294,13 @@ namespace RiseSim.ViewModels.SubViews
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
-            SearchResult.Value = new ObservableCollection<EquipSet>(result);
+            SearchResult.Value = new ObservableCollection<BindableEquipSet>();
+            foreach (var set in result)
+            {
+                SearchResult.Value.Add(new BindableEquipSet(set));
 
+            }
+                
             // ビジーフラグ解除
             IsBusy.Value = false;
 
@@ -344,7 +354,7 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットを追加
         internal void AddMySet()
         {
-            EquipSet set = DetailSet.Value;
+            EquipSet set = DetailSet.Value.Original;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
