@@ -16,9 +16,11 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
+using RiseSim.ViewModels.BindableWrapper;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,10 +33,10 @@ namespace RiseSim.ViewModels.Controls
         public ReactivePropertySlim<string> DispKind { get; } = new();
 
         // 装備一覧
-        public ReactivePropertySlim<List<Equipment>> Equips { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<BindableEquipment>> Equips { get; } = new();
 
         // 選択中の装備
-        public ReactivePropertySlim<Equipment> SelectedEquip { get; } = new();
+        public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
 
         // 除外コマンド
         public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
@@ -52,7 +54,7 @@ namespace RiseSim.ViewModels.Controls
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
             DispKind.Value = dispKind;
-            Equips.Value = equips;
+            Equips.Value = BindableEquipment.BeBindableList(equips);
 
             SetCommand();
         }
