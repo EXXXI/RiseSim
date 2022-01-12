@@ -84,10 +84,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Thunder = equip.Thunder;
             Ice = equip.Ice;
             Dragon = equip.Dragon;
-            foreach (var skill in equip.Skills)
-            {
-                Skills.Add(new BindableSkill(skill));
-            }
+            Skills = BindableSkill.BeBindableList(equip.Skills);
             Kind = equip.Kind;
             DispName = equip.DispName;
             Description = equip.Description;
@@ -95,5 +92,14 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = equip;
         }
 
+        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
+        {
+            ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();
+            foreach (var equip in list)
+            {
+                bindableList.Add(new BindableEquipment(equip));
+            }
+            return bindableList;
+        }
     }
 }

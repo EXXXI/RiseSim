@@ -50,10 +50,10 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<BindableEquipSet> DetailSet { get; } = new();
 
         // 追加スキル検索結果
-        public ReactivePropertySlim<List<Skill>> ExtraSkills { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<BindableSkill>> ExtraSkills { get; } = new();
 
         // 最近使ったスキル
-        public ReactivePropertySlim<List<string>> RecentSkillNames { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<string>> RecentSkillNames { get; } = new();
 
         // 装備詳細の各行のVM
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> EquipRowVMs { get; } = new();
@@ -112,7 +112,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             AddMySetCommand.Subscribe(_ => AddMySet());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
-            AddExtraSkillCommand.Subscribe(x => AddSkill(x as Skill));
+            AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
         }
 
@@ -239,11 +239,7 @@ namespace RiseSim.ViewModels.SubViews
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(
                 skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon));
-            SearchResult.Value = new ObservableCollection<BindableEquipSet>();
-            foreach (var set in result)
-            {
-                SearchResult.Value.Add(new BindableEquipSet(set));
-            }
+            SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -294,13 +290,8 @@ namespace RiseSim.ViewModels.SubViews
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
-            SearchResult.Value = new ObservableCollection<BindableEquipSet>();
-            foreach (var set in result)
-            {
-                SearchResult.Value.Add(new BindableEquipSet(set));
+            SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
-            }
-                
             // ビジーフラグ解除
             IsBusy.Value = false;
 
@@ -335,7 +326,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // 追加スキル検索
             List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill());
-            ExtraSkills.Value = result;
+            ExtraSkills.Value = BindableSkill.BeBindableList(result);
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -412,7 +403,7 @@ namespace RiseSim.ViewModels.SubViews
         // 最近使ったスキル読み込み
         private void LoadRecentSkills()
         {
-            RecentSkillNames.Value = Masters.RecentSkillNames;
+            RecentSkillNames.Value = new ObservableCollection<string>(Masters.RecentSkillNames);
         }
 
         // 全ての検索条件をクリア
@@ -432,7 +423,7 @@ namespace RiseSim.ViewModels.SubViews
         }
 
         // スキルを検索条件に追加
-        private void AddSkill(Skill? skill)
+        private void AddSkill(BindableSkill? skill)
         {
             if (skill == null)
             {

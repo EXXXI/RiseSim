@@ -2,6 +2,7 @@
 using SimModel.model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,16 @@ namespace RiseSim.ViewModels.BindableWrapper
             Level = skill.Level;
             Description = skill.Description;
             Original = skill;
+        }
+
+        static public ObservableCollection<BindableSkill> BeBindableList(List<Skill> list)
+        {
+            ObservableCollection<BindableSkill> bindableList = new ObservableCollection<BindableSkill>();
+            foreach (var skill in list)
+            {
+                bindableList.Add(new BindableSkill(skill));
+            }
+            return bindableList;
         }
     }
 }

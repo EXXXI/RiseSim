@@ -20,6 +20,7 @@ using RiseSim.Const;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,10 +33,10 @@ namespace RiseSim.ViewModels.Controls
         private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
 
         // スキル名一覧
-        public ReactivePropertySlim<List<string>> Skills { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<string>> Skills { get; } = new();
 
         // 選択中スキルのレベル一覧
-        public ReactivePropertySlim<List<int>> SkillLevels { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<int>> SkillLevels { get; } = new();
 
         // 選択中スキル名
         public ReactivePropertySlim<string> SkillName { get; } = new();
@@ -56,7 +57,7 @@ namespace RiseSim.ViewModels.Controls
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
         public SkillSelectorViewModel()
         {
-            List<string> skillList = new();
+            ObservableCollection<string> skillList = new();
             skillList.Add(NoSkillName);
             foreach (var skill in Masters.Skills)
             {
@@ -75,7 +76,7 @@ namespace RiseSim.ViewModels.Controls
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
         internal void SetLevels()
         {
-            List<int> list = new();
+            ObservableCollection<int> list = new();
             int maxLevel = 0;
             foreach (var skill in Masters.Skills)
             {

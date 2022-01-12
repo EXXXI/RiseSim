@@ -85,11 +85,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void LoadMySets()
         {
             // マイセット画面用のVMの設定
-            MySetList.Value = new ObservableCollection<BindableEquipSet>();
-            foreach (var set in Masters.MySets)
-            {
-                MySetList.Value.Add(new BindableEquipSet(set));
-            }
+            MySetList.Value = BindableEquipSet.BeBindableList(Masters.MySets);
         }
     }
 }

@@ -91,10 +91,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Waist = new BindableEquipment(set.Waist);
             Leg = new BindableEquipment(set.Leg);
             Charm = new BindableEquipment(set.Charm);
-            foreach (var deco in set.Decos)
-            {
-                Decos.Add(new BindableEquipment(deco));
-            }
+            Decos = BindableEquipment.BeBindableList(set.Decos);
             WeaponSlot1 = set.WeaponSlot1;
             WeaponSlot2 = set.WeaponSlot2;
             WeaponSlot3 = set.WeaponSlot3;
@@ -105,16 +102,23 @@ namespace RiseSim.ViewModels.BindableWrapper
             Thunder = set.Thunder;
             Ice = set.Ice;
             Dragon = set.Dragon;
-            foreach (var skill in set.Skills)
-            {
-                Skills.Add(new BindableSkill(skill));
-            }
+            Skills = BindableSkill.BeBindableList(set.Skills);
             SimpleSetName = set.SimpleSetName;
             DecoNameCSV = set.DecoNameCSV;
             WeaponSlotDisp = set.WeaponSlotDisp;
             SkillsDisp = set.SkillsDisp;
             Description = set.Description;
             Original = set;
+        }
+
+        static public ObservableCollection<BindableEquipSet> BeBindableList(List<EquipSet> list)
+        {
+            ObservableCollection<BindableEquipSet> bindableList = new ObservableCollection<BindableEquipSet>();
+            foreach (var set in list)
+            {
+                bindableList.Add(new BindableEquipSet(set));
+            }
+            return bindableList;
         }
     }
 }

@@ -95,7 +95,7 @@
         </Grid>
 
         <!-- 中央ペイン：結果出力 -->
-        <DataGrid x:Name="resultGrid" Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
+        <DataGrid Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
