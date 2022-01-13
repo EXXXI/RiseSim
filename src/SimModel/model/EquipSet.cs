@@ -14,6 +14,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using SimModel.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -184,6 +185,48 @@ namespace SimModel.model
                 {
                     JoinSkill(ret, equip.Skills);
                 }
+
+                // 風雷合一：風雷合一判定
+                int furaiPlus = 0;
+                foreach (var skill in ret)
+                {
+                    if (LogicConfig.Instance.FuraiName.Equals(skill.Name))
+                    {
+                        switch (skill.Level)
+                        {
+                            case 4:
+                                furaiPlus = 1; 
+                                break;
+                            case 5:
+                                furaiPlus = 2;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                // 風雷合一：スキル追加
+                if (furaiPlus > 0)
+                {
+                    // 対象洗い出し
+                    List<Skill> furaiTarget = new List<Skill>();
+                    JoinSkill(furaiTarget, Head.Skills);
+                    JoinSkill(furaiTarget, Body.Skills);
+                    JoinSkill(furaiTarget, Arm.Skills);
+                    JoinSkill(furaiTarget, Waist.Skills);
+                    JoinSkill(furaiTarget, Leg.Skills);
+
+                    // スキルレベル設定
+                    foreach (var skill in furaiTarget)
+                    {
+                        skill.Level = furaiPlus;
+                    }
+
+                    // スキルレベル追加
+                    JoinSkill(ret, furaiTarget);
+                }
+
                 ret.Sort((a, b) => b.Level - a.Level);
                 return ret;
             }

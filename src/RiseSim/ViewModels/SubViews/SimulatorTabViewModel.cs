@@ -345,7 +345,7 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットを追加
         internal void AddMySet()
         {
-            EquipSet set = DetailSet.Value.Original;
+            EquipSet? set = DetailSet.Value?.Original;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
@@ -363,7 +363,7 @@ namespace RiseSim.ViewModels.SubViews
         }
 
         // マイセットのスキルをシミュ画面の検索条件に反映
-        internal void InputMySetCondition(EquipSet mySet)
+        internal void InputMySetCondition(EquipSet? mySet)
         {
             if (mySet == null)
             {
