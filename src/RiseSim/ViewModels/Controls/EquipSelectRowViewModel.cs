@@ -38,22 +38,29 @@ namespace RiseSim.ViewModels.Controls
         // 選択中の装備
         public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
 
+        // 固定可能フラグ
+        public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
+
         // 除外コマンド
         public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
 
         // 固定コマンド
-        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand IncludeCommand { get; private set; }
 
         // コマンドを設定
         private void SetCommand()
         {
             ExcludeCommand.Subscribe(_ => Exclude());
-            IncludeCommand.Subscribe(_ => Include());
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
             DispKind.Value = dispKind;
+            if (EquipKind.deco.StrWithColon().Equals(dispKind))
+            {
+                CanInclude.Value = false;
+            }
             Equips.Value = BindableEquipment.BeBindableList(equips);
 
             SetCommand();

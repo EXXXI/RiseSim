@@ -39,6 +39,9 @@ namespace RiseSim.ViewModels.Controls
         // 装備説明
         public ReactivePropertySlim<string> Description { get; } = new();
 
+        // 固定可能フラグ
+        public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
+
         // 管理用装備種類
         public EquipKind TrueKind { get; set; }
 
@@ -49,19 +52,23 @@ namespace RiseSim.ViewModels.Controls
         public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
 
         // 固定コマンド
-        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand IncludeCommand { get; private set; }
 
         // コマンドを設定
         private void SetCommand()
         {
             ExcludeCommand.Subscribe(_ => Exclude());
-            IncludeCommand.Subscribe(_ => Include());
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
         public EquipRowViewModel(BindableEquipment equip)
         {
             DispName.Value = equip.DispName;
             TrueKind = equip.Kind;
+            if (TrueKind.Equals(EquipKind.deco))
+            {
+                CanInclude.Value = false;
+            }
             TrueName = equip.Name;
             Description.Value = equip.Description;
             DispKind.Value = TrueKind.StrWithColon();
