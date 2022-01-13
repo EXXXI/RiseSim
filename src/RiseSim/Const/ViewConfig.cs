@@ -19,9 +19,6 @@ namespace RiseSim.Const
         // スキル選択部品の個数
         public int SkillSelectorCount { get; set; }
 
-        // 護石のスキル個数
-        public int CharmMaxSkillCount { get; set; }
-
         // スロットの最大の大きさ
         public int MaxSlotSize { get; set; }
 
@@ -39,7 +36,6 @@ namespace RiseSim.Const
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
                 SkillSelectorCount = Parse(line[@"スキル選択部品の個数"], 15);
-                CharmMaxSkillCount = Parse(line[@"護石のスキル個数"], 2);
                 MaxSlotSize = Parse(line[@"スロットの最大の大きさ"], 4);
                 DefaultLimit = Parse(line[@"デフォルトの頑張り度"], 100).ToString();
                 NoSkillName = line[@"スキル未選択時の表示"];

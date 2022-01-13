@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimModel.Const
 {
-    internal class LogicConfig
+    public class LogicConfig
     {
         // インスタンス
         static private LogicConfig instance;
@@ -19,6 +19,15 @@ namespace SimModel.Const
         // 最近使ったスキルの記憶容量
         public int MaxRecentSkillCount { get; set; }
 
+        // 防具のスキル最大個数
+        public int MaxEquipSkillCount { get; set; }
+
+        // 装飾品のスキル最大個数
+        public int MaxDecoSkillCount { get; set; }
+
+        // 護石のスキル最大個数
+        public int MaxCharmSkillCount { get; set; }
+
         // プライベートコンストラクタ
         private LogicConfig()
         {
@@ -27,6 +36,9 @@ namespace SimModel.Const
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
                 MaxRecentSkillCount = Parse(line[@"最近使ったスキルの記憶容量"], 20);
+                MaxEquipSkillCount = Parse(line[@"防具のスキル最大個数"], 5);
+                MaxDecoSkillCount = Parse(line[@"装飾品のスキル最大個数"], 2);
+                MaxCharmSkillCount = Parse(line[@"護石のスキル最大個数"], 2);
             }
         }
 

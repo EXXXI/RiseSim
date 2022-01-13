@@ -16,6 +16,7 @@
  */
 using Csv;
 using SimModel.model;
+using SimModel.Const;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -113,7 +114,7 @@ namespace SimModel.domain
                 equip.Ice = Parse(line[@"氷耐性"]);
                 equip.Dragon = Parse(line[@"龍耐性"]);
                 List<Skill> skills = new List<Skill>();
-                for (int i = 1; i <= 5; i++)
+                for (int i = 1; i <= LogicConfig.Instance.MaxEquipSkillCount; i++)
                 {
                     string skill = line[@"スキル系統" + i];
                     string level = line[@"スキル値" + i];
@@ -153,7 +154,7 @@ namespace SimModel.domain
                 equip.Ice = 0;
                 equip.Dragon = 0;
                 List<Skill> skills = new List<Skill>();
-                for (int i = 1; i <= 2; i++)
+                for (int i = 1; i <= LogicConfig.Instance.MaxDecoSkillCount; i++)
                 {
                     string skill = line[@"スキル系統" + i];
                     string level = line[@"スキル値" + i];
@@ -211,17 +212,29 @@ namespace SimModel.domain
             List<string[]> body = new List<string[]>();
             foreach (var charm in Masters.Charms)
             {
-                string skillName1 = charm.Skills.Count > 0 ? charm.Skills[0].Name : string.Empty;
-                string skillLevel1 = charm.Skills.Count > 0 ? charm.Skills[0].Level.ToString() : string.Empty;
-                string skillName2 = charm.Skills.Count > 1 ? charm.Skills[1].Name : string.Empty;
-                string skillLevel2 = charm.Skills.Count > 1 ? charm.Skills[1].Level.ToString() : string.Empty;
-                string slot1 = charm.Slot1.ToString();
-                string slot2 = charm.Slot2.ToString();
-                string slot3 = charm.Slot3.ToString();
-                string name = charm.Name;
-                body.Add(new string[] { skillName1, skillLevel1, skillName2, skillLevel2, slot1, slot2, slot3, name });
+                List<string> bodyStrings = new List<string>();
+                for (int i = 0; i < LogicConfig.Instance.MaxCharmSkillCount; i++)
+                {
+                    bodyStrings.Add(charm.Skills.Count > i ? charm.Skills[i].Name : string.Empty);
+                    bodyStrings.Add(charm.Skills.Count > i ? charm.Skills[i].Level.ToString() : string.Empty);
+                }
+                bodyStrings.Add(charm.Slot1.ToString());
+                bodyStrings.Add(charm.Slot2.ToString());
+                bodyStrings.Add(charm.Slot3.ToString());
+                bodyStrings.Add(charm.Name);
+                body.Add(bodyStrings.ToArray());
             }
-            string[] header = new string[] { "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "スロット1", "スロット2", "スロット3" , "内部管理ID" };
+            List<string> headStrings = new List<string>();
+            for (int i = 1; i <= LogicConfig.Instance.MaxCharmSkillCount; i++)
+            {
+                headStrings.Add("スキル系統" + i);
+                headStrings.Add("スキル値" + i);
+            }
+            headStrings.Add("スロット1");
+            headStrings.Add("スロット2");
+            headStrings.Add("スロット3");
+            headStrings.Add("内部管理ID");
+            string[] header = headStrings.ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(CharmCsv, export);
         }
@@ -239,16 +252,14 @@ namespace SimModel.domain
                 charm.Slot1 = Parse(line[@"スロット1"]);
                 charm.Slot2 = Parse(line[@"スロット2"]);
                 charm.Slot3 = Parse(line[@"スロット3"]);
-                Skill skill1 = new Skill(line[@"スキル系統1"], Parse(line[@"スキル値1"]));
-                Skill skill2 = new Skill(line[@"スキル系統2"], Parse(line[@"スキル値2"]));
                 charm.Skills = new List<Skill>();
-                if (!string.IsNullOrWhiteSpace(skill1.Name))
+                for (int i = 1; i <= LogicConfig.Instance.MaxCharmSkillCount; i++)
                 {
-                    charm.Skills.Add(skill1);
-                }
-                if (!string.IsNullOrWhiteSpace(skill2.Name))
-                {
-                    charm.Skills.Add(skill2);
+                    Skill skill = new Skill(line[@"スキル系統" + i], Parse(line[@"スキル値" + i]));
+                    if (!string.IsNullOrWhiteSpace(skill.Name))
+                    {
+                        charm.Skills.Add(skill);
+                    }
                 }
 
                 // 内部管理IDがない場合は付与する
@@ -262,10 +273,10 @@ namespace SimModel.domain
                 }
 
                 Masters.Charms.Add(charm);
-
-                // 内部管理IDを保存するため、書き込みを実施
-                SaveCharmCSV();
             }
+
+            // 内部管理IDを保存するため、書き込みを実施
+            SaveCharmCSV();
         }
 
         // マイセットマスタ書き込み

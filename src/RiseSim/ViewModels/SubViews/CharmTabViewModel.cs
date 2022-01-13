@@ -2,6 +2,7 @@
 using Reactive.Bindings;
 using RiseSim.Const;
 using RiseSim.ViewModels.Controls;
+using SimModel.Const;
 using SimModel.model;
 using SimModel.service;
 using System;
@@ -21,7 +22,7 @@ namespace RiseSim.ViewModels.SubViews
 
 
         // 護石のスキル個数
-        private int CharmMaxSkillCount { get; } = ViewConfig.Instance.CharmMaxSkillCount;
+        private int MaxCharmSkillCount { get; } = LogicConfig.Instance.MaxCharmSkillCount;
 
         // スロットの最大の大きさ
         private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
@@ -60,7 +61,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // 護石画面のスキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> charmSelectorVMs = new();
-            for (int i = 0; i < CharmMaxSkillCount; i++)
+            for (int i = 0; i < MaxCharmSkillCount; i++)
             {
                 charmSelectorVMs.Add(new SkillSelectorViewModel());
             }
