@@ -58,7 +58,7 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットを削除
         internal void DeleteMySet()
         {
-            EquipSet set = MyDetailSet.Value.Original;
+            EquipSet? set = MyDetailSet.Value?.Original;
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
@@ -78,7 +78,7 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットのスキルをシミュ画面の検索条件に反映
         internal void InputMySetCondition()
         {
-            MainViewModel.Instance.InputMySetCondition(MyDetailSet.Value.Original);
+            MainViewModel.Instance.InputMySetCondition(MyDetailSet.Value?.Original);
         }
 
         // マイセットのマスタ情報をVMにロード

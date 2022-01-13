@@ -114,7 +114,7 @@ namespace RiseSim.ViewModels
         }
 
         // マイセットのスキルをシミュ画面の検索条件に反映　処理本体はシミュ画面VM
-        internal void InputMySetCondition(EquipSet set)
+        internal void InputMySetCondition(EquipSet? set)
         {
             SimulatorTabVM.Value.InputMySetCondition(set);
         }

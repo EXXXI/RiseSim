@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using GlpkWrapperCS;
+using SimModel.Const;
 using SimModel.model;
 using System;
 using System.Collections.Generic;
@@ -60,6 +61,13 @@ namespace SimModel.domain
         // 除外・固定条件の制約式の開始Index
         private int FirstCludeRowIndex { get; set; }
 
+        // 風雷合一：スキル条件の制約式の開始Index
+        public int FirstFuraiSkillRowIndex { get; private set; }
+
+        // 風雷合一：フラグ条件の制約式の開始Index
+        public int FirstFuraiFlagRowIndex { get; private set; }
+
+        
         // コンストラクタ：検索条件を指定する
         public Searcher(SearchCondition condition)
         {
@@ -167,6 +175,22 @@ namespace SimModel.domain
                 problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, skill.Level, 0.0);
             }
 
+            // 風雷合一：防具スキル存在条件
+            FirstFuraiSkillRowIndex = problem.RowsCount;
+            foreach (var skill in Condition.Skills)
+            {
+                problem.AddRow(skill.Name + "風雷スキル存在");
+                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0, 0.0);
+            }
+
+            // 風雷合一：各スキル用フラグ条件
+            FirstFuraiFlagRowIndex = problem.RowsCount;
+            foreach (var skill in Condition.Skills)
+            {
+                problem.AddRow(skill.Name + "風雷フラグ");
+                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0, 0.0);
+            }
+
             // 検索済み結果の除外
             FirstResultExcludeRowIndex = problem.RowsCount;
             foreach (var set in ResultSets)
@@ -193,7 +217,7 @@ namespace SimModel.domain
         }
 
         // 変数設定
-        private static void SetColumns(MipProblem problem)
+        private void SetColumns(MipProblem problem)
         {
             // 各装備は0個以上で整数
             foreach (var equip in Masters.Heads)
@@ -235,6 +259,22 @@ namespace SimModel.domain
             foreach (var equip in Masters.Decos)
             {
                 problem.AddColumn(equip.Name);
+                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
+                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+            }
+
+            // 風雷合一：Lv4
+            foreach (var skill in Condition.Skills)
+            {
+                problem.AddColumn(skill.Name + "風雷4");
+                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
+                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+            }
+
+            // 風雷合一：Lv5
+            foreach (var skill in Condition.Skills)
+            {
+                problem.AddColumn(skill.Name + "風雷5");
                 problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
                 problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
             }
@@ -310,6 +350,52 @@ namespace SimModel.domain
             foreach (var equip in Masters.Decos)
             {
                 SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                columnIndex++;
+            }
+
+            // 風雷合一：各スキルLv4
+            foreach (var skill in Condition.Skills)
+            {
+                if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
+                {
+                    // スキル値追加
+                    iaList.Add(FirstSkillRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(1);
+
+                    // スキル存在値減少
+                    iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(-1);
+
+                    // スキルフラグ値減少
+                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(-4);
+                }
+                columnIndex++;
+            }
+
+            // 風雷合一：各スキルLv5
+            foreach (var skill in Condition.Skills)
+            {
+                if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
+                {
+                    // スキル値追加
+                    iaList.Add(FirstSkillRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(2);
+
+                    // スキル存在値減少
+                    iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(-1);
+
+                    // スキルフラグ値減少
+                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill));
+                    jaList.Add(columnIndex);
+                    arList.Add(-5);
+                }
                 columnIndex++;
             }
 
@@ -447,6 +533,44 @@ namespace SimModel.domain
                     }
                 }
             }
+
+            // 風雷合一：スキル存在情報
+            if(equip.Kind != EquipKind.deco && equip.Kind != EquipKind.charm)
+            {
+                foreach (var condSkill in Condition.Skills)
+                {
+                    foreach (var equipSkill in equip.Skills)
+                    {
+                        if (equipSkill.Name.Equals(condSkill.Name))
+                        {
+                            iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill));
+                            jaList.Add(columnIndex);
+                            arList.Add(1);
+                        }
+                    }
+                }
+            }
+
+            // 風雷合一：スキル用フラグ情報
+            bool hasFurai = false;
+            foreach (var skill in equip.Skills)
+            {
+                if (LogicConfig.Instance.FuraiName.Equals(skill.Name))
+                {
+                    hasFurai = true;
+                    break;
+                }
+            }
+            if (hasFurai)
+            {
+                foreach (var condSkill in Condition.Skills)
+                {
+                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(condSkill));
+                    jaList.Add(columnIndex);
+                    arList.Add(1);
+                }
+            }
+
         }
 
         // 計算結果整理
@@ -463,7 +587,7 @@ namespace SimModel.domain
 
                     // 存在チェック
                     Equipment? equip = Masters.GetEquipByName(name);
-                    if (equip == null)
+                    if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
                     {
                         // 存在しない装備名の場合無視
                         // 護石削除関係でバグっていた場合の対策

@@ -28,6 +28,9 @@ namespace SimModel.Const
         // 護石のスキル最大個数
         public int MaxCharmSkillCount { get; set; }
 
+        // 風雷合一
+        public string FuraiName { get; } = "風雷合一";
+
         // プライベートコンストラクタ
         private LogicConfig()
         {
