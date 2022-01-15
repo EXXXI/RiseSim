@@ -32,6 +32,7 @@ namespace SimModel.Model
 
     public static class SexExt
     {
+        // 日本語名を返す
         public static string Str(this Sex kind)
         {
             switch (kind)
@@ -43,6 +44,20 @@ namespace SimModel.Model
                 default:
                     return string.Empty;
             }
+        }
+
+        // 日本語名をSex型に変換
+        public static Sex StrToSex(this string sex)
+        {
+            if (Sex.male.Str().Equals(sex))
+            {
+                return Sex.male;
+            }
+            if (Sex.female.Str().Equals(sex))
+            {
+                return Sex.female;
+            }
+            return Sex.all;
         }
     }
 }

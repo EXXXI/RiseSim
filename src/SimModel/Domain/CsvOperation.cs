@@ -198,9 +198,11 @@ namespace SimModel.Domain
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                Clude clude = new Clude();
-                clude.Name = line[@"対象"];
-                clude.Kind = (CludeKind)Parse(line[@"種別"]);
+                Clude clude = new Clude
+                {
+                    Name = line[@"対象"],
+                    Kind = (CludeKind)Parse(line[@"種別"])
+                };
 
                 Masters.Cludes.Add(clude);
             }

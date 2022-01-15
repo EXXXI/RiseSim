@@ -100,6 +100,7 @@ namespace RiseSim.ViewModels.Controls
             SkillLevel.Value = maxLevel;
         }
 
+        // 選択状態をリセット
         internal void SetDefault()
         {
             SkillName.Value = NoSkillName;

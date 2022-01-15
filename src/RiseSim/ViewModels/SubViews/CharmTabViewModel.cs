@@ -60,7 +60,7 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
 
 
-        // コマンド
+        // 護石追加コマンド
         public ReactiveCommand AddCharmCommand { get; } = new ReactiveCommand();
 
         // コマンドを設定

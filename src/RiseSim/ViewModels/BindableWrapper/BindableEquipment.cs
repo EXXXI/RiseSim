@@ -108,6 +108,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = equip;
         }
 
+        // リストをまとめてバインド用クラスに変換
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
         {
             ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();

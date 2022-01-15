@@ -28,6 +28,7 @@ namespace SimModel.Model
         // スキルレベル
         public int Level { get; set; } = 0;
 
+        // コンストラクタ
         public Skill(string name, int level)
         {
             Name = name;

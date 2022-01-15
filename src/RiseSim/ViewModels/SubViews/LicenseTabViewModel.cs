@@ -32,6 +32,7 @@ namespace RiseSim.ViewModels.SubViews
         // ライセンス画面の雑な要約
         public ReactivePropertySlim<string> WhatIsLicense { get; } = new();
 
+        // コンストラクタ
         public LicenseTabViewModel()
         {
             // ライセンス表示

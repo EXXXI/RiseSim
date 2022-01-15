@@ -99,6 +99,7 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 説明
         public string Description { get; set; }
 
+        // コンストラクタ
         public BindableEquipSet(EquipSet set)
         {
             Head = new BindableEquipment(set.Head);
@@ -127,6 +128,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = set;
         }
 
+        // リストをまとめてバインド用クラスに変換
         static public ObservableCollection<BindableEquipSet> BeBindableList(List<EquipSet> list)
         {
             ObservableCollection<BindableEquipSet> bindableList = new ObservableCollection<BindableEquipSet>();

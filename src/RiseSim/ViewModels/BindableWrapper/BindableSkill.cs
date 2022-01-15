@@ -39,6 +39,7 @@ namespace RiseSim.ViewModels.BindableWrapper
         // オリジナル
         public Skill Original { get; set; }
 
+        // コンストラクタ
         public BindableSkill(Skill skill)
         {
             Name = skill.Name;
@@ -47,6 +48,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = skill;
         }
 
+        // リストをまとめてバインド用クラスに変換
         static public ObservableCollection<BindableSkill> BeBindableList(List<Skill> list)
         {
             ObservableCollection<BindableSkill> bindableList = new ObservableCollection<BindableSkill>();

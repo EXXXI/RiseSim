@@ -26,6 +26,7 @@ namespace SimModel.Domain
 {
     static internal class DataManagement
     {
+        // 最近使ったスキルの記憶容量
         static public int MaxRecentSkillCount { get; } = LogicConfig.Instance.MaxRecentSkillCount;
 
         // 除外設定を追加

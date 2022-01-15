@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Csv;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,6 +45,9 @@ namespace RiseSim.Config
         // スキル未選択時の表示
         public string NoSkillName { get; set; }
 
+        // 性別の初期値
+        public Sex DefaultSex { get; set; }
+
         // プライベートコンストラクタ
         private ViewConfig()
         {
@@ -55,6 +59,13 @@ namespace RiseSim.Config
                 MaxSlotSize = Parse(line[@"スロットの最大の大きさ"], 4);
                 DefaultLimit = Parse(line[@"デフォルトの頑張り度"], 100).ToString();
                 NoSkillName = line[@"スキル未選択時の表示"];
+                Sex defSex = line[@"性別の初期値"].StrToSex();
+                if (defSex == Sex.all)
+                {
+                    // 指定が不正な場合、ひとまず男性とする
+                    defSex = Sex.male;
+                }
+                DefaultSex = defSex;
             }
         }
 

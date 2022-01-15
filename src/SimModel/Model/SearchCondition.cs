@@ -58,6 +58,7 @@ namespace SimModel.Model
         // 性別
         public Sex Sex { get; set; }
 
+        // デフォルトコンストラクタ
         public SearchCondition()
         {
         }

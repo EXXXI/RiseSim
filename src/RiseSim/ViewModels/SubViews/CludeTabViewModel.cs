@@ -42,6 +42,7 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<CludeRowViewModel>> CludeRowVMs { get; } = new();
 
 
+        // コンストラクタ
         public CludeTabViewModel()
         {
             // MainViewModelから参照を取得

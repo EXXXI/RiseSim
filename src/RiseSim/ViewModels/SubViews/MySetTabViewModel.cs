@@ -46,8 +46,10 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> MyEquipRowVMs { get; } = new();
 
 
-        // コマンド
+        // マイセット削除コマンド
         public ReactiveCommand DeleteMySetCommand { get; } = new ReactiveCommand();
+
+        // マイセットの内容を検索条件に指定するコマンド
         public ReactiveCommand InputMySetConditionCommand { get; } = new ReactiveCommand();
 
         // コマンドを設定

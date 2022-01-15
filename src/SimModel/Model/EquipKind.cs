@@ -35,6 +35,7 @@ namespace SimModel.Model
     }
     public static class EquipKindExt
     {
+        // 日本語名を返す
         public static string Str(this EquipKind kind)
         {
             switch (kind)
@@ -57,6 +58,8 @@ namespace SimModel.Model
                     return string.Empty;
             }
         }
+
+        // 日本語名と区切り用のコロンを返す
         public static string StrWithColon(this EquipKind kind)
         {
             return Str(kind) + '：';

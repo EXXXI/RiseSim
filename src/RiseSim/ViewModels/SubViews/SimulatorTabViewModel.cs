@@ -111,14 +111,28 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<string>> SexMaster { get; } = new();
 
 
-        // コマンド
+        // 検索コマンド
         public AsyncReactiveCommand SearchCommand { get; private set; }
+
+        // もっと検索コマンド
         public AsyncReactiveCommand SearchMoreCommand { get; private set; }
+
+        // 追加スキル検索コマンド
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
+
+        // マイセット追加コマンド
         public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
+
+        // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
+
+        // 追加スキル検索結果から検索条件へスキルを追加するコマンド
         public ReactiveCommand AddExtraSkillCommand { get; } = new ReactiveCommand();
+
+        // 最近使ったスキルから検索条件へスキルを追加するコマンド
         public ReactiveCommand AddRecentSkillCommand { get; } = new ReactiveCommand();
+
+
         // コマンドを設定
         private void SetCommand()
         {
@@ -132,6 +146,7 @@ namespace RiseSim.ViewModels.SubViews
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
         }
 
+        // コンストラクタ
         public SimulatorTabViewModel()
         {
             // MainViewModelから参照を取得
@@ -165,13 +180,12 @@ namespace RiseSim.ViewModels.SubViews
             SlotMaster.Value = slots;
             WeaponSlots.Value = "0-0-0";
 
-            // TODO: 性別の初期値は保存したいかも
             // 性別の選択肢
             ObservableCollection<string> sexes = new();
             sexes.Add(Sex.male.Str());
             sexes.Add(Sex.female.Str());
             SexMaster.Value = sexes;
-            SelectedSex.Value = Sex.male.Str();
+            SelectedSex.Value = ViewConfig.Instance.DefaultSex.Str();
 
             // 頑張り度を設定
             Limit.Value = DefaultLimit;
@@ -502,7 +516,8 @@ namespace RiseSim.ViewModels.SubViews
             return;
         }
 
-        // 
+        // int.Parseを実施
+        // 変換できなかった場合nullを返す
         private int? ParseOrNull(string param)
         {
             if (int.TryParse(param, out int result))

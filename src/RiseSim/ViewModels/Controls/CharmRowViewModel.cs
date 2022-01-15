@@ -42,13 +42,17 @@ namespace RiseSim.ViewModels.Controls
             DeleteCharmCommand.Subscribe(_ => DeleteCharm());
         }
 
+        // コンストラクタ
         public CharmRowViewModel(Equipment charm)
         {
             TrueName = charm.Name;
             DispName.Value = charm.DispName;
+
+            // コマンドを設定
             SetCommand();
         }
 
+        // 護石削除
         internal void DeleteCharm()
         {
             MainViewModel.Instance.DeleteCharm(TrueName, DispName.Value);

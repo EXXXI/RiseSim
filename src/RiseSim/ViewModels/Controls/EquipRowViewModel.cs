@@ -60,6 +60,7 @@ namespace RiseSim.ViewModels.Controls
             IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
+        // コンストラクタ
         public EquipRowViewModel(BindableEquipment equip)
         {
             DispName.Value = equip.DispName;
@@ -71,16 +72,6 @@ namespace RiseSim.ViewModels.Controls
             TrueName = equip.Name;
             Description.Value = equip.Description;
             DispKind.Value = TrueKind.StrWithColon();
-
-            SetCommand();
-        }
-
-        public EquipRowViewModel(string dispKind, string dispName, EquipKind trueKind, string trueName)
-        {
-            DispKind.Value = dispKind;
-            DispName.Value = dispName;
-            TrueKind = trueKind;
-            TrueName = trueName;
 
             SetCommand();
         }
@@ -105,11 +96,14 @@ namespace RiseSim.ViewModels.Controls
             return list;
         }
 
+        // 装備を除外
         internal void Exclude()
         {
             MainViewModel.Instance.AddExclude(TrueName, DispName.Value);
 
         }
+
+        // 装備を固定
         internal void Include()
         {
             MainViewModel.Instance.AddInclude(TrueName, DispName.Value);
