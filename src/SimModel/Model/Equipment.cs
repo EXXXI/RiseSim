@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
     // 装備
     public class Equipment

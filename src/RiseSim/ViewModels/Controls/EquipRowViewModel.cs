@@ -17,8 +17,7 @@
 using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
-using SimModel.model;
-using SimModel.service;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

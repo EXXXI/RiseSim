@@ -1,4 +1,4 @@
-/*    RiseSim : MHRise skill simurator for Windows
+ï»¿/*    RiseSim : MHRise skill simurator for Windows
  *    Copyright (C) 2022  EXXXI
  *
  *    This program is free software: you can redistribute it and/or modify
@@ -15,36 +15,20 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
-    // ƒXƒLƒ‹
-    public class Skill
+    // é™¤å¤–ãƒ»å›ºå®šæƒ…å ±
+    public class Clude
     {
+        // è£…å‚™å
+        public string Name { get; set; } = string.Empty;
 
-        // ƒXƒLƒ‹–¼
-        public string Name { get; set; }
-
-        // ƒXƒLƒ‹ƒŒƒxƒ‹
-        public int Level { get; set; } = 0;
-
-        public Skill(string name, int level)
-        {
-            Name = name;
-            Level = level;
-        }
-
-        // •\¦—p•¶š—ñ
-        public string Description 
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(Name))
-                {
-                    return string.Empty;
-                }
-                return Name + "Lv" + Level;
-            }
-        }
+        // é™¤å¤–orå›ºå®š
+        public CludeKind Kind { get; set; }
     }
 }

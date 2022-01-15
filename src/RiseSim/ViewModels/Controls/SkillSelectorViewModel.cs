@@ -16,8 +16,8 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
-using RiseSim.Const;
-using SimModel.model;
+using RiseSim.Config;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

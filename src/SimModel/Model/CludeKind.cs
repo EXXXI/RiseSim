@@ -20,15 +20,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
-    // 除外・固定情報
-    public class Clude
+    // 除外or固定
+    public enum CludeKind
     {
-        // 装備名
-        public string Name { get; set; } = string.Empty;
-
-        // 除外or固定
-        public CludeKind Kind { get; set; }
+        exclude = 0,
+        include = 1
     }
 }

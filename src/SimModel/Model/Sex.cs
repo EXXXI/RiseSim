@@ -20,46 +20,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
-    // 装備種類
-    public enum EquipKind
+    // 性別
+    public enum Sex
     {
-        head,
-        body,
-        arm,
-        waist,
-        leg,
-        deco,
-        charm
+        all = 0,
+        male = 1,
+        female = 2
     }
-    public static class EquipKindExt
+
+    public static class SexExt
     {
-        public static string Str(this EquipKind kind)
+        public static string Str(this Sex kind)
         {
             switch (kind)
             {
-                case EquipKind.head:
-                    return "頭";
-                case EquipKind.body:
-                    return "胴";
-                case EquipKind.arm:
-                    return "腕";
-                case EquipKind.waist:
-                    return "腰";
-                case EquipKind.leg:
-                    return "足";
-                case EquipKind.deco:
-                    return "装飾品";
-                case EquipKind.charm:
-                    return "護石";
+                case Sex.male:
+                    return "男性";
+                case Sex.female:
+                    return "女性";
                 default:
                     return string.Empty;
             }
-        }
-        public static string StrWithColon(this EquipKind kind)
-        {
-            return Str(kind) + '：';
         }
     }
 }

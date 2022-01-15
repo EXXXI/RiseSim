@@ -16,7 +16,7 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
-using SimModel.model;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
