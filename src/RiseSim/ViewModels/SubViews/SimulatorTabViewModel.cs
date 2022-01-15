@@ -1,10 +1,26 @@
-﻿using Prism.Mvvm;
+﻿/*    RiseSim : MHRise skill simurator for Windows
+ *    Copyright (C) 2022  EXXXI
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+using Prism.Mvvm;
 using Reactive.Bindings;
-using RiseSim.Const;
+using RiseSim.Config;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
-using SimModel.model;
-using SimModel.service;
+using SimModel.Model;
+using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -95,14 +111,28 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<string>> SexMaster { get; } = new();
 
 
-        // コマンド
+        // 検索コマンド
         public AsyncReactiveCommand SearchCommand { get; private set; }
+
+        // もっと検索コマンド
         public AsyncReactiveCommand SearchMoreCommand { get; private set; }
+
+        // 追加スキル検索コマンド
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
+
+        // マイセット追加コマンド
         public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
+
+        // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
+
+        // 追加スキル検索結果から検索条件へスキルを追加するコマンド
         public ReactiveCommand AddExtraSkillCommand { get; } = new ReactiveCommand();
+
+        // 最近使ったスキルから検索条件へスキルを追加するコマンド
         public ReactiveCommand AddRecentSkillCommand { get; } = new ReactiveCommand();
+
+
         // コマンドを設定
         private void SetCommand()
         {
@@ -116,6 +146,7 @@ namespace RiseSim.ViewModels.SubViews
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
         }
 
+        // コンストラクタ
         public SimulatorTabViewModel()
         {
             // MainViewModelから参照を取得
@@ -149,13 +180,12 @@ namespace RiseSim.ViewModels.SubViews
             SlotMaster.Value = slots;
             WeaponSlots.Value = "0-0-0";
 
-            // TODO: 性別の初期値は保存したいかも
             // 性別の選択肢
             ObservableCollection<string> sexes = new();
             sexes.Add(Sex.male.Str());
             sexes.Add(Sex.female.Str());
             SexMaster.Value = sexes;
-            SelectedSex.Value = Sex.male.Str();
+            SelectedSex.Value = ViewConfig.Instance.DefaultSex.Str();
 
             // 頑張り度を設定
             Limit.Value = DefaultLimit;
@@ -486,7 +516,8 @@ namespace RiseSim.ViewModels.SubViews
             return;
         }
 
-        // 
+        // int.Parseを実施
+        // 変換できなかった場合nullを返す
         private int? ParseOrNull(string param)
         {
             if (int.TryParse(param, out int result))

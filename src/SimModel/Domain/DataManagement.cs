@@ -14,18 +14,19 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-using SimModel.Const;
-using SimModel.model;
+using SimModel.Config;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.domain
+namespace SimModel.Domain
 {
     static internal class DataManagement
     {
+        // 最近使ったスキルの記憶容量
         static public int MaxRecentSkillCount { get; } = LogicConfig.Instance.MaxRecentSkillCount;
 
         // 除外設定を追加

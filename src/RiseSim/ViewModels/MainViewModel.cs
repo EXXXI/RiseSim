@@ -16,10 +16,9 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
-using RiseSim.ViewModels.Controls;
 using RiseSim.ViewModels.SubViews;
-using SimModel.model;
-using SimModel.service;
+using SimModel.Model;
+using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +26,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace RiseSim.ViewModels
 {

@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
     // 検索条件
     internal class SearchCondition
@@ -58,6 +58,7 @@ namespace SimModel.model
         // 性別
         public Sex Sex { get; set; }
 
+        // デフォルトコンストラクタ
         public SearchCondition()
         {
         }

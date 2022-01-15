@@ -16,7 +16,7 @@
  */
 using Prism.Mvvm;
 using Reactive.Bindings;
-using SimModel.model;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +51,7 @@ namespace RiseSim.ViewModels.Controls
             DeleteCludeCommand.Subscribe(_ => DeleteClude());
         }
 
+        // コンストラクタ
         public CludeRowViewModel(Clude clude)
         {
             Equipment? equip = Masters.GetEquipByName(clude.Name);
@@ -78,6 +79,7 @@ namespace RiseSim.ViewModels.Controls
             SetCommand();
         }
 
+        // 除外・固定の解除
         internal void DeleteClude()
         {
             MainViewModel.Instance.DeleteClude(TrueName, DispName.Value);

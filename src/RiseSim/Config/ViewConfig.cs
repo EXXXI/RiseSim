@@ -1,4 +1,21 @@
-﻿using Csv;
+﻿/*    RiseSim : MHRise skill simurator for Windows
+ *    Copyright (C) 2022  EXXXI
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+using Csv;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RiseSim.Const
+namespace RiseSim.Config
 {
     internal class ViewConfig
     {
@@ -28,6 +45,9 @@ namespace RiseSim.Const
         // スキル未選択時の表示
         public string NoSkillName { get; set; }
 
+        // 性別の初期値
+        public Sex DefaultSex { get; set; }
+
         // プライベートコンストラクタ
         private ViewConfig()
         {
@@ -39,6 +59,13 @@ namespace RiseSim.Const
                 MaxSlotSize = Parse(line[@"スロットの最大の大きさ"], 4);
                 DefaultLimit = Parse(line[@"デフォルトの頑張り度"], 100).ToString();
                 NoSkillName = line[@"スキル未選択時の表示"];
+                Sex defSex = line[@"性別の初期値"].StrToSex();
+                if (defSex == Sex.all)
+                {
+                    // 指定が不正な場合、ひとまず男性とする
+                    defSex = Sex.male;
+                }
+                DefaultSex = defSex;
             }
         }
 

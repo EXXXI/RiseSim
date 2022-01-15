@@ -17,7 +17,7 @@
 using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
-using SimModel.model;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,11 +54,13 @@ namespace RiseSim.ViewModels.Controls
             IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
+        // コンストラクタ
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
             DispKind.Value = dispKind;
             if (EquipKind.deco.StrWithColon().Equals(dispKind))
             {
+                // 装飾品は固定できない
                 CanInclude.Value = false;
             }
             Equips.Value = BindableEquipment.BeBindableList(equips);
@@ -66,6 +68,7 @@ namespace RiseSim.ViewModels.Controls
             SetCommand();
         }
 
+        // 装備を除外
         internal void Exclude()
         {
             if (SelectedEquip.Value != null)
@@ -73,6 +76,8 @@ namespace RiseSim.ViewModels.Controls
                 MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
+
+        // 装備を固定
         internal void Include()
         {
             if (SelectedEquip.Value != null)

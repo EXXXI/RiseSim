@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
     // 装備種類
     public enum EquipKind
@@ -35,6 +35,7 @@ namespace SimModel.model
     }
     public static class EquipKindExt
     {
+        // 日本語名を返す
         public static string Str(this EquipKind kind)
         {
             switch (kind)
@@ -57,6 +58,8 @@ namespace SimModel.model
                     return string.Empty;
             }
         }
+
+        // 日本語名と区切り用のコロンを返す
         public static string StrWithColon(this EquipKind kind)
         {
             return Str(kind) + '：';

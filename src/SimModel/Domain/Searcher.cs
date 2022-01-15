@@ -15,15 +15,15 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using GlpkWrapperCS;
-using SimModel.Const;
-using SimModel.model;
+using SimModel.Config;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.domain
+namespace SimModel.Domain
 {
     internal class Searcher
     {

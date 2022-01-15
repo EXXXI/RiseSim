@@ -20,29 +20,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.model
+namespace SimModel.Model
 {
-    // 性別
-    public enum Sex
+    // 除外or固定
+    public enum CludeKind
     {
-        all = 0,
-        male = 1,
-        female = 2
-    }
-
-    public static class SexExt
-    {
-        public static string Str(this Sex kind)
-        {
-            switch (kind)
-            {
-                case Sex.male:
-                    return "男性";
-                case Sex.female:
-                    return "女性";
-                default:
-                    return string.Empty;
-            }
-        }
+        exclude = 0,
+        include = 1
     }
 }

@@ -15,8 +15,8 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Csv;
-using SimModel.model;
-using SimModel.Const;
+using SimModel.Model;
+using SimModel.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimModel.domain
+namespace SimModel.Domain
 {
     static internal class CsvOperation
     {
@@ -198,9 +198,11 @@ namespace SimModel.domain
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                Clude clude = new Clude();
-                clude.Name = line[@"対象"];
-                clude.Kind = (CludeKind)Parse(line[@"種別"]);
+                Clude clude = new Clude
+                {
+                    Name = line[@"対象"],
+                    Kind = (CludeKind)Parse(line[@"種別"])
+                };
 
                 Masters.Cludes.Add(clude);
             }
