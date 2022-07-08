@@ -78,11 +78,11 @@ namespace SimModel.Config
         // 失敗した場合は指定したデフォルト値として扱う
         static private int Parse(string str, int def)
         {
-            try
+            if (int.TryParse(str, out int num))
             {
-                return int.Parse(str);
+                return num;
             }
-            catch (FormatException)
+            else
             {
                 return def;
             }
