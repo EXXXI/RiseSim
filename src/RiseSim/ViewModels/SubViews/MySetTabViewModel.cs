@@ -45,6 +45,9 @@ namespace RiseSim.ViewModels.SubViews
         // マイセット画面の装備詳細の各行のVM
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> MyEquipRowVMs { get; } = new();
 
+        // マイセット名前入力欄
+        public ReactivePropertySlim<string> MyDetailName { get; } = new();
+
 
         // マイセット削除コマンド
         public ReactiveCommand DeleteMySetCommand { get; } = new ReactiveCommand();
@@ -52,13 +55,49 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットの内容を検索条件に指定するコマンド
         public ReactiveCommand InputMySetConditionCommand { get; } = new ReactiveCommand();
 
+        // マイセットの名前変更を保存するコマンド
+        public ReactiveCommand ChangeNameCommand { get; } = new ReactiveCommand();
+
         // コマンドを設定
         private void SetCommand()
         {
             DeleteMySetCommand.Subscribe(_ => DeleteMySet());
             InputMySetConditionCommand.Subscribe(_ => InputMySetCondition());
+            ChangeNameCommand.Subscribe(_ => ChangeName());
         }
 
+        // マイセットの名前変更
+        private void ChangeName()
+        {
+            if (MyDetailSet.Value == null)
+            {
+                return;
+            }
+
+            // TODO: これだけだと不安だからID欲しくない？
+            // 選択状態復帰用
+            string description = MyDetailSet.Value.Description;
+            string name = MyDetailName.Value;
+
+            // 変更
+            MyDetailSet.Value.Original.Name = name;
+            Simulator.SaveMySet();
+
+            // マイセットマスタのリロード
+            MainViewModel.Instance.LoadMySets();
+
+            // 選択状態が解除されてしまうのでDetailSetを再選択
+            foreach (var mySet in MySetList.Value)
+            {
+                if (mySet.Name == name && mySet.Description == description)
+                {
+                    MyDetailSet.Value = mySet;
+                }
+            }
+
+            // ログ表示
+            StatusBarText.Value = "マイセット名前変更：" + MyDetailName.Value;
+        }
 
         public MySetTabViewModel()
         {
@@ -67,7 +106,10 @@ namespace RiseSim.ViewModels.SubViews
             StatusBarText = MainViewModel.Instance.StatusBarText;
 
             // マイセット画面の一覧と装備詳細を紐づけ
-            MyDetailSet.Subscribe(set => MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set));
+            MyDetailSet.Subscribe(set => {
+                MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
+                MyDetailName.Value = MyDetailSet.Value?.Name;
+            });
 
             // コマンドを設定
             SetCommand();

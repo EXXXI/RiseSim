@@ -57,6 +57,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 武器スロ3つ目
         public int WeaponSlot3 { get; set; }
 
+        // マイセット用名前
+        public string Name { get; set; }
+
         // 初期防御力
         public int Mindef { get; set; }
 
@@ -112,6 +115,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             WeaponSlot1 = set.WeaponSlot1;
             WeaponSlot2 = set.WeaponSlot2;
             WeaponSlot3 = set.WeaponSlot3;
+            Name = set.Name;
             Mindef = set.Mindef;
             Maxdef = set.Maxdef;
             Fire = set.Fire;

@@ -184,6 +184,13 @@ namespace SimModel.Domain
             CsvOperation.SaveMySetCSV();
         }
 
+        // マイセットの変更を保存
+        static internal void SaveMySet()
+        {
+            // マスタへ反映
+            CsvOperation.SaveMySetCSV();
+        }
+
         // 最近使ったスキルの更新
         internal static void UpdateRecentSkill(List<Skill> skills)
         {

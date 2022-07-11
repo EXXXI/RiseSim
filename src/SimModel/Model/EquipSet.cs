@@ -56,6 +56,9 @@ namespace SimModel.Model
         // 武器スロ3つ目
         public int WeaponSlot3 { get; set; }
 
+        // マイセット用名前
+        // TODO: 外だしするか検討
+        public string Name { get; set; } = "マイセット";
 
         // 合計パラメータ計算用装備一覧
         private List<Equipment> Equipments

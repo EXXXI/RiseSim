@@ -20,6 +20,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
+                <DataGridTextColumn Header="名前" Binding="{Binding Name, Mode=OneWay}" />
                 <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
@@ -48,6 +49,11 @@
             <StackPanel Grid.Row="0">
                 <Button x:Name="mySetDeleteButton" Content="この装備をマイセットから削除する" Command="{Binding DeleteMySetCommand}"/>
                 <Button x:Name="mySetToConditionButton" Content="この装備のスキルを検索条件に入力する" Command="{Binding InputMySetConditionCommand}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Width="60" Text="名前：" TextAlignment="Right"/>
+                    <TextBox Width="100" Text="{Binding MyDetailName.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Width="60" Command="{Binding ChangeNameCommand}">名前変更</Button>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
                     <TextBlock Width="100" Text="{Binding MyDetailSet.Value.WeaponSlotDisp, Mode=OneWay}"/>
