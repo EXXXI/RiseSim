@@ -132,6 +132,12 @@ namespace RiseSim.ViewModels.SubViews
         // 最近使ったスキルから検索条件へスキルを追加するコマンド
         public ReactiveCommand AddRecentSkillCommand { get; } = new ReactiveCommand();
 
+        // 防具を除外するコマンド
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        // 防具を固定するコマンド
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
 
         // コマンドを設定
         private void SetCommand()
@@ -144,6 +150,26 @@ namespace RiseSim.ViewModels.SubViews
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
+            ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
+            IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
+        }
+
+        // 装備除外
+        private void Exclude(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                MainViewModel.Instance.AddExclude(equip.Name, equip.DispName);
+            }
+        }
+
+        // 装備固定
+        private void Include(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                MainViewModel.Instance.AddInclude(equip.Name, equip.DispName);
+            }
         }
 
         // コンストラクタ

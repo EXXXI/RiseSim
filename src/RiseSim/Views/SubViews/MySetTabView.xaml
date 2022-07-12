@@ -17,9 +17,40 @@
 
         <!-- マイセット一覧 -->
         <DataGrid x:Name="mySetGrid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Head.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Head.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Body.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Body.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Arm.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Arm.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Waist.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Waist.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Leg.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Leg.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="マイセットから削除" Command="{Binding DeleteMySetCommand}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
+                <DataGridTextColumn Header="名前" Binding="{Binding Name, Mode=OneWay}" />
                 <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
@@ -48,6 +79,11 @@
             <StackPanel Grid.Row="0">
                 <Button x:Name="mySetDeleteButton" Content="この装備をマイセットから削除する" Command="{Binding DeleteMySetCommand}"/>
                 <Button x:Name="mySetToConditionButton" Content="この装備のスキルを検索条件に入力する" Command="{Binding InputMySetConditionCommand}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Width="60" Text="名前：" TextAlignment="Right"/>
+                    <TextBox Width="100" Text="{Binding MyDetailName.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Width="60" Command="{Binding ChangeNameCommand}">名前変更</Button>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
                     <TextBlock Width="100" Text="{Binding MyDetailSet.Value.WeaponSlotDisp, Mode=OneWay}"/>

@@ -290,9 +290,9 @@ namespace SimModel.Domain
                 string weaponSlot1 = set.WeaponSlot1.ToString();
                 string weaponSlot2 = set.WeaponSlot2.ToString();
                 string weaponSlot3 = set.WeaponSlot3.ToString();
-                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.Head.Name, set.Body.Name, set.Arm.Name, set.Waist.Name, set.Leg.Name, set.Charm.Name, set.DecoNameCSV });
+                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.Head.Name, set.Body.Name, set.Arm.Name, set.Waist.Name, set.Leg.Name, set.Charm.Name, set.DecoNameCSV, set.Name });
             }
-            string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品" };
+            string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品", "名前" };
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(MySetCsv, export);
         }
@@ -317,7 +317,16 @@ namespace SimModel.Domain
                 set.Leg = Masters.GetEquipByName(line[@"足"]);
                 set.Charm = Masters.GetEquipByName(line[@"護石"]);
                 set.DecoNameCSV = line[@"装飾品"];
-
+                // 前バージョンとの互換性のため存在確認
+                // TODO: 次回作でこのシミュが使えそうならその時は消そう
+                if (line.Headers.Contains(@"名前"))
+                {
+                    set.Name = line[@"名前"];
+                }
+                else
+                {
+                    set.Name = LogicConfig.Instance.DefaultMySetName;
+                }
                 Masters.MySets.Add(set);
             }
         }

@@ -184,6 +184,12 @@ namespace SimModel.Service
             DataManagement.DeleteMySet(set);
         }
 
+        // マイセット更新
+        public void SaveMySet()
+        {
+            DataManagement.SaveMySet();
+        }
+
         // 最近使ったスキル更新
         public void UpdateRecentSkill(List<Skill> skills)
         {

@@ -96,6 +96,36 @@
 
         <!-- 中央ペイン：結果出力 -->
         <DataGrid Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding DetailSet.Value.Head.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding DetailSet.Value.Head.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding DetailSet.Value.Head, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding DetailSet.Value.Head, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Body.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding DetailSet.Value.Body.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding DetailSet.Value.Body, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding DetailSet.Value.Body, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Arm.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding DetailSet.Value.Arm.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding DetailSet.Value.Arm, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding DetailSet.Value.Arm, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Waist.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding DetailSet.Value.Waist.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding DetailSet.Value.Waist, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding DetailSet.Value.Waist, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Leg.DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding DetailSet.Value.Leg.Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding DetailSet.Value.Leg, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding DetailSet.Value.Leg, Mode=OneWay}"/>
+                    </MenuItem>
+                    <MenuItem Header="マイセットに登録" Command="{Binding AddMySetCommand}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
