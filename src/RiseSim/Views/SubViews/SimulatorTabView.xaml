@@ -96,6 +96,25 @@
 
         <!-- 中央ペイン：結果出力 -->
         <DataGrid Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding DetailSet.Value.Head.DispName}">
+                        <MenuItem Header="{Binding DetailSet.Value.Head.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Body.DispName}">
+                        <MenuItem Header="{Binding DetailSet.Value.Body.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Arm.DispName}">
+                        <MenuItem Header="{Binding DetailSet.Value.Arm.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Waist.DispName}">
+                        <MenuItem Header="{Binding DetailSet.Value.Waist.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding DetailSet.Value.Leg.DispName}">
+                        <MenuItem Header="{Binding DetailSet.Value.Leg.Description}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />

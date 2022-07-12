@@ -17,6 +17,25 @@
 
         <!-- マイセット一覧 -->
         <DataGrid x:Name="mySetGrid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Head.DispName}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Head.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Body.DispName}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Body.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Arm.DispName}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Arm.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Waist.DispName}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Waist.Description}"/>
+                    </MenuItem>
+                    <MenuItem Header="{Binding MyDetailSet.Value.Leg.DispName}">
+                        <MenuItem Header="{Binding MyDetailSet.Value.Leg.Description}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
