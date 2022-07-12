@@ -57,8 +57,7 @@ namespace SimModel.Model
         public int WeaponSlot3 { get; set; }
 
         // マイセット用名前
-        // TODO: 外だしするか検討
-        public string Name { get; set; } = "マイセット";
+        public string Name { get; set; } = LogicConfig.Instance.DefaultMySetName;
 
         // 合計パラメータ計算用装備一覧
         private List<Equipment> Equipments

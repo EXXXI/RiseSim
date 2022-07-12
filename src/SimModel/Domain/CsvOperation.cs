@@ -325,8 +325,7 @@ namespace SimModel.Domain
                 }
                 else
                 {
-                    // TODO: 外だしするか検討
-                    set.Name = "マイセット";
+                    set.Name = LogicConfig.Instance.DefaultMySetName;
                 }
                 Masters.MySets.Add(set);
             }

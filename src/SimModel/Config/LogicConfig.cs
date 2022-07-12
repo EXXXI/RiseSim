@@ -47,6 +47,9 @@ namespace SimModel.Config
         // 風雷合一
         public string FuraiName { get; } = "風雷合一";
 
+        // マイセットのデフォルト名
+        public string DefaultMySetName { get; } = "マイセット";
+
         // プライベートコンストラクタ
         private LogicConfig()
         {

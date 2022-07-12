@@ -58,12 +58,39 @@ namespace RiseSim.ViewModels.SubViews
         // マイセットの名前変更を保存するコマンド
         public ReactiveCommand ChangeNameCommand { get; } = new ReactiveCommand();
 
+        // 防具を除外するコマンド
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        // 防具を固定するコマンド
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
+
         // コマンドを設定
         private void SetCommand()
         {
             DeleteMySetCommand.Subscribe(_ => DeleteMySet());
             InputMySetConditionCommand.Subscribe(_ => InputMySetCondition());
             ChangeNameCommand.Subscribe(_ => ChangeName());
+            ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
+            IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
+        }
+
+        // 装備除外
+        private void Exclude(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                MainViewModel.Instance.AddExclude(equip.Name, equip.DispName);
+            }
+        }
+
+        // 装備固定
+        private void Include(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                MainViewModel.Instance.AddInclude(equip.Name, equip.DispName);
+            }
         }
 
         // マイセットの名前変更
@@ -108,7 +135,7 @@ namespace RiseSim.ViewModels.SubViews
             // マイセット画面の一覧と装備詳細を紐づけ
             MyDetailSet.Subscribe(set => {
                 MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
-                MyDetailName.Value = MyDetailSet.Value?.Name;
+                MyDetailName.Value = MyDetailSet.Value?.Name ?? String.Empty;
             });
 
             // コマンドを設定
