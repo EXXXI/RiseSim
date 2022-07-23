@@ -40,6 +40,7 @@ namespace SimModel.Domain
         private const string CharmCsv = "save/charm.csv";
         private const string MySetCsv = "save/myset.csv";
         private const string RecentSkillCsv = "save/recentSkill.csv";
+        private const string AugmentationCsv = "save/augmentation.csv";
 
         // スキルマスタ読み込み
         static internal void LoadSkillCSV()
@@ -59,36 +60,36 @@ namespace SimModel.Domain
         // 頭防具マスタ読み込み
         static internal void LoadHeadCSV()
         {
-            Masters.Heads = new();
-            LoadEquipCSV(HeadCsv, Masters.Heads, EquipKind.head);
+            Masters.OriginalHeads = new();
+            LoadEquipCSV(HeadCsv, Masters.OriginalHeads, EquipKind.head);
         }
 
         // 胴防具マスタ読み込み
         static internal void LoadBodyCSV()
         {
-            Masters.Bodys = new();
-            LoadEquipCSV(BodyCsv, Masters.Bodys, EquipKind.body);
+            Masters.OriginalBodys = new();
+            LoadEquipCSV(BodyCsv, Masters.OriginalBodys, EquipKind.body);
         }
 
         // 腕防具マスタ読み込み
         static internal void LoadArmCSV()
         {
-            Masters.Arms = new();
-            LoadEquipCSV(ArmCsv, Masters.Arms, EquipKind.arm);
+            Masters.OriginalArms = new();
+            LoadEquipCSV(ArmCsv, Masters.OriginalArms, EquipKind.arm);
         }
 
         // 腰防具マスタ読み込み
         static internal void LoadWaistCSV()
         {
-            Masters.Waists = new();
-            LoadEquipCSV(WaistCsv, Masters.Waists, EquipKind.waist);
+            Masters.OriginalWaists = new();
+            LoadEquipCSV(WaistCsv, Masters.OriginalWaists, EquipKind.waist);
         }
 
         // 足防具マスタ読み込み
         static internal void LoadLegCSV()
         {
-            Masters.Legs = new();
-            LoadEquipCSV(LegCsv, Masters.Legs, EquipKind.leg);
+            Masters.OriginalLegs = new();
+            LoadEquipCSV(LegCsv, Masters.OriginalLegs, EquipKind.leg);
         }
 
         // 防具マスタ読み込み
@@ -357,6 +358,80 @@ namespace SimModel.Domain
             }
         }
 
+        // 錬成装備マスタ読み込み
+        static internal void LoadAugmentationCSV()
+        {
+            Masters.Augmentations = new();
+
+            string csv = ReadAllText(AugmentationCsv);
+            var x = CsvReader.ReadFromText(csv);
+            foreach (ICsvLine line in x)
+            {
+                Augmentation aug = new Augmentation();
+                aug.DispName = line[@"名前"];
+                aug.BaseName = line[@"ベース装備"];
+                aug.Kind = ToEquipKind(line[@"種類"]);
+                aug.Slot1 = Parse(line[@"スロット1"]);
+                aug.Slot2 = Parse(line[@"スロット2"]);
+                aug.Slot3 = Parse(line[@"スロット3"]);
+                aug.Def = Parse(line[@"防御力増減"]);
+                aug.Fire = Parse(line[@"火耐性増減"]);
+                aug.Water = Parse(line[@"水耐性増減"]);
+                aug.Thunder = Parse(line[@"雷耐性増減"]);
+                aug.Ice = Parse(line[@"氷耐性増減"]);
+                aug.Dragon = Parse(line[@"龍耐性増減"]);
+                List<Skill> skills = new List<Skill>();
+                // TODO: マジックナンバー
+                for (int i = 1; i <= 2; i++)
+                {
+                    string skill = line[@"スキル系統" + i];
+                    string level = line[@"スキル値" + i];
+                    if (string.IsNullOrWhiteSpace(skill))
+                    {
+                        break;
+                    }
+                    skills.Add(new Skill(skill, Parse(level), true));
+                }
+                aug.Skills = skills;
+                aug.Name = line[@"管理用ID"];
+
+                Masters.Augmentations.Add(aug);
+            }
+        }
+
+        // 錬成装備マスタ書き込み
+        static internal void SaveAugmentationCSV()
+        {
+            List<string[]> body = new List<string[]>();
+            foreach (var aug in Masters.Augmentations)
+            {
+                List<string> bodyStrings = new List<string>();
+                bodyStrings.Add(aug.DispName);
+                bodyStrings.Add(aug.BaseName);
+                bodyStrings.Add(aug.Kind.Str());
+                bodyStrings.Add(aug.Slot1.ToString());
+                bodyStrings.Add(aug.Slot2.ToString());
+                bodyStrings.Add(aug.Slot3.ToString());
+                bodyStrings.Add(aug.Def.ToString());
+                bodyStrings.Add(aug.Fire.ToString());
+                bodyStrings.Add(aug.Water.ToString());
+                bodyStrings.Add(aug.Thunder.ToString());
+                bodyStrings.Add(aug.Ice.ToString());
+                bodyStrings.Add(aug.Dragon.ToString());
+                // TODO: マジックナンバー
+                for (int i = 0; i < 2; i++)
+                {
+                    bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Name : string.Empty);
+                    bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Level.ToString() : string.Empty);
+                }
+                bodyStrings.Add(aug.Name);
+                body.Add(bodyStrings.ToArray());
+            }
+            string[] header = new string[] { "名前", "ベース装備", "種類", "スロット1", "スロット2", "スロット3", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "管理用ID" };
+            string export = CsvWriter.WriteToText(header, body);
+            File.WriteAllText(AugmentationCsv, export);
+        }
+
         // ファイル読み込み
         static private string ReadAllText(string fileName)
         {
@@ -368,7 +443,7 @@ namespace SimModel.Domain
             {
                 csv = csv.Substring(1);
             }
-            // 同名のヘッダーは利用不可
+            // 同名のヘッダーは利用不可なので小細工
             csv = csv.Replace("生産素材1,個数", "生産素材1,生産素材個数1");
             csv = csv.Replace("生産素材2,個数", "生産素材2,生産素材個数2");
             csv = csv.Replace("生産素材3,個数", "生産素材3,生産素材個数3");
@@ -412,6 +487,28 @@ namespace SimModel.Domain
             else
             {
                 return def;
-            }        }
+            }       
+        }
+
+        // TODO: 別の場所に定義したい
+        // 文字列をEquipKindに変換
+        static private EquipKind ToEquipKind(string str)
+        {
+            switch (str)
+            {
+                case "頭":
+                    return EquipKind.head;
+                case "胴":
+                    return EquipKind.body;
+                case "腕":
+                    return EquipKind.arm;
+                case "腰":
+                    return EquipKind.waist;
+                case "脚":
+                    return EquipKind.leg;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

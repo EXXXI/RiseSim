@@ -541,7 +541,8 @@ namespace SimModel.Domain
                 {
                     foreach (var equipSkill in equip.Skills)
                     {
-                        if (equipSkill.Name.Equals(condSkill.Name))
+                        // TODO: 錬成分は除外？
+                        if (equipSkill.Name.Equals(condSkill.Name) && !equipSkill.IsAdditional)
                         {
                             iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill));
                             jaList.Add(columnIndex);

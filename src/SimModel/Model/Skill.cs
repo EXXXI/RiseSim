@@ -28,11 +28,22 @@ namespace SimModel.Model
         // スキルレベル
         public int Level { get; set; } = 0;
 
+        // 追加スキルフラグ
+        public bool IsAdditional { get; set; } = false;
+
         // コンストラクタ
         public Skill(string name, int level)
         {
             Name = name;
             Level = level;
+        }
+
+        // コンストラクタ
+        public Skill(string name, int level, bool isAdditional)
+        {
+            Name = name;
+            Level = level;
+            IsAdditional = isAdditional;
         }
 
         // 表示用文字列
@@ -44,7 +55,8 @@ namespace SimModel.Model
                 {
                     return string.Empty;
                 }
-                return Name + "Lv" + Level;
+
+                return (IsAdditional ? "(追加)" : string.Empty) + Name + "Lv" + Level;
             }
         }
     }

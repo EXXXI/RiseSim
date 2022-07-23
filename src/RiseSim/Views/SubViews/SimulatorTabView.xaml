@@ -129,11 +129,11 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="頭" Binding="{Binding Head.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="胴" Binding="{Binding Body.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="腕" Binding="{Binding Arm.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="腰" Binding="{Binding Waist.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="足" Binding="{Binding Leg.Name, Mode=OneWay}" />
+                <DataGridTextColumn Header="頭" Binding="{Binding Head.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="胴" Binding="{Binding Body.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腕" Binding="{Binding Arm.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腰" Binding="{Binding Waist.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="足" Binding="{Binding Leg.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="護石" Binding="{Binding Charm.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />

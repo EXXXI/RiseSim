@@ -50,7 +50,10 @@ namespace SimModel.Service
             CsvOperation.LoadCharmCSV();
             CsvOperation.LoadMySetCSV();
             CsvOperation.LoadRecentSkillCSV();
+            CsvOperation.LoadAugmentationCSV();
 
+            // 錬成装備込みのマスタデータ作成
+            Masters.RefreshEquipmentMasters();
         }
 
         // 新規検索
@@ -196,6 +199,22 @@ namespace SimModel.Service
             DataManagement.UpdateRecentSkill(skills);
         }
 
+        // 錬成装備登録
+        public void AddAugmentation(Augmentation aug)
+        {
+            DataManagement.AddAugmentation(aug);
+        }
 
+        // 錬成装備削除
+        public void DeleteAugmentation(Augmentation aug)
+        {
+            DataManagement.DeleteAugmentation(aug);
+        }
+
+        // 装備マスタリロード
+        public void RefreshEquipmentMasters()
+        {
+            Masters.RefreshEquipmentMasters();
+        }
     }
 }

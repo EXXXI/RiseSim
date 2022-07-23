@@ -62,8 +62,8 @@ namespace SimModel.Model
         // 合計パラメータ計算用装備一覧
         private List<Equipment> Equipments
         {
-            get 
-            { 
+            get
+            {
                 List<Equipment> ret = new List<Equipment>();
                 ret.Add(Head);
                 ret.Add(Body);
@@ -80,7 +80,7 @@ namespace SimModel.Model
         }
 
         // 初期防御力
-        public int Mindef 
+        public int Mindef
         {
             get
             {
@@ -197,7 +197,7 @@ namespace SimModel.Model
                         switch (skill.Level)
                         {
                             case 4:
-                                furaiPlus = 1; 
+                                furaiPlus = 1;
                                 break;
                             case 5:
                                 furaiPlus = 2;
@@ -213,11 +213,11 @@ namespace SimModel.Model
                 {
                     // 対象洗い出し
                     List<Skill> furaiTarget = new List<Skill>();
-                    JoinSkill(furaiTarget, Head.Skills);
-                    JoinSkill(furaiTarget, Body.Skills);
-                    JoinSkill(furaiTarget, Arm.Skills);
-                    JoinSkill(furaiTarget, Waist.Skills);
-                    JoinSkill(furaiTarget, Leg.Skills);
+                    JoinSkill(furaiTarget, Head.Skills, true);
+                    JoinSkill(furaiTarget, Body.Skills, true);
+                    JoinSkill(furaiTarget, Arm.Skills, true);
+                    JoinSkill(furaiTarget, Waist.Skills, true);
+                    JoinSkill(furaiTarget, Leg.Skills, true);
 
                     // スキルレベル設定
                     foreach (var skill in furaiTarget)
@@ -236,8 +236,9 @@ namespace SimModel.Model
 
 
         // 制約式名称用の、装飾品を除いたCSV表記
-        public string GlpkRowName { 
-            get 
+        public string GlpkRowName
+        {
+            get
             {
                 StringBuilder sb = new();
                 sb.Append(Head.Name);
@@ -444,7 +445,7 @@ namespace SimModel.Model
                 }
 
                 int maxLevel = 0;
-                foreach(var skill in Masters.Skills)
+                foreach (var skill in Masters.Skills)
                 {
                     if (newSkill.Name.Equals(skill.Name))
                     {
@@ -472,6 +473,28 @@ namespace SimModel.Model
                 }
             }
             return baseSkills;
+        }
+
+        // TODO: 錬成分は除外？
+        // スキルの追加(同名スキルはスキルレベルを加算、錬成の追加スキルは除外)
+        private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills, bool excludeAdditional)
+        {
+            List<Skill> skills = new();
+            if (excludeAdditional)
+            {
+                foreach (var skill in newSkills)
+                {
+                    if (!skill.IsAdditional)
+                    {
+                        skills.Add(skill);
+                    }
+                }
+                return JoinSkill(baseSkills, skills);
+            }
+            else
+            {
+                return JoinSkill(baseSkills, newSkills);
+            }
         }
     }
 }

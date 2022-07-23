@@ -29,18 +29,36 @@ namespace SimModel.Model
         public static List<Skill> Skills { get; set; } = new();
 
         // 頭装備マスタ
-        public static List<Equipment> Heads { get; set; } = new();
+        public static List<Equipment> OriginalHeads { get; set; } = new();
 
         // 胴装備マスタ
-        public static List<Equipment> Bodys { get; set; } = new();
+        public static List<Equipment> OriginalBodys { get; set; } = new();
 
         // 腕装備マスタ
-        public static List<Equipment> Arms { get; set; } = new();
+        public static List<Equipment> OriginalArms { get; set; } = new();
 
         // 腰装備マスタ
-        public static List<Equipment> Waists { get; set; } = new();
+        public static List<Equipment> OriginalWaists { get; set; } = new();
 
         // 足装備マスタ
+        public static List<Equipment> OriginalLegs { get; set; } = new();
+
+        // 錬成装備情報マスタ
+        public static List<Augmentation> Augmentations { get; set; } = new();
+
+        // 頭装備マスタ(錬成防具入り)
+        public static List<Equipment> Heads { get; set; } = new();
+
+        // 胴装備マスタ(錬成防具入り)
+        public static List<Equipment> Bodys { get; set; } = new();
+
+        // 腕装備マスタ(錬成防具入り)
+        public static List<Equipment> Arms { get; set; } = new();
+
+        // 腰装備マスタ(錬成防具入り)
+        public static List<Equipment> Waists { get; set; } = new();
+
+        // 足装備マスタ(錬成防具入り)
         public static List<Equipment> Legs { get; set; } = new();
 
         // 護石マスタ
@@ -58,6 +76,49 @@ namespace SimModel.Model
         // 最近使ったスキルマスタ
         public static List<string> RecentSkillNames { get; set; } = new();
 
+        internal static void RefreshEquipmentMasters()
+        {
+            Heads = MakeEquipmentMaster(OriginalHeads, EquipKind.head);
+            Bodys = MakeEquipmentMaster(OriginalBodys, EquipKind.body);
+            Arms = MakeEquipmentMaster(OriginalArms, EquipKind.arm);
+            Waists = MakeEquipmentMaster(OriginalWaists, EquipKind.waist);
+            Legs = MakeEquipmentMaster(OriginalLegs, EquipKind.leg);
+        }
+
+        private static List<Equipment> MakeEquipmentMaster(List<Equipment> originalEquips, EquipKind kind)
+        {
+            List<Equipment> equips = new();
+            foreach (Equipment equip in originalEquips)
+            {
+                equips.Add(equip);
+            }
+            foreach (Augmentation aug in Augmentations)
+            {
+                if (aug.Kind == kind)
+                {
+                    Equipment baseEquip = GetEquipByName(aug.BaseName);
+                    Equipment newEquip = new Equipment(baseEquip);
+                    newEquip.Name = aug.Name;
+                    newEquip.DispName = aug.DispName;
+                    newEquip.Mindef += aug.Def;
+                    newEquip.Maxdef += aug.Def;
+                    newEquip.Fire += aug.Fire;
+                    newEquip.Water += aug.Water;
+                    newEquip.Thunder += aug.Thunder;
+                    newEquip.Ice += aug.Ice;
+                    newEquip.Dragon += aug.Dragon;
+                    newEquip.Slot1 = aug.Slot1;
+                    newEquip.Slot2 = aug.Slot2;
+                    newEquip.Slot3 = aug.Slot3;
+                    foreach (var skill in aug.Skills)
+                    {
+                        newEquip.Skills.Add(skill);
+                    }
+                    equips.Add(newEquip);
+                }
+            }
+            return equips;
+        }
 
         // 装備名から装備を取得
         public static Equipment GetEquipByName(string name)
