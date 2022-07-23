@@ -33,6 +33,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // スキルレベル
         public int Level { get; }
 
+        // 追加スキルフラグ
+        public bool IsAdditional { get; set; }
+
         // 説明
         public string Description { get; }
 
@@ -44,6 +47,7 @@ namespace RiseSim.ViewModels.BindableWrapper
         {
             Name = skill.Name;
             Level = skill.Level;
+            IsAdditional = skill.IsAdditional;
             Description = skill.Description;
             Original = skill;
         }

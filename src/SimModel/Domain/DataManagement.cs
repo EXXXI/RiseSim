@@ -232,5 +232,26 @@ namespace SimModel.Domain
             // マスタへ反映
             CsvOperation.SaveRecentSkillCSV();
         }
+
+
+        // 錬成装備の追加
+        static internal void AddAugmentation(Augmentation aug)
+        {
+            // 追加
+            Masters.Augmentations.Add(aug);
+
+            // マスタへ反映
+            CsvOperation.SaveAugmentationCSV();
+        }
+
+        // 錬成装備の削除
+        static internal void DeleteAugmentation(Augmentation aug)
+        {
+            // 削除
+            Masters.Augmentations.Remove(aug);
+
+            // マスタへ反映
+            CsvOperation.SaveAugmentationCSV();
+        }
     }
 }

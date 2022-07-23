@@ -45,6 +45,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // スロット3つ目
         public int Slot3 { get; set; }
 
+        // スロットの文字列表現
+        public string SlotStr { get { return Slot1 + "-" + Slot2 + "-" + Slot3; } }
+
         // 初期防御力
         public int Mindef { get; set; }
 
