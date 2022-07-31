@@ -14,7 +14,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-using GlpkWrapperCS;
+
 using SimModel.Config;
 using SimModel.Model;
 using System;
@@ -22,10 +22,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.OrTools.LinearSolver;
 
 namespace SimModel.Domain
 {
-    internal class Searcher
+    internal class Searcher : ISearcher
     {
         // 定数：各制約式のIndex
         const int HeadRowIndex = 0;
@@ -62,10 +63,10 @@ namespace SimModel.Domain
         private int FirstCludeRowIndex { get; set; }
 
         // 風雷合一：スキル条件の制約式の開始Index
-        public int FirstFuraiSkillRowIndex { get; private set; }
+        private int FirstFuraiSkillRowIndex { get; set; }
 
         // 風雷合一：フラグ条件の制約式の開始Index
-        public int FirstFuraiFlagRowIndex { get; private set; }
+        private int FirstFuraiFlagRowIndex { get; set; }
 
         
         // コンストラクタ：検索条件を指定する
@@ -83,32 +84,30 @@ namespace SimModel.Domain
 
             while (ResultSets.Count < target)
             {
-                using MipProblem problem = new();
-                problem.Name = "search";
-                problem.ObjDir = ObjectDirection.Maximize;
-
-                // 制約式設定
-                SetRows(problem);
+                using Solver solver = Solver.CreateSolver("SCIP");
 
                 // 変数設定
-                SetColumns(problem);
+                Variable[] x = SetVariables(solver);
+
+                // 制約式設定
+                Constraint[] y = SetConstraints(solver);
 
                 // 目的関数設定(防御力)
-                SetCoef(problem);
+                SetObjective(solver, x);
 
                 // 係数設定(防具データ)
-                SetDatas(problem);
+                SetDatas(solver, x, y);
 
                 // 計算
-                var result = problem.BranchAndCut();
-                if (!result.Equals(SolverResult.OK))
+                var result = solver.Solve();
+                if (!result.Equals(Solver.ResultStatus.OPTIMAL))
                 {
                     // もう結果がヒットしない場合終了
                     return true;
                 }
 
                 // 計算結果整理
-                bool hasData = MakeSet(problem);
+                bool hasData = MakeSet(x);
                 if (!hasData)
                 {
                     // TODO: 計算結果の空データ、何故発生する？
@@ -120,87 +119,84 @@ namespace SimModel.Domain
         }
 
         // 制約式設定
-        private void SetRows(MipProblem problem)
+        private Constraint[] SetConstraints(Solver solver)
         {
+            int numConstraints = 0;
+            numConstraints += 5; // 防具5部位
+            numConstraints += 1; // 護石
+            numConstraints += 4; // スロットLv
+            numConstraints += 1; // 性別
+            numConstraints += 1; // 防御力
+            numConstraints += 5; // 耐性
+            numConstraints += Condition.Skills.Count; // スキル数
+            numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
+            numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
+            numConstraints += ResultSets.Count; // 検索済み結果の除外
+            numConstraints += Masters.Cludes.Count; // 除外固定装備設定
+
+            Constraint[] y = new Constraint[numConstraints];
+
+            int index = 0;
             // 各部位に装着できる防具は1つまで
-            problem.AddRow("head");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
-            problem.AddRow("body");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
-            problem.AddRow("arm");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
-            problem.AddRow("waist");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
-            problem.AddRow("leg");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
-            problem.AddRow("charm");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Double, 0.0, 1.0);
+            y[index++] = solver.MakeConstraint(0, 1, "head");
+            y[index++] = solver.MakeConstraint(0, 1, "body");
+            y[index++] = solver.MakeConstraint(0, 1, "arm");
+            y[index++] = solver.MakeConstraint(0, 1, "waist");
+            y[index++] = solver.MakeConstraint(0, 1, "leg");
+            y[index++] = solver.MakeConstraint(0, 1, "charm");
 
             // 武器スロ計算
             int[] slotCond = SlotCalc(Condition.WeaponSlot1, Condition.WeaponSlot2, Condition.WeaponSlot3);
 
             // 残りスロット数は0以上
-            problem.AddRow("Slot1");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[0], 0.0);
-            problem.AddRow("Slot2");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[1], 0.0);
-            problem.AddRow("Slot3");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[2], 0.0);
-            problem.AddRow("Slot4");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0 - slotCond[3], 0.0);
+
+            y[index++] = solver.MakeConstraint(0.0 - slotCond[0], double.PositiveInfinity, "Slot1");
+            y[index++] = solver.MakeConstraint(0.0 - slotCond[1], double.PositiveInfinity, "Slot2");
+            y[index++] = solver.MakeConstraint(0.0 - slotCond[2], double.PositiveInfinity, "Slot3");
+            y[index++] = solver.MakeConstraint(0.0 - slotCond[3], double.PositiveInfinity, "Slot4");
 
             // 性別(自分と違う方を除外する)
-            problem.AddRow("Sex");
-            problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Fixed, 0.0, 0.0);
+            y[index++] = solver.MakeConstraint(0, 0, "Sex");
 
             // 防御・耐性
-            problem.AddRow("Def");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Def == null ? BoundsType.Free : BoundsType.Lower, Condition.Def ?? 0.0 , 0.0);
-            problem.AddRow("Fire");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Fire == null ? BoundsType.Free : BoundsType.Lower, Condition.Fire ?? 0.0, 0.0);
-            problem.AddRow("Water");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Water == null ? BoundsType.Free : BoundsType.Lower, Condition.Water ?? 0.0, 0.0);
-            problem.AddRow("Thunder");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Thunder == null ? BoundsType.Free : BoundsType.Lower, Condition.Thunder ?? 0.0, 0.0);
-            problem.AddRow("Ice");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Ice == null ? BoundsType.Free : BoundsType.Lower, Condition.Ice ?? 0.0, 0.0);
-            problem.AddRow("Dragon");
-            problem.SetRowBounds(problem.RowsCount - 1, Condition.Dragon == null ? BoundsType.Free : BoundsType.Lower, Condition.Dragon ?? 0.0, 0.0);
+            y[index++] = solver.MakeConstraint(Condition.Def ?? 0.0, double.PositiveInfinity, "Def");
+            y[index++] = solver.MakeConstraint(Condition.Fire ?? double.NegativeInfinity, double.PositiveInfinity, "Fire");
+            y[index++] = solver.MakeConstraint(Condition.Water ?? double.NegativeInfinity, double.PositiveInfinity, "Water");
+            y[index++] = solver.MakeConstraint(Condition.Thunder ?? double.NegativeInfinity, double.PositiveInfinity, "Thunder");
+            y[index++] = solver.MakeConstraint(Condition.Ice ?? double.NegativeInfinity, double.PositiveInfinity, "Ice");
+            y[index++] = solver.MakeConstraint(Condition.Dragon ?? double.NegativeInfinity, double.PositiveInfinity, "Dragon");
 
             // スキル条件
-            FirstSkillRowIndex = problem.RowsCount;
+            FirstSkillRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-                problem.AddRow(skill.Name);
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, skill.Level, 0.0);
+
+                y[index++] = solver.MakeConstraint(skill.Level, double.PositiveInfinity, skill.Name);
             }
 
             // 風雷合一：防具スキル存在条件
-            FirstFuraiSkillRowIndex = problem.RowsCount;
+            FirstFuraiSkillRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-                problem.AddRow(skill.Name + "風雷スキル存在");
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0, 0.0);
+                y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, skill.Name + "風雷スキル存在");
             }
 
             // 風雷合一：各スキル用フラグ条件
-            FirstFuraiFlagRowIndex = problem.RowsCount;
+            FirstFuraiFlagRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-                problem.AddRow(skill.Name + "風雷フラグ");
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Lower, 0.0, 0.0);
+                y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, skill.Name + "風雷フラグ");
             }
 
             // 検索済み結果の除外
-            FirstResultExcludeRowIndex = problem.RowsCount;
+            FirstResultExcludeRowIndex = index;
             foreach (var set in ResultSets)
             {
-                problem.AddRow(set.GlpkRowName);
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Upper, 0.0, set.EquipIndexsWithOutDecos.Count - 1);
+                y[index++] = solver.MakeConstraint(0.0, set.EquipIndexsWithOutDecos.Count - 1, set.GlpkRowName);
             }
 
             // 除外固定装備設定
-            FirstCludeRowIndex = problem.RowsCount;
+            FirstCludeRowIndex = index;
             foreach (var clude in Masters.Cludes)
             {
                 string nameSuffix = "_ex";
@@ -210,146 +206,144 @@ namespace SimModel.Domain
                     nameSuffix = "_in";
                     fix = 1;
                 }
-                problem.AddRow(clude.Name + nameSuffix);
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Fixed, fix, fix);
+                y[index++] = solver.MakeConstraint(fix, fix, clude.Name + nameSuffix);
             }
 
+            return y;
         }
 
         // 変数設定
-        private void SetColumns(MipProblem problem)
+        private Variable[] SetVariables(Solver solver)
         {
+            // 変数の数
+            int numVars = 0;
+            numVars += Masters.Heads.Count;
+            numVars += Masters.Bodys.Count;
+            numVars += Masters.Arms.Count;
+            numVars += Masters.Waists.Count;
+            numVars += Masters.Legs.Count;
+            numVars += Masters.Charms.Count;
+            numVars += Masters.Decos.Count;
+            numVars += Condition.Skills.Count;
+            numVars += Condition.Skills.Count;
+
+            Variable[] x = new Variable[numVars];
+
             // 各装備は0個以上で整数
+            int index = 0;
             foreach (var equip in Masters.Heads)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Bodys)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Arms)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Waists)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Legs)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Charms)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Decos)
             {
-                problem.AddColumn(equip.Name);
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
 
             // 風雷合一：Lv4
             foreach (var skill in Condition.Skills)
             {
-                problem.AddColumn(skill.Name + "風雷4");
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, skill.Name + "風雷4");
             }
 
             // 風雷合一：Lv5
             foreach (var skill in Condition.Skills)
             {
-                problem.AddColumn(skill.Name + "風雷5");
-                problem.SetColumnBounds(problem.ColumnsCount - 1, BoundsType.Lower, 0.0, 0.0);
-                problem.ColumnKind[problem.ColumnsCount - 1] = VariableKind.Integer;
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, skill.Name + "風雷5");
             }
+
+            return x;
         }
 
         // TODO: 目的関数、防御力以外も対応する？
         // 目的関数設定(防御力)
-        private static void SetCoef(MipProblem problem)
+        private static void SetObjective(Solver solver, Variable[] x)
         {
+            Objective objective = solver.Objective();
+
             // 各装備の防御力が、目的関数における各装備の項の係数となる
-            int columnIndex = 0;
+            int index = 0;
             foreach (var equip in Masters.Heads)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                objective.SetCoefficient(x[index++], equip.Maxdef);
             }
             foreach (var equip in Masters.Bodys)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                objective.SetCoefficient(x[index++], equip.Maxdef);
             }
             foreach (var equip in Masters.Arms)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                objective.SetCoefficient(x[index++], equip.Maxdef);
             }
             foreach (var equip in Masters.Waists)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                objective.SetCoefficient(x[index++], equip.Maxdef);
             }
             foreach (var equip in Masters.Legs)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                objective.SetCoefficient(x[index++], equip.Maxdef);
             }
+            objective.SetMaximization();
         }
 
         // 係数設定(防具データ)
-        private void SetDatas(MipProblem problem)
+        private void SetDatas(Solver solver, Variable[] x, Constraint[] y)
         {
-            List<int> iaList = new();
-            List<int> jaList = new();
-            List<double> arList = new();
-
             // 防具データ
             int columnIndex = 0;
             foreach (var equip in Masters.Heads)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Bodys)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Arms)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Waists)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Legs)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Charms)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
             foreach (var equip in Masters.Decos)
             {
-                SetEquipData(iaList, jaList, arList, columnIndex, equip);
+                SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
 
@@ -359,19 +353,13 @@ namespace SimModel.Domain
                 if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
                 {
                     // スキル値追加
-                    iaList.Add(FirstSkillRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(1);
+                    y[FirstSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], 1);
 
                     // スキル存在値減少
-                    iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(-1);
+                    y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -1);
 
                     // スキルフラグ値減少
-                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(-4);
+                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -4);
                 }
                 columnIndex++;
             }
@@ -382,19 +370,14 @@ namespace SimModel.Domain
                 if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
                 {
                     // スキル値追加
-                    iaList.Add(FirstSkillRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(2);
+                    y[FirstSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], 2);
 
                     // スキル存在値減少
-                    iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(-1);
+                    y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -1);
 
                     // スキルフラグ値減少
-                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill));
-                    jaList.Add(columnIndex);
-                    arList.Add(-5);
+                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -5);
+
                 }
                 columnIndex++;
             }
@@ -407,9 +390,7 @@ namespace SimModel.Domain
                 foreach (var index in indexList)
                 {
                     // 各装備に対応する係数を1とする
-                    iaList.Add(resultExcludeRowIndex);
-                    jaList.Add(index);
-                    arList.Add(1);
+                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
                 }
                 resultExcludeRowIndex++;
             }
@@ -420,21 +401,13 @@ namespace SimModel.Domain
             {
                 // 装備に対応する係数を1とする
                 int index = Masters.GetEquipIndexByName(clude.Name);
-                iaList.Add(cludeRowIndex);
-                jaList.Add(index);
-                arList.Add(1);
+                y[cludeRowIndex].SetCoefficient(x[index], 1);
                 cludeRowIndex++;
             }
-
-            int[] ia = iaList.ToArray();
-            int[] ja = jaList.ToArray();
-            double[] ar = arList.ToArray();
-
-            problem.LoadMatrix(ia, ja, ar);
         }
 
         // 装備のデータを係数として登録
-        private void SetEquipData(List<int> iaList, List<int> jaList, List<double> arList, int columnIndex, Equipment equip)
+        private void SetEquipData(Variable xvar, Constraint[] y, Equipment equip)
         {
             // 部位情報
             int kindIndex = 0;
@@ -465,9 +438,7 @@ namespace SimModel.Domain
             }
             if (!isDeco)
             {
-                iaList.Add(kindIndex);
-                jaList.Add(columnIndex);
-                arList.Add(1);
+                y[kindIndex].SetCoefficient(xvar, 1);
             }
 
             // スロット情報
@@ -479,46 +450,24 @@ namespace SimModel.Domain
                     slotCond[i] = slotCond[i] * -1;
                 }
             }
-            iaList.Add(Slot1RowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(slotCond[0]);
-            iaList.Add(Slot2RowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(slotCond[1]);
-            iaList.Add(Slot3RowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(slotCond[2]);
-            iaList.Add(Slot4RowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(slotCond[3]);
+            y[Slot1RowIndex].SetCoefficient(xvar, slotCond[0]);
+            y[Slot2RowIndex].SetCoefficient(xvar, slotCond[1]);
+            y[Slot3RowIndex].SetCoefficient(xvar, slotCond[2]);
+            y[Slot4RowIndex].SetCoefficient(xvar, slotCond[3]);
 
             // 性別情報(自分と違う方を除外する)
             if (!equip.Sex.Equals(Sex.all) && !equip.Sex.Equals(Condition.Sex))
             {
-                iaList.Add(SexRowIndex);
-                jaList.Add(columnIndex);
-                arList.Add(1);
+                y[SexRowIndex].SetCoefficient(xvar, 1);
             }
 
             // 防御・耐性情報
-            iaList.Add(DefRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Maxdef);
-            iaList.Add(FireRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Fire);
-            iaList.Add(WaterRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Water);
-            iaList.Add(ThunderRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Thunder);
-            iaList.Add(IceRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Ice);
-            iaList.Add(DragonRowIndex);
-            jaList.Add(columnIndex);
-            arList.Add(equip.Dragon);
+            y[DefRowIndex].SetCoefficient(xvar, equip.Maxdef);
+            y[FireRowIndex].SetCoefficient(xvar, equip.Fire);
+            y[WaterRowIndex].SetCoefficient(xvar, equip.Water);
+            y[ThunderRowIndex].SetCoefficient(xvar, equip.Thunder);
+            y[IceRowIndex].SetCoefficient(xvar, equip.Ice);
+            y[DragonRowIndex].SetCoefficient(xvar, equip.Dragon);
 
             // スキル情報
             foreach (var condSkill in Condition.Skills)
@@ -527,9 +476,7 @@ namespace SimModel.Domain
                 {
                     if (equipSkill.Name.Equals(condSkill.Name))
                     {
-                        iaList.Add(FirstSkillRowIndex + Condition.Skills.IndexOf(condSkill));
-                        jaList.Add(columnIndex);
-                        arList.Add(equipSkill.Level);
+                        y[FirstSkillRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, equipSkill.Level);
                     }
                 }
             }
@@ -543,9 +490,7 @@ namespace SimModel.Domain
                     {
                         if (equipSkill.Name.Equals(condSkill.Name))
                         {
-                            iaList.Add(FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill));
-                            jaList.Add(columnIndex);
-                            arList.Add(1);
+                            y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, 1);
                         }
                     }
                 }
@@ -565,25 +510,23 @@ namespace SimModel.Domain
             {
                 foreach (var condSkill in Condition.Skills)
                 {
-                    iaList.Add(FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(condSkill));
-                    jaList.Add(columnIndex);
-                    arList.Add(1);
+                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, 1);
                 }
             }
 
         }
 
         // 計算結果整理
-        private bool MakeSet(MipProblem problem)
+        private bool MakeSet(Variable[] x)
         {
             EquipSet equipSet = new();
             bool hasData = false;
-            for (int i = 0; i < problem.ColumnsCount; i++)
+            for (int i = 0; i < x.Length; i++)
             {
-                if (problem.MipColumnValue[i] > 0)
+                if (x[i].SolutionValue() > 0)
                 {
                     // 装備名
-                    string name = problem.ColumnName[i];
+                    string name = x[i].Name();
 
                     // 存在チェック
                     Equipment? equip = Masters.GetEquipByName(name);
@@ -614,7 +557,7 @@ namespace SimModel.Domain
                             equipSet.Leg = equip;
                             break;
                         case EquipKind.deco:
-                            for (int j = 0; j < problem.MipColumnValue[i]; j++)
+                            for (int j = 0; j < x[i].SolutionValue(); j++)
                             {
                                 // 装飾品は個数を確認し、その数追加
                                 equipSet.Decos.Add(equip);

@@ -28,7 +28,7 @@ namespace SimModel.Service
     public class Simulator
     {
         // 検索インスタンス
-        private Searcher Searcher { get; set; }
+        private ISearcher Searcher { get; set; }
 
         // 全件検索完了フラグ
         public bool IsSearchedAll { get; set; }
@@ -76,7 +76,14 @@ namespace SimModel.Service
             condition.Def = def;
 
             // 検索
-            Searcher = new Searcher(condition);
+            if (IntPtr.Size == 4)
+            {
+                Searcher = new Searcher_x86(condition);
+            }
+            else
+            {
+                Searcher = new Searcher(condition);
+            }
             IsSearchedAll = Searcher.ExecSearch(limit);
 
             // 最近使ったスキル更新
@@ -126,7 +133,15 @@ namespace SimModel.Service
                     if (isNewSkill)
                     {
                         // 頑張り度1で検索
-                        Searcher exSearcher = new(condition);
+                        ISearcher exSearcher;
+                        if (IntPtr.Size == 4)
+                        {
+                            exSearcher = new Searcher_x86(condition);
+                        }
+                        else
+                        {
+                            exSearcher = new Searcher(condition);
+                        }
                         exSearcher.ExecSearch(1);
 
                         // 1件でもヒットすれば追加スキル一覧に追加
