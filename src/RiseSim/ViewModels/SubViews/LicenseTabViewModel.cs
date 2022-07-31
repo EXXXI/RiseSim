@@ -35,12 +35,20 @@ namespace RiseSim.ViewModels.SubViews
         // コンストラクタ
         public LicenseTabViewModel()
         {
-            // ライセンス表示
+            // TODO:バージョン毎回変えるのめんどくさいから何かいい方法を考える
+            // バージョン・ライセンス表示
             StringBuilder sb = new();
+            sb.Append("■バージョン\n");
+            sb.Append("20220731.0\n");
+            sb.Append('\n');
             sb.Append("■このシミュのライセンス\n");
             sb.Append("GNU General Public License v3.0\n");
             sb.Append('\n');
             sb.Append("■使わせていただいたOSS(+必要であればライセンス)\n");
+            sb.Append("・Google OR-Tools\n");
+            sb.Append("プロジェクト：https://github.com/google/or-tools\n");
+            sb.Append("ライセンス：https://github.com/google/or-tools/blob/stable/LICENSE\n");
+            sb.Append('\n');
             sb.Append("・GLPK for C#/CLI\n");
             sb.Append("プロジェクト：http://glpk-cli.sourceforge.net/\n");
             sb.Append('\n');

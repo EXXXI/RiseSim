@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace GlpkWrapperCS
 {
 	using org.gnu.glpk;
@@ -68,7 +67,41 @@ namespace GlpkWrapperCS
 			MipColumnValue = new mipColumnValue(this);
 		}
 		// Disposeメソッド
-		public void Dispose() { }
+		public void Dispose() {
+			problem.Dispose();
+			problem = null;
+			ObjCoef.Dispose();
+			// 制約式関係
+			RowName.Dispose();
+			RowType.Dispose();
+			RowLB.Dispose();
+			RowUB.Dispose();
+			RowMatrix.Dispose();
+			// 変数関係
+			ColumnName.Dispose();
+			ColumnType.Dispose();
+			ColumnLB.Dispose();
+			ColumnUB.Dispose();
+			ColumnKind.Dispose();
+			LpColumnValue.Dispose();
+			MipColumnValue.Dispose();
+
+			ObjCoef = null;
+			// 制約式関係
+			RowName = null;
+			RowType = null;
+			RowLB = null;
+			RowUB = null;
+			RowMatrix = null;
+			// 変数関係
+			ColumnName = null;
+			ColumnType = null;
+			ColumnLB = null;
+			ColumnUB = null;
+			ColumnKind = null;
+			LpColumnValue = null;
+			MipColumnValue = null;
+		}
 		// 問題名
 		public string Name
 		{
@@ -78,7 +111,7 @@ namespace GlpkWrapperCS
 		// 最適化処理
 		public SolverResult Simplex(bool messageFlg = true)
 		{
-			glp_smcp smcp = new glp_smcp();
+			using glp_smcp smcp = new glp_smcp();
 			GLPK.glp_init_smcp(smcp);
 			if (!messageFlg)
 				smcp.msg_lev = GLPK.GLP_MSG_OFF;
@@ -87,7 +120,7 @@ namespace GlpkWrapperCS
 		public SolverResult BranchAndCut(bool messageFlg = true)
 		{
 			Simplex(false);
-			glp_iocp iocp = new glp_iocp();
+			using glp_iocp iocp = new glp_iocp();
 			GLPK.glp_init_iocp(iocp);
 			if (!messageFlg)
 				iocp.msg_lev = GLPK.GLP_MSG_OFF;
@@ -199,7 +232,7 @@ namespace GlpkWrapperCS
 			set { GLPK.glp_set_obj_dir(problem, (int)value); }
 		}
 		// 目的関数の係数
-		public class objCoef
+		public class objCoef : IDisposable
 		{
 			MipProblem mip;
 			public objCoef(MipProblem mip)
@@ -211,6 +244,10 @@ namespace GlpkWrapperCS
 				get { return GLPK.glp_get_obj_coef(mip.problem, index + 1); }
 				set { GLPK.glp_set_obj_coef(mip.problem, index + 1, (int)value); }
 			}
+			public void Dispose()
+            {
+				mip = null;
+            }
 		}
 		public objCoef ObjCoef;
 		// 最適化後の値
@@ -241,7 +278,7 @@ namespace GlpkWrapperCS
 			get { return GLPK.glp_get_num_rows(problem); }
 		}
 		// 制約式の名前
-		public class rowName
+		public class rowName : IDisposable
 		{
 			MipProblem mip;
 			public rowName(MipProblem mip)
@@ -253,6 +290,10 @@ namespace GlpkWrapperCS
 				get { return GLPK.glp_get_row_name(mip.problem, index + 1); }
 				set { GLPK.glp_set_row_name(mip.problem, index + 1, value); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public rowName RowName;
 		// 制約式の範囲を設定する
@@ -261,7 +302,7 @@ namespace GlpkWrapperCS
 			GLPK.glp_set_row_bnds(problem, index + 1, (int)type, lowerBound, upperBound);
 		}
 		// 制約式の種類
-		public class rowType
+		public class rowType : IDisposable
 		{
 			MipProblem mip;
 			public rowType(MipProblem mip)
@@ -272,10 +313,14 @@ namespace GlpkWrapperCS
 			{
 				get { return (BoundsType)GLPK.glp_get_row_type(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public rowType RowType;
 		// 制約式の下限
-		public class rowLb
+		public class rowLb : IDisposable
 		{
 			MipProblem mip;
 			public rowLb(MipProblem mip)
@@ -286,10 +331,14 @@ namespace GlpkWrapperCS
 			{
 				get { return GLPK.glp_get_row_lb(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public rowLb RowLB;
 		// 制約式の上限
-		public class rowUb
+		public class rowUb : IDisposable
 		{
 			MipProblem mip;
 			public rowUb(MipProblem mip)
@@ -299,6 +348,10 @@ namespace GlpkWrapperCS
 			public double this[int index]
 			{
 				get { return GLPK.glp_get_row_ub(mip.problem, index + 1); }
+			}
+			public void Dispose()
+			{
+				mip = null;
 			}
 		}
 		public rowUb RowUB;
@@ -324,7 +377,7 @@ namespace GlpkWrapperCS
 		{
 			LoadMatrix(ia.Count(), ia, ja, ar);
 		}
-		public class rowMatrix
+		public class rowMatrix : IDisposable
 		{
 			// 係数を問題から読み込む
 			MipProblem mip;
@@ -356,6 +409,10 @@ namespace GlpkWrapperCS
 					return matrix;
 				}
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public rowMatrix RowMatrix;
 		#endregion
@@ -377,7 +434,7 @@ namespace GlpkWrapperCS
 			get { return GLPK.glp_get_num_cols(problem); }
 		}
 		// 変数の名前
-		public class columnName
+		public class columnName : IDisposable
 		{
 			MipProblem mip;
 			public columnName(MipProblem mip)
@@ -389,6 +446,10 @@ namespace GlpkWrapperCS
 				get { return GLPK.glp_get_col_name(mip.problem, index + 1); }
 				set { GLPK.glp_set_col_name(mip.problem, index + 1, value); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public columnName ColumnName;
 		// 変数の範囲を設定する
@@ -397,7 +458,7 @@ namespace GlpkWrapperCS
 			GLPK.glp_set_col_bnds(problem, index + 1, (int)type, lowerBound, upperBound);
 		}
 		// 変数の種類
-		public class columnType
+		public class columnType : IDisposable
 		{
 			MipProblem mip;
 			public columnType(MipProblem mip)
@@ -408,10 +469,14 @@ namespace GlpkWrapperCS
 			{
 				get { return (BoundsType)GLPK.glp_get_col_type(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public columnType ColumnType;
 		// 変数の下限
-		public class columnLb
+		public class columnLb : IDisposable
 		{
 			MipProblem mip;
 			public columnLb(MipProblem mip)
@@ -422,10 +487,14 @@ namespace GlpkWrapperCS
 			{
 				get { return GLPK.glp_get_col_lb(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public columnLb ColumnLB;
 		// 変数の上限
-		public class columnUb
+		public class columnUb : IDisposable
 		{
 			MipProblem mip;
 			public columnUb(MipProblem mip)
@@ -436,10 +505,14 @@ namespace GlpkWrapperCS
 			{
 				get { return GLPK.glp_get_col_ub(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public columnUb ColumnUB;
 		// 変数条件
-		public class columnKind
+		public class columnKind : IDisposable
 		{
 			MipProblem mip;
 			public columnKind(MipProblem mip)
@@ -451,10 +524,14 @@ namespace GlpkWrapperCS
 				get { return (VariableKind)GLPK.glp_get_col_kind(mip.problem, index + 1); }
 				set { GLPK.glp_set_col_kind(mip.problem, index + 1, (int)value); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public columnKind ColumnKind;
 		// 変数の値
-		public class lpColumnValue
+		public class lpColumnValue : IDisposable
 		{
 			MipProblem mip;
 			public lpColumnValue(MipProblem mip)
@@ -465,9 +542,13 @@ namespace GlpkWrapperCS
 			{
 				get { return GLPK.glp_get_col_prim(mip.problem, index + 1); }
 			}
+			public void Dispose()
+			{
+				mip = null;
+			}
 		}
 		public lpColumnValue LpColumnValue;
-		public class mipColumnValue
+		public class mipColumnValue : IDisposable
 		{
 			MipProblem mip;
 			public mipColumnValue(MipProblem mip)
@@ -477,6 +558,10 @@ namespace GlpkWrapperCS
 			public double this[int index]
 			{
 				get { return GLPK.glp_mip_col_val(mip.problem, index + 1); }
+			}
+			public void Dispose()
+			{
+				mip = null;
 			}
 		}
 		public mipColumnValue MipColumnValue;

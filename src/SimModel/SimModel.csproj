@@ -4,13 +4,14 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
 	<DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
 	<DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Csv" Version="2.0.62" />
+	<PackageReference Include="Google.OrTools" Version="9.3.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,5 +67,9 @@
       <HintPath>libglpk-cli.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+	<PropertyGroup>
+		<RestoreSources>lib;$(RestoreSources);https://api.nuget.org/v3/index.json</RestoreSources>
+	</PropertyGroup>
 
 </Project>
