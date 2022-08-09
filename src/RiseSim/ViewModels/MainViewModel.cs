@@ -46,6 +46,9 @@ namespace RiseSim.ViewModels
         // 護石画面のVM
         public ReactivePropertySlim<CharmTabViewModel> CharmTabVM { get; } = new();
 
+        // 怪異錬成画面のVM
+        public ReactivePropertySlim<AugmentationTabViewModel> AugmentationTabVM { get; } = new();
+
         // マイセット画面のVM
         public ReactivePropertySlim<MySetTabViewModel> MySetTabVM { get; } = new();
 
@@ -77,6 +80,7 @@ namespace RiseSim.ViewModels
             SimulatorTabVM.Value = new SimulatorTabViewModel();
             CludeTabVM.Value = new CludeTabViewModel();
             CharmTabVM.Value = new CharmTabViewModel();
+            AugmentationTabVM.Value = new AugmentationTabViewModel();
             MySetTabVM.Value = new MySetTabViewModel();
             LicenseTabVM.Value = new LicenseTabViewModel();
 
@@ -128,6 +132,12 @@ namespace RiseSim.ViewModels
         // 装備関係のマスタ情報をVMにロード
         internal void LoadEquips()
         {
+            // 錬成情報を反映
+            Simulator.RefreshEquipmentMasters();
+
+            // 錬成画面用のVM設定
+            AugmentationTabVM.Value.LoadAugmentations();
+
             // 除外固定画面用のVMの設定
             CludeTabVM.Value.LoadEquipsForClude();
 

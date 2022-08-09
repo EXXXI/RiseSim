@@ -82,10 +82,38 @@ namespace SimModel.Model
             Kind = kind;
         }
 
-        // 表示用装備名(護石のみ特殊処理)
+        // コピーコンストラクタ
+        public Equipment(Equipment equip)
+        {
+            Name = equip.Name;
+            Sex = equip.Sex;
+            Rare = equip.Rare;
+            Slot1 = equip.Slot1;
+            Slot2 = equip.Slot2;
+            Slot3 = equip.Slot3;
+            Mindef = equip.Mindef;
+            Maxdef = equip.Maxdef;
+            Fire = equip.Fire;
+            Water = equip.Water;
+            Thunder = equip.Thunder;
+            Ice = equip.Ice;
+            Dragon = equip.Dragon;
+            Kind = equip.Kind;
+            foreach (var skill in equip.Skills)
+            {
+                Skills.Add(skill);
+            }
+        }
+
+        // 表示用装備名(護石は特殊処理、錬成で名前付けした場合はそれを優先)
+        private string? dispName = null;
         public string DispName { 
             get
             {
+                if (!string.IsNullOrWhiteSpace(dispName))
+                {
+                    return dispName;
+                }
                 if (!Kind.Equals(EquipKind.charm) || string.IsNullOrWhiteSpace(Name))
                 {
                     return Name;
@@ -116,7 +144,11 @@ namespace SimModel.Model
 
                     return sb.ToString();
                 }
-            } 
+            }
+            set
+            {
+                dispName = value;
+            }
         }
 
 
