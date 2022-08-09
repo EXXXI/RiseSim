@@ -26,6 +26,10 @@
                 <subviews:CharmTabView DataContext="{Binding CharmTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
+            <TabItem Header="傀異錬成設定">
+                <subviews:AugmentationTabView DataContext="{Binding AugmentationTabVM.Value, Mode=OneWay}"/>
+            </TabItem>
+
             <TabItem Header="マイセット">
                 <subviews:MySetTabView DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>
