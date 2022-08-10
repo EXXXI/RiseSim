@@ -44,6 +44,10 @@ namespace SimModel.Config
         // 護石のスキル最大個数
         public int MaxCharmSkillCount { get; set; }
 
+        // TODO: 変更可能にするならCSVあたりもいじる必要あり
+        // 傀異錬成防具のスキル最大個数
+        public int MaxAugmentationSkillCount { get; set; } = 3;
+
         // 風雷合一
         public string FuraiName { get; } = "風雷合一";
 

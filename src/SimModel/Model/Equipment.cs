@@ -64,8 +64,33 @@ namespace SimModel.Model
         // 龍耐性
         public int Dragon { get; set; }
 
-        // スキル
+        // スキル(錬成スキルを別個に扱う)
         public List<Skill> Skills { get; set; } = new();
+
+        // スキル(錬成スキルを合算して扱う)
+        public List<Skill> MargedSkills {
+            get
+            {
+                List<Skill> margedSkills = new();
+                foreach (Skill skill in Skills)
+                {
+                    bool isExist = false;
+                    foreach (Skill margedSkill in margedSkills)
+                    {
+                        if (skill.Name == margedSkill.Name)
+                        {
+                            margedSkill.Level += skill.Level;
+                            isExist = true;
+                        }
+                    }
+                    if (!isExist)
+                    {
+                        margedSkills.Add(new Skill(skill.Name, skill.Level));
+                    }
+                }
+                return margedSkills;
+            }
+        }
 
         // 装備種類
         public EquipKind Kind { get; set; }
