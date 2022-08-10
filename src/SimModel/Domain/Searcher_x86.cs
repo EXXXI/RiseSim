@@ -523,7 +523,7 @@ namespace SimModel.Domain
             // スキル情報
             foreach (var condSkill in Condition.Skills)
             {
-                foreach (var equipSkill in equip.Skills)
+                foreach (var equipSkill in equip.MargedSkills)
                 {
                     if (equipSkill.Name.Equals(condSkill.Name))
                     {
