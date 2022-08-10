@@ -3,6 +3,7 @@ using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
+using SimModel.Config;
 using SimModel.Model;
 using SimModel.Service;
 using System;
@@ -99,10 +100,9 @@ namespace RiseSim.ViewModels.SubViews
 
             // スキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
-            // TODO: マジックナンバー
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
             {
-                selectorVMs.Add(new SkillSelectorViewModel());
+                selectorVMs.Add(new SkillSelectorViewModel(true));
             }
             SkillSelectorVMs.Value = selectorVMs;
 
@@ -198,7 +198,6 @@ namespace RiseSim.ViewModels.SubViews
             List<EquipSet> delMySets = new();
             foreach (var set in Masters.MySets)
             {
-                // TODO: 護石等を含む必要がないか要確認
                 if ((set.Head.Name != null && set.Head.Name.Equals(name)) ||
                     (set.Body.Name != null && set.Body.Name.Equals(name)) ||
                     (set.Arm.Name != null && set.Arm.Name.Equals(name)) ||

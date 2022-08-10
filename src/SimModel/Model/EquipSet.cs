@@ -475,7 +475,6 @@ namespace SimModel.Model
             return baseSkills;
         }
 
-        // TODO: 錬成分は除外？
         // スキルの追加(同名スキルはスキルレベルを加算、錬成の追加スキルは除外)
         private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills, bool excludeAdditional)
         {

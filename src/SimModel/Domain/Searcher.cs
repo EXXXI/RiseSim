@@ -472,7 +472,7 @@ namespace SimModel.Domain
             // スキル情報
             foreach (var condSkill in Condition.Skills)
             {
-                foreach (var equipSkill in equip.Skills)
+                foreach (var equipSkill in equip.MargedSkills)
                 {
                     if (equipSkill.Name.Equals(condSkill.Name))
                     {
@@ -488,7 +488,7 @@ namespace SimModel.Domain
                 {
                     foreach (var equipSkill in equip.Skills)
                     {
-                        // TODO: 錬成分は除外？
+                        // 錬成分は除外
                         if (equipSkill.Name.Equals(condSkill.Name) && !equipSkill.IsAdditional)
                         {
                             y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, 1);

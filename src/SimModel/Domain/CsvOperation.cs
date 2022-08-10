@@ -381,8 +381,7 @@ namespace SimModel.Domain
                 aug.Ice = Parse(line[@"氷耐性増減"]);
                 aug.Dragon = Parse(line[@"龍耐性増減"]);
                 List<Skill> skills = new List<Skill>();
-                // TODO: マジックナンバー
-                for (int i = 1; i <= 2; i++)
+                for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCount; i++)
                 {
                     string skill = line[@"スキル系統" + i];
                     string level = line[@"スキル値" + i];
@@ -406,7 +405,7 @@ namespace SimModel.Domain
             foreach (var aug in Masters.Augmentations)
             {
                 List<string> bodyStrings = new List<string>();
-                bodyStrings.Add(aug.DispName);
+                bodyStrings.Add(aug.DispName ?? string.Empty);
                 bodyStrings.Add(aug.BaseName);
                 bodyStrings.Add(aug.Kind.Str());
                 bodyStrings.Add(aug.Slot1.ToString());
@@ -418,8 +417,7 @@ namespace SimModel.Domain
                 bodyStrings.Add(aug.Thunder.ToString());
                 bodyStrings.Add(aug.Ice.ToString());
                 bodyStrings.Add(aug.Dragon.ToString());
-                // TODO: マジックナンバー
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
                 {
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Name : string.Empty);
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Level.ToString() : string.Empty);
@@ -427,7 +425,8 @@ namespace SimModel.Domain
                 bodyStrings.Add(aug.Name);
                 body.Add(bodyStrings.ToArray());
             }
-            string[] header = new string[] { "名前", "ベース装備", "種類", "スロット1", "スロット2", "スロット3", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "管理用ID" };
+
+            string[] header = new string[] { "名前", "ベース装備", "種類", "スロット1", "スロット2", "スロット3", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "スキル系統3", "スキル値3", "管理用ID" };
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(AugmentationCsv, export);
         }

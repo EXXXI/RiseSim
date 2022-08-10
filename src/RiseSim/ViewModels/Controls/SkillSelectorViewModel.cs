@@ -44,6 +44,10 @@ namespace RiseSim.ViewModels.Controls
         // 選択中スキルレベル
         public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
+        // 傀異錬成フラグ
+        public bool IsAugmentation { get; set; } = false;
+
+
         // クリアコマンド
         public ReactiveCommand ClearCommand { get; } = new ReactiveCommand();
 
@@ -55,8 +59,10 @@ namespace RiseSim.ViewModels.Controls
 
 
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
-        public SkillSelectorViewModel()
+        public SkillSelectorViewModel(bool isAugmentation)
         {
+            IsAugmentation = isAugmentation;
+
             ObservableCollection<string> skillList = new();
             skillList.Add(NoSkillName);
             foreach (var skill in Masters.Skills)
@@ -73,10 +79,15 @@ namespace RiseSim.ViewModels.Controls
             SetCommand();
         }
 
+        public SkillSelectorViewModel() : this(false)
+        {
+        }
+
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
         internal void SetLevels()
         {
             ObservableCollection<int> list = new();
+
             int maxLevel = 0;
             foreach (var skill in Masters.Skills)
             {
@@ -85,19 +96,38 @@ namespace RiseSim.ViewModels.Controls
                     maxLevel = skill.Level;
                 }
             }
-            for (int i = maxLevel; i > 0; i--)
-            {
-                list.Add(i);
-            }
-            SkillLevels.Value = list;
 
-            if (list.Count == 0)
+            if (maxLevel == 0)
             {
                 // スキルが選択されていないときは0とする
                 list.Add(0);
             }
-            // 初期値は最大レベルとする
-            SkillLevel.Value = maxLevel;
+            else if (IsAugmentation)
+            {
+                // スキルが存在して傀異錬成画面の場合は固定
+                list.Add(2);
+                list.Add(1);
+                list.Add(-1);
+            }
+            else
+            {
+                // 通常の場合
+                for (int i = maxLevel; i > 0; i--)
+                {
+                    list.Add(i);
+                }
+            }
+            SkillLevels.Value = list;
+
+            // 初期値は通常は最大レベル、傀異錬成時は1とする
+            if (IsAugmentation)
+            {
+                SkillLevel.Value = 1;
+            }
+            else
+            {
+                SkillLevel.Value = maxLevel;
+            }
         }
 
         // 選択状態をリセット
