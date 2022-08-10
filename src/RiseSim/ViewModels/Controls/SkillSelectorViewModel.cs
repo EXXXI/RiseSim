@@ -108,6 +108,7 @@ namespace RiseSim.ViewModels.Controls
                 list.Add(2);
                 list.Add(1);
                 list.Add(-1);
+                list.Add(-2);
             }
             else
             {
@@ -120,7 +121,7 @@ namespace RiseSim.ViewModels.Controls
             SkillLevels.Value = list;
 
             // 初期値は通常は最大レベル、傀異錬成時は1とする
-            if (IsAugmentation)
+            if (maxLevel != 0 && IsAugmentation)
             {
                 SkillLevel.Value = 1;
             }
