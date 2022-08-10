@@ -230,7 +230,11 @@ namespace RiseSim.ViewModels.SubViews
                 case "腰":
                     Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists);
                     break;
+                case "足":
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs);
+                    break;
                 case "脚":
+                    // 誤記
                     Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs);
                     break;
                 default:
@@ -260,7 +264,10 @@ namespace RiseSim.ViewModels.SubViews
                     return EquipKind.arm;
                 case "腰":
                     return EquipKind.waist;
+                case "足":
+                    return EquipKind.leg;
                 case "脚":
+                    // 誤記
                     return EquipKind.leg;
                 default:
                     throw new ArgumentOutOfRangeException();

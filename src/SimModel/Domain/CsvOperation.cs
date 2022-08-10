@@ -503,7 +503,10 @@ namespace SimModel.Domain
                     return EquipKind.arm;
                 case "腰":
                     return EquipKind.waist;
+                case "足":
+                    return EquipKind.leg;
                 case "脚":
+                    // 誤記
                     return EquipKind.leg;
                 default:
                     throw new ArgumentOutOfRangeException();
