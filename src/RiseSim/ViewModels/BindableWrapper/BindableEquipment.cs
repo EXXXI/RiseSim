@@ -112,14 +112,31 @@ namespace RiseSim.ViewModels.BindableWrapper
         }
 
         // リストをまとめてバインド用クラスに変換
-        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
+        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter)
         {
             ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();
             foreach (var equip in list)
             {
-                bindableList.Add(new BindableEquipment(equip));
+                if (string.IsNullOrWhiteSpace(filter) || equip.DispName.Contains(filter))
+                {
+                    bindableList.Add(new BindableEquipment(equip));
+                }
             }
+
+            // フィルタ結果が0件の場合フィルタを無効化して再計算
+            if (!string.IsNullOrWhiteSpace(filter) && bindableList.Count == 0)
+            {
+                return BeBindableList(list, null);
+            }
+
+            // 返却
             return bindableList;
+        }
+
+        // リストをまとめてバインド用クラスに変換
+        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
+        {
+            return BeBindableList(list, null);
         }
     }
 }

@@ -35,6 +35,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // スロット3つ目
         public int Slot3 { get; set; }
 
+        // スロット表示
+        public string SlotDisp { get; set; }
+
         // 防御力増減
         public int Def { get; set; }
 
@@ -73,6 +76,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Slot1 = aug.Slot1;
             Slot2 = aug.Slot2;
             Slot3 = aug.Slot3;
+            SlotDisp = aug.SlotDisp;
             Def = aug.Def;
             Fire = aug.Fire;
             Water = aug.Water;
