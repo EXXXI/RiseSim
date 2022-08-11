@@ -343,6 +343,10 @@ namespace SimModel.Model
                 string[] splitted = value.Split(',');
                 foreach (var decoName in splitted)
                 {
+                    if (string.IsNullOrWhiteSpace(decoName))
+                    {
+                        continue;
+                    }
                     Equipment? deco = Masters.GetEquipByName(decoName);
                     if (deco != null)
                     {
