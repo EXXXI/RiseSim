@@ -48,12 +48,12 @@ namespace SimModel.Service
             // セーブデータ類の読み込み
             CsvOperation.LoadCludeCSV();
             CsvOperation.LoadCharmCSV();
-            CsvOperation.LoadMySetCSV();
-            CsvOperation.LoadRecentSkillCSV();
             CsvOperation.LoadAugmentationCSV();
+            CsvOperation.LoadRecentSkillCSV();
 
-            // 錬成装備込みのマスタデータ作成
+            // 錬成装備込みのマスタデータ作成&マイセット読み込み
             Masters.RefreshEquipmentMasters();
+            CsvOperation.LoadMySetCSV();
         }
 
         // 新規検索
