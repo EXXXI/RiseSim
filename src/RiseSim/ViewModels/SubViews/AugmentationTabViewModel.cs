@@ -144,7 +144,12 @@ namespace RiseSim.ViewModels.SubViews
         {
             Augmentation aug = new();
             aug.Name = Guid.NewGuid().ToString();
-            aug.DispName = DispName.Value;
+            string dispName = DispName.Value;
+            if (string.IsNullOrWhiteSpace(dispName))
+            {
+                dispName = MakeDefaultDispName(SelectedEquip.Value.Name);
+            }
+            aug.DispName = dispName;
             aug.Kind = ToEquipKind(Kind.Value);
             aug.BaseName = SelectedEquip.Value.Name;
             string[] slots = Slots.Value.Split('-');
@@ -169,6 +174,27 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.AddAugmentation(aug);
 
             MainViewModel.Instance.LoadEquips();
+        }
+
+        // 錬成設定のデフォルト名
+        private string MakeDefaultDispName(string baseName)
+        {
+            bool isExist = true;
+            string name = baseName + "_" + 0;
+            for (int i = 1; isExist; i++)
+            {
+                isExist = false;
+                name = baseName + "_" + i;
+                foreach (var aug in Masters.Augmentations)
+                {
+                    if (aug.DispName == name)
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+            }
+            return name;
         }
 
         // 錬成情報を削除
