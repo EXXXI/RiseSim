@@ -37,6 +37,14 @@ namespace SimModel.Model
         // スロット3つ目
         public int Slot3 { get; set; }
 
+        // スロット表示
+        public string SlotDisp { 
+            get
+            { 
+                return Slot1 + "-" + Slot2 + "-" + Slot3;
+            }
+        }
+
         // 防御力増減
         public int Def { get; set; }
 

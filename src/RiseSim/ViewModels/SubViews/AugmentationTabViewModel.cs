@@ -32,6 +32,9 @@ namespace RiseSim.ViewModels.SubViews
         // 部位指定
         public ReactivePropertySlim<string> Kind { get; } = new();
 
+        // ベース装備絞込条件
+        public ReactivePropertySlim<string> FilterInput { get; } = new();
+
         // ベース装備一覧
         public ReactivePropertySlim<ObservableCollection<BindableEquipment>> Equips { get; } = new();
 
@@ -86,6 +89,7 @@ namespace RiseSim.ViewModels.SubViews
         private void SetCommand()
         {
             Kind.Subscribe(_ => SetEquips());
+            FilterInput.Subscribe(_ => SetEquips());
             SelectedEquip.Subscribe(_ => SetSlots());
             AddCommand.Subscribe(_ => AddAugmentation());
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
@@ -219,23 +223,23 @@ namespace RiseSim.ViewModels.SubViews
             switch (Kind.Value)
             {
                 case "頭":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, FilterInput.Value);
                     break;
                 case "胴":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, FilterInput.Value);
                     break;
                 case "腕":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, FilterInput.Value);
                     break;
                 case "腰":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, FilterInput.Value);
                     break;
                 case "足":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value);
                     break;
                 case "脚":
                     // 誤記
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value);
                     break;
                 default:
                     break;

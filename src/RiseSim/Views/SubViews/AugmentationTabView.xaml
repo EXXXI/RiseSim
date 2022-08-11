@@ -25,6 +25,10 @@
                 </ComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Width="85" Text="ベース防具絞込"/>
+                <TextBox Width="165" Text="{Binding FilterInput.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具"/>
                 <ComboBox ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Width="165" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
@@ -87,6 +91,7 @@
                 <DataGridTextColumn Header="ベース防具" Binding="{Binding BaseName, Mode=OneWay}" />
                 <DataGridTextColumn Header="名前" Binding="{Binding DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="防御" Binding="{Binding Def, Mode=OneWay}" />
+                <DataGridTextColumn Header="スロット" Binding="{Binding SlotDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
                 <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
