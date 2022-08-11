@@ -57,11 +57,11 @@
                 <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
                 <DataGridTextColumn Header="氷" Binding="{Binding Ice, Mode=OneWay}" />
                 <DataGridTextColumn Header="龍" Binding="{Binding Dragon, Mode=OneWay}" />
-                <DataGridTextColumn Header="頭" Binding="{Binding Head.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="胴" Binding="{Binding Body.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="腕" Binding="{Binding Arm.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="腰" Binding="{Binding Waist.Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="足" Binding="{Binding Leg.Name, Mode=OneWay}" />
+                <DataGridTextColumn Header="頭" Binding="{Binding Head.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="胴" Binding="{Binding Body.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腕" Binding="{Binding Arm.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腰" Binding="{Binding Waist.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="足" Binding="{Binding Leg.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="護石" Binding="{Binding Charm.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV, Mode=OneWay}" />
             </DataGrid.Columns>

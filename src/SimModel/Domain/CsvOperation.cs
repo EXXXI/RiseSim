@@ -62,6 +62,7 @@ namespace SimModel.Domain
         {
             Masters.OriginalHeads = new();
             LoadEquipCSV(HeadCsv, Masters.OriginalHeads, EquipKind.head);
+            Masters.Heads = Masters.OriginalHeads;
         }
 
         // 胴防具マスタ読み込み
@@ -69,6 +70,7 @@ namespace SimModel.Domain
         {
             Masters.OriginalBodys = new();
             LoadEquipCSV(BodyCsv, Masters.OriginalBodys, EquipKind.body);
+            Masters.Bodys = Masters.OriginalBodys;
         }
 
         // 腕防具マスタ読み込み
@@ -76,6 +78,7 @@ namespace SimModel.Domain
         {
             Masters.OriginalArms = new();
             LoadEquipCSV(ArmCsv, Masters.OriginalArms, EquipKind.arm);
+            Masters.Arms = Masters.OriginalArms;
         }
 
         // 腰防具マスタ読み込み
@@ -83,6 +86,7 @@ namespace SimModel.Domain
         {
             Masters.OriginalWaists = new();
             LoadEquipCSV(WaistCsv, Masters.OriginalWaists, EquipKind.waist);
+            Masters.Waists = Masters.OriginalWaists;
         }
 
         // 足防具マスタ読み込み
@@ -90,6 +94,7 @@ namespace SimModel.Domain
         {
             Masters.OriginalLegs = new();
             LoadEquipCSV(LegCsv, Masters.OriginalLegs, EquipKind.leg);
+            Masters.Legs = Masters.OriginalLegs;
         }
 
         // 防具マスタ読み込み
@@ -317,6 +322,12 @@ namespace SimModel.Domain
                 set.Waist = Masters.GetEquipByName(line[@"腰"]);
                 set.Leg = Masters.GetEquipByName(line[@"足"]);
                 set.Charm = Masters.GetEquipByName(line[@"護石"]);
+                set.Head.Kind = EquipKind.head;
+                set.Body.Kind = EquipKind.body;
+                set.Arm.Kind = EquipKind.arm;
+                set.Waist.Kind = EquipKind.waist;
+                set.Leg.Kind = EquipKind.leg;
+                set.Charm.Kind = EquipKind.charm;
                 set.DecoNameCSV = line[@"装飾品"];
                 // 前バージョンとの互換性のため存在確認
                 // TODO: 次回作でこのシミュが使えそうならその時は消そう
