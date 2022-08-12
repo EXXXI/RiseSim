@@ -76,7 +76,9 @@
                     </ItemsControl>
                 </StackPanel>
             </StackPanel>
-            <Button x:Name="searchButton" Content="追加する" Command="{Binding AddCommand}" />
+            <Button Content="追加する" Command="{Binding AddCommand}" />
+            <Button Content="選択中の錬成防具の内容を上の入力欄に反映" Command="{Binding InputCommand}" Margin="0,30,0,0"/>
+            <Button Content="上の入力欄の情報を選択中の錬成防具に上書き&#10;(ベース防具が違う場合は新規追加する)" Command="{Binding UpdateCommand}" xml:space="preserve"/>
         </StackPanel>
 
         <!-- 一覧 -->

@@ -191,6 +191,16 @@ namespace SimModel.Domain
             CsvOperation.SaveMySetCSV();
         }
 
+        // マイセットを再読み込み
+        static internal void LoadMySet()
+        {
+            // マスタへ反映
+            CsvOperation.LoadMySetCSV();
+        }
+
+
+
+
         // 最近使ったスキルの更新
         internal static void UpdateRecentSkill(List<Skill> skills)
         {
@@ -252,6 +262,38 @@ namespace SimModel.Domain
 
             // マスタへ反映
             CsvOperation.SaveAugmentationCSV();
+        }
+
+        // 錬成装備の更新
+        internal static void UpdateAugmentation(Augmentation newAugData)
+        {
+            foreach (var aug in Masters.Augmentations)
+            {
+                if (aug.Name == newAugData.Name)
+                {
+                    aug.DispName = newAugData.DispName;
+                    aug.Kind = newAugData.Kind;
+                    aug.BaseName = newAugData.BaseName;
+                    aug.Slot1 = newAugData.Slot1;
+                    aug.Slot2 = newAugData.Slot2;
+                    aug.Slot3 = newAugData.Slot3;
+                    aug.Def = newAugData.Def;
+                    aug.Fire = newAugData.Fire;
+                    aug.Water = newAugData.Water;
+                    aug.Thunder = newAugData.Thunder;
+                    aug.Ice = newAugData.Ice;
+                    aug.Dragon = newAugData.Dragon;
+                    aug.Skills = newAugData.Skills;
+
+                    // マスタへ反映
+                    CsvOperation.SaveAugmentationCSV();
+
+                    return;
+                }
+            }
+
+            // 万一更新先が見つからなかった場合は新規登録
+            AddAugmentation(newAugData);
         }
     }
 }

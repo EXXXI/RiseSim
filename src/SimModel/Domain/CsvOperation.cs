@@ -394,6 +394,10 @@ namespace SimModel.Domain
                 List<Skill> skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCount; i++)
                 {
+                    if (!line.Headers.Contains(@"スキル系統" + i))
+                    {
+                        break;
+                    }
                     string skill = line[@"スキル系統" + i];
                     string level = line[@"スキル値" + i];
                     if (string.IsNullOrWhiteSpace(skill))

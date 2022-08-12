@@ -159,7 +159,6 @@ namespace SimModel.Service
             return exSkills;
         }
 
-
         // 除外装備登録
         public Clude? AddExclude(string name)
         {
@@ -208,6 +207,12 @@ namespace SimModel.Service
             DataManagement.SaveMySet();
         }
 
+        // マイセット再読み込み
+        public void LoadMySet()
+        {
+            DataManagement.LoadMySet();
+        }
+
         // 最近使ったスキル更新
         public void UpdateRecentSkill(List<Skill> skills)
         {
@@ -224,6 +229,12 @@ namespace SimModel.Service
         public void DeleteAugmentation(Augmentation aug)
         {
             DataManagement.DeleteAugmentation(aug);
+        }
+
+        // 錬成装備更新
+        public void UpdateAugmentation(Augmentation aug)
+        {
+            DataManagement.UpdateAugmentation(aug);
         }
 
         // 装備マスタリロード

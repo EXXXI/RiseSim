@@ -51,7 +51,7 @@ namespace SimModel.Model
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(Name))
+                if (string.IsNullOrWhiteSpace(Name) || Level == 0)
                 {
                     return string.Empty;
                 }
