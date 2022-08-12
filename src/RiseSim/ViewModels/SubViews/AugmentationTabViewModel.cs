@@ -84,6 +84,12 @@ namespace RiseSim.ViewModels.SubViews
         // 削除コマンド
         public ReactiveCommand DeleteCommand { get; private set; } = new();
 
+        // 反映コマンド
+        public ReactiveCommand InputCommand { get; private set; } = new();
+
+        // 上書きコマンド
+        public ReactiveCommand UpdateCommand { get; private set; } = new();
+
 
         // コマンドを設定
         private void SetCommand()
@@ -93,6 +99,102 @@ namespace RiseSim.ViewModels.SubViews
             SelectedEquip.Subscribe(_ => SetSlots());
             AddCommand.Subscribe(_ => AddAugmentation());
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
+            InputCommand.Subscribe(_ => InputAugmentation());
+            UpdateCommand.Subscribe(_ => UpdateAugmentation());
+        }
+
+        // 上書きコマンド
+        private void UpdateAugmentation()
+        {
+            if (SelectedAugmentation.Value == null)
+            {
+                return;
+            }
+
+            // ベースが変わっている場合は新規に回す
+            if (ToEquipKind(Kind.Value) != SelectedAugmentation.Value.Kind ||
+                SelectedEquip.Value.Name != SelectedAugmentation.Value.BaseName)
+            {
+                AddAugmentation();
+                return;
+            }
+
+            Augmentation aug = new();
+            aug.Name = SelectedAugmentation.Value.Name;
+            string dispName = DispName.Value;
+            if (string.IsNullOrWhiteSpace(dispName))
+            {
+                dispName = MakeDefaultDispName(SelectedEquip.Value.Name);
+            }
+            aug.DispName = dispName;
+            aug.Kind = ToEquipKind(Kind.Value);
+            aug.BaseName = SelectedEquip.Value.Name;
+            string[] slots = Slots.Value.Split('-');
+            aug.Slot1 = Parse(slots[0]);
+            aug.Slot2 = Parse(slots[1]);
+            aug.Slot3 = Parse(slots[2]);
+            aug.Def = Parse(Def.Value);
+            aug.Fire = Parse(Fire.Value);
+            aug.Water = Parse(Water.Value);
+            aug.Thunder = Parse(Thunder.Value);
+            aug.Ice = Parse(Ice.Value);
+            aug.Dragon = Parse(Dragon.Value);
+            foreach (var selector in SkillSelectorVMs.Value)
+            {
+                if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                {
+                    Skill skill = new(selector.SkillName.Value, selector.SkillLevel.Value, true);
+                    aug.Skills.Add(skill);
+                }
+            }
+            Simulator.UpdateAugmentation(aug);
+
+            // 装備情報修正・マイセットの内容を更新
+            MainViewModel.Instance.LoadEquips();
+            Simulator.LoadMySet();
+            MainViewModel.Instance.LoadMySets();
+        }
+
+        // 反映コマンド
+        private void InputAugmentation()
+        {
+            if (SelectedAugmentation.Value == null)
+            {
+                return;
+            }
+            BindableAugmentation aug = SelectedAugmentation.Value;
+            DispName.Value = aug.DispName;
+            Kind.Value = aug.Kind.Str();
+            FilterInput.Value = string.Empty;
+            foreach (var equip in Equips.Value)
+            {
+                if (equip.Name == aug.BaseName)
+                {
+                    SelectedEquip.Value = equip;
+                }
+            }
+            Slots.Value = aug.Slot1 + "-" + aug.Slot2 + "-" + aug.Slot3;
+            Def.Value = aug.Def.ToString();
+            Fire.Value = aug.Fire.ToString();
+            Water.Value = aug.Water.ToString();
+            Thunder.Value = aug.Thunder.ToString();
+            Ice.Value = aug.Ice.ToString();
+            Dragon.Value = aug.Dragon.ToString();
+
+            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
+            {
+                if (i < aug.Skills.Count)
+                {
+                    SkillSelectorVMs.Value[i].SkillName.Value = aug.Skills[i].Name;
+                    SkillSelectorVMs.Value[i].SkillLevel.Value = aug.Skills[i].Level;
+                }
+                else
+                {
+                    SkillSelectorVMs.Value[i].SkillName.Value = ViewConfig.Instance.NoSkillName;
+                    SkillSelectorVMs.Value[i].SkillLevel.Value = 0;
+                }
+            }
+
         }
 
         // コンストラクタ

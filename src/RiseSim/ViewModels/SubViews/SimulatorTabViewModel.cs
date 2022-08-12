@@ -434,6 +434,11 @@ namespace RiseSim.ViewModels.SubViews
             int count = Math.Min(SkillSelectorCount, mySet.Skills.Count);
             for (int i = 0; i < count; i++)
             {
+                if (mySet.Skills[i].Level == 0)
+                {
+                    continue;
+                }
+
                 // スキル情報反映
                 SkillSelectorVMs.Value[i].SkillName.Value = mySet.Skills[i].Name;
                 SkillSelectorVMs.Value[i].SkillLevel.Value = mySet.Skills[i].Level;

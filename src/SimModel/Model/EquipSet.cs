@@ -390,6 +390,11 @@ namespace SimModel.Model
             get
             {
                 StringBuilder sb = new();
+                if (!IsDecoValid)
+                {
+                    sb.Append("※傀異錬成防具のスロットを減らしたため、\n");
+                    sb.Append("※このマイセットの装飾品は装備しきれません\n");
+                }
                 sb.Append("武器スロ：");
                 sb.Append(WeaponSlotDisp);
                 sb.Append('\n');
@@ -435,6 +440,73 @@ namespace SimModel.Model
                     sb.Append(skill.Description);
                 }
                 return sb.ToString();
+            }
+        }
+
+        // 装飾品がはめられる状態かチェック
+        public bool IsDecoValid { 
+            get
+            {
+                int[] reqSlots = { 0, 0, 0, 0 };
+                int[] hasSlots = { 0, 0, 0, 0 };
+
+                foreach (var deco in Decos)
+                {
+                    reqSlots[deco.Slot1 - 1]++;
+                }
+                if (WeaponSlot1 > 0)
+                {
+                    hasSlots[WeaponSlot1 - 1]++;
+                }
+                if (WeaponSlot2 > 0)
+                {
+                    hasSlots[WeaponSlot2 - 1]++;
+                }
+                if (WeaponSlot3 > 0)
+                {
+                    hasSlots[WeaponSlot3 - 1]++;
+                }
+                CalcEquipHasSlot(hasSlots, Head);
+                CalcEquipHasSlot(hasSlots, Body);
+                CalcEquipHasSlot(hasSlots, Arm);
+                CalcEquipHasSlot(hasSlots, Waist);
+                CalcEquipHasSlot(hasSlots, Leg);
+                CalcEquipHasSlot(hasSlots, Charm);
+
+                if (reqSlots[3] > hasSlots[3])
+                {
+                    return false;
+                }
+                if (reqSlots[3] + reqSlots[2] > hasSlots[3] + hasSlots[2])
+                {
+                    return false;
+                }
+                if (reqSlots[3] + reqSlots[2] + reqSlots[1] > hasSlots[3] + hasSlots[2] + hasSlots[1])
+                {
+                    return false;
+                }
+                if (reqSlots[3] + reqSlots[2] + reqSlots[1] + reqSlots[0] > hasSlots[3] + hasSlots[2] + hasSlots[1] + hasSlots[0])
+                {
+                    return false;
+                }
+                return true;
+
+            }
+        }
+
+        private static void CalcEquipHasSlot(int[] hasSlots, Equipment equip)
+        {
+            if (equip.Slot1 > 0)
+            {
+                hasSlots[equip.Slot1 - 1]++;
+            }
+            if (equip.Slot2 > 0)
+            {
+                hasSlots[equip.Slot2 - 1]++;
+            }
+            if (equip.Slot3 > 0)
+            {
+                hasSlots[equip.Slot3 - 1]++;
             }
         }
 
