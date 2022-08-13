@@ -112,12 +112,13 @@ namespace RiseSim.ViewModels.BindableWrapper
         }
 
         // リストをまとめてバインド用クラスに変換
-        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter)
+        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter, int minRare)
         {
             ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();
             foreach (var equip in list)
             {
-                if (string.IsNullOrWhiteSpace(filter) || equip.DispName.Contains(filter))
+                if ((equip.Rare == 0 || equip.Rare >= minRare) &&
+                    (string.IsNullOrWhiteSpace(filter) || equip.DispName.Contains(filter)))
                 {
                     bindableList.Add(new BindableEquipment(equip));
                 }
@@ -131,6 +132,12 @@ namespace RiseSim.ViewModels.BindableWrapper
 
             // 返却
             return bindableList;
+        }
+
+        // リストをまとめてバインド用クラスに変換
+        static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter)
+        {
+            return BeBindableList(list, null, 0);
         }
 
         // リストをまとめてバインド用クラスに変換

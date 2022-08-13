@@ -351,23 +351,23 @@ namespace RiseSim.ViewModels.SubViews
             switch (Kind.Value)
             {
                 case "頭":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, FilterInput.Value, 8);
                     break;
                 case "胴":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, FilterInput.Value, 8);
                     break;
                 case "腕":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, FilterInput.Value, 8);
                     break;
                 case "腰":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, FilterInput.Value, 8);
                     break;
                 case "足":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value, 8);
                     break;
                 case "脚":
                     // 誤記
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value, 8);
                     break;
                 default:
                     break;
