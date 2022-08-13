@@ -65,6 +65,14 @@ namespace RiseSim.ViewModels.BindableWrapper
         // オリジナル
         public Augmentation Original { get; set; }
 
+        // 防具データ(ベース含)
+        public BindableEquipment Equip { 
+            get
+            {
+                return new BindableEquipment(Masters.GetEquipByName(Name));
+            }
+        }
+
         // コンストラクタ
         public BindableAugmentation(Augmentation aug)
         {

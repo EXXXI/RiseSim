@@ -434,7 +434,7 @@ namespace RiseSim.ViewModels.SubViews
             int count = Math.Min(SkillSelectorCount, mySet.Skills.Count);
             for (int i = 0; i < count; i++)
             {
-                if (mySet.Skills[i].Level == 0)
+                if (mySet.Skills[i].Level <= 0)
                 {
                     continue;
                 }

@@ -374,12 +374,15 @@ namespace SimModel.Model
                 bool first = true;
                 foreach (var skill in Skills)
                 {
-                    if (!first)
+                    if (skill.Level > 0)
                     {
-                        sb.Append(", ");
+                        if (!first)
+                        {
+                            sb.Append(", ");
+                        }
+                        sb.Append(skill.Description);
+                        first = false;
                     }
-                    sb.Append(skill.Description);
-                    first = false;
                 }
                 return sb.ToString();
             }
@@ -436,8 +439,11 @@ namespace SimModel.Model
                 sb.Append("-----------");
                 foreach (var skill in Skills)
                 {
-                    sb.Append('\n');
-                    sb.Append(skill.Description);
+                    if (skill.Level > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append(skill.Description);
+                    }
                 }
                 return sb.ToString();
             }
