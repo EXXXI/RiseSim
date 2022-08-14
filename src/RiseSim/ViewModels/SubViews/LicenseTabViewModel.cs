@@ -39,7 +39,7 @@ namespace RiseSim.ViewModels.SubViews
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");
-            sb.Append("20220814.0\n");
+            sb.Append("20220814.1\n");
             sb.Append('\n');
             sb.Append("■このシミュのライセンス\n");
             sb.Append("GNU General Public License v3.0\n");
