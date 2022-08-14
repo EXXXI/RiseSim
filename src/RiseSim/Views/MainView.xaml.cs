@@ -14,8 +14,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using RiseSim.Properties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,6 +41,69 @@ namespace RiseSim.Views
         {
             InitializeComponent();
 
-        }
-    }
+			// ウィンドウサイズ復元
+			RecoverWindowBounds();
+		}
+
+		// 終了時
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			// ウィンドウサイズ保存
+			SaveWindowBounds();
+
+			base.OnClosing(e);
+		}
+
+		// ウィンドウサイズ保存
+		void SaveWindowBounds()
+		{
+			var settings = Settings.Default;
+			if (WindowState == WindowState.Maximized)
+            {
+				settings.WindowMaximized = true;
+            }
+            else
+            {
+				settings.WindowMaximized = false;
+			}
+
+			// サイズを保存するため、一旦最大化を解除
+			WindowState = WindowState.Normal;
+			settings.WindowLeft = Left;
+			settings.WindowTop = Top;
+			settings.WindowWidth = Width;
+			settings.WindowHeight = Height;
+
+			// 保存
+			settings.Save();
+		}
+
+		// ウィンドウサイズ復元
+		void RecoverWindowBounds()
+		{
+			var settings = Settings.Default;
+			// 左
+			if (settings.WindowLeft >= 0 &&
+				(settings.WindowLeft + settings.WindowWidth) < SystemParameters.VirtualScreenWidth)
+			{ Left = settings.WindowLeft; }
+			// 上
+			if (settings.WindowTop >= 0 &&
+				(settings.WindowTop + settings.WindowHeight) < SystemParameters.VirtualScreenHeight)
+			{ Top = settings.WindowTop; }
+			// 幅
+			if (settings.WindowWidth > 0 &&
+				settings.WindowWidth <= SystemParameters.WorkArea.Width)
+			{ Width = settings.WindowWidth; }
+			// 高さ
+			if (settings.WindowHeight > 0 &&
+				settings.WindowHeight <= SystemParameters.WorkArea.Height)
+			{ Height = settings.WindowHeight; }
+			// 最大化
+			if (settings.WindowMaximized)
+			{
+				// ロード後に最大化
+				Loaded += (o, e) => WindowState = WindowState.Maximized;
+			}
+		}
+	}
 }

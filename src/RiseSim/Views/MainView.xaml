@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:RiseSim.ViewModels" xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.Views.SubViews" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d"
-        Title="MHRiseSkillSimurator" Height="700" Width="1000">
+        Title="MHRiseSkillSimurator" Height="800" Width="1000">
     <Grid>
         <!-- グリッド設定 -->
         <Grid.RowDefinitions>
