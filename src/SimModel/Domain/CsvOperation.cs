@@ -270,10 +270,15 @@ namespace SimModel.Domain
                     }
                 }
 
+                // TODO: 例外処理だと遅いから後で何か別の方法を考える
                 // 内部管理IDがない場合は付与する
                 try
                 {
                     charm.Name = line[@"内部管理ID"];
+                    if (string.IsNullOrWhiteSpace(charm.Name))
+                    {
+                        charm.Name = Guid.NewGuid().ToString();
+                    }
                 }
                 catch (InvalidOperationException)
                 {
