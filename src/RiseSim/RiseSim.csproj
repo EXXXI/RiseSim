@@ -46,4 +46,9 @@
     </Compile>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+	  <Exec Command="rd /s /q &quot;$(TargetDir)save&quot;" />
+	  <Exec Command="md &quot;$(TargetDir)save&quot;" />
+  </Target>
+
 </Project>
