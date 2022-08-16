@@ -47,7 +47,7 @@
                 <TextBox Width="165" Text="{Binding Def.Value}"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Width="85" Text="武器スロ(変更後)"/>
+                <TextBlock Width="85" Text="スロット(変更後)"/>
                 <ComboBox ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}" SelectedItem="{Binding Slots.Value}" Width="165" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
