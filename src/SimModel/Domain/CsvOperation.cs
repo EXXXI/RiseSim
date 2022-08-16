@@ -454,21 +454,28 @@ namespace SimModel.Domain
         // ファイル読み込み
         static private string ReadAllText(string fileName)
         {
-            string csv = File.ReadAllText(fileName);
-
-            // ライブラリの仕様に合わせてヘッダーを修正
-            // ヘッダー行はコメントアウトしない
-            if (csv.StartsWith('#'))
+            try
             {
-                csv = csv.Substring(1);
-            }
-            // 同名のヘッダーは利用不可なので小細工
-            csv = csv.Replace("生産素材1,個数", "生産素材1,生産素材個数1");
-            csv = csv.Replace("生産素材2,個数", "生産素材2,生産素材個数2");
-            csv = csv.Replace("生産素材3,個数", "生産素材3,生産素材個数3");
-            csv = csv.Replace("生産素材4,個数", "生産素材4,生産素材個数4");
+                string csv = File.ReadAllText(fileName);
 
-            return csv;
+                // ライブラリの仕様に合わせてヘッダーを修正
+                // ヘッダー行はコメントアウトしない
+                if (csv.StartsWith('#'))
+                {
+                    csv = csv.Substring(1);
+                }
+                // 同名のヘッダーは利用不可なので小細工
+                csv = csv.Replace("生産素材1,個数", "生産素材1,生産素材個数1");
+                csv = csv.Replace("生産素材2,個数", "生産素材2,生産素材個数2");
+                csv = csv.Replace("生産素材3,個数", "生産素材3,生産素材個数3");
+                csv = csv.Replace("生産素材4,個数", "生産素材4,生産素材個数4");
+
+                return csv;
+            }
+            catch (FileNotFoundException)
+            {
+                return string.Empty;
+            }
         }
 
         // スキルマスタへのスキルの追加
