@@ -42,19 +42,27 @@ namespace SimModel.Domain
         private const string RecentSkillCsv = "save/recentSkill.csv";
         private const string AugmentationCsv = "save/augmentation.csv";
 
+        private const string SkillMasterHeaderName = @"スキル系統";
+        private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
+        private const string SkillMasterHeaderCategory = @"カテゴリ";
+
+
         // スキルマスタ読み込み
         static internal void LoadSkillCSV()
         {
-            Masters.Skills = new();
-
             string csv = ReadAllText(SkillCsv);
 
-            foreach (ICsvLine line in CsvReader.ReadFromText(csv))
-            {
-                string skillName = line[@"スキル系統"];
-                int skillLevel = Parse(line[@"必要ポイント"]);
-                AddSkill(skillName, skillLevel);
-            }
+            Masters.Skills = CsvReader.ReadFromText(csv)
+                .Select(line => new
+                {
+                    Name = line[SkillMasterHeaderName],
+                    Level = Parse(line[SkillMasterHeaderRequiredPoints]),
+                    Category = line[SkillMasterHeaderCategory]
+                })
+                // マスタのCSVにある同名スキルのうち、スキルレベルが最大のものだけを選ぶ
+                .GroupBy(x => new { x.Name, x.Category })
+                .Select(group => new Skill(group.Key.Name, group.Max(x => x.Level), group.Key.Category))
+                .ToList();
         }
 
         // 頭防具マスタ読み込み
@@ -130,7 +138,7 @@ namespace SimModel.Domain
                     }
                     skills.Add(new Skill(skill, Parse(level)));
                 }
-                equip.Skills = skills; 
+                equip.Skills = skills;
 
                 equipments.Add(equip);
             }
@@ -472,28 +480,10 @@ namespace SimModel.Domain
 
                 return csv;
             }
-            catch (FileNotFoundException)
+            catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
             {
                 return string.Empty;
             }
-        }
-
-        // スキルマスタへのスキルの追加
-        static private void AddSkill(string skillName, int skillLevel)
-        {
-            foreach (var skill in Masters.Skills)
-            {
-                if (skill.Name.Equals(skillName))
-                {
-                    // 同名スキルはスキルレベルが高いものだけを残す(マスタには最大レベルを保持する)
-                    if (skill.Level < skillLevel)
-                    {
-                        skill.Level = skillLevel;
-                    }
-                    return;
-                }
-            }
-            Masters.Skills.Add(new Skill(skillName, skillLevel));
         }
 
         // int.Parseを実行
@@ -513,7 +503,7 @@ namespace SimModel.Domain
             else
             {
                 return def;
-            }       
+            }
         }
 
         // TODO: 別の場所に定義したい
