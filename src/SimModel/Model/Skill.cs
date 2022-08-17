@@ -19,7 +19,7 @@ using System;
 namespace SimModel.Model
 {
     // スキル
-    public class Skill
+    public record Skill
     {
 
         // スキル名
@@ -60,5 +60,14 @@ namespace SimModel.Model
                 return (IsAdditional ? "(追加)" : string.Empty) + Name + "Lv" + Level;
             }
         }
+
+        /// <summary>
+        /// SkillPickerSelectorViewでComboBoxの表示に使う文字列を返す
+        /// </summary>
+        public string PickerSelectorDisplayName => Level switch
+        {
+            0 => Name,
+            _ => $"{Name}Lv{Level}"
+        };
     }
 }

@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="RiseSim.Views.Controls.SkillPickerSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views.Controls"
+             xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
+             d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerSelectorViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="22" d:DesignWidth="165">
+    <ComboBox VerticalAlignment="Center" 
+              ItemsSource="{Binding Path=Items.Value, Mode=OneWay}" 
+              DisplayMemberPath="PickerSelectorDisplayName"
+              HorizontalAlignment="Left"
+              SelectedIndex="0"
+              SelectedItem="{Binding Path=SelectedSkill.Value}"
+              Background="{Binding Path=BackgroundColor}"
+              Width="165"/>
+</UserControl>
