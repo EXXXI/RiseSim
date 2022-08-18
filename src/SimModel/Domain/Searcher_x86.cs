@@ -288,24 +288,68 @@ namespace SimModel.Domain
             int columnIndex = 0;
             foreach (var equip in Masters.Heads)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                problem.ObjCoef[columnIndex++] = Score(equip);
             }
             foreach (var equip in Masters.Bodys)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                problem.ObjCoef[columnIndex++] = Score(equip);
             }
             foreach (var equip in Masters.Arms)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                problem.ObjCoef[columnIndex++] = Score(equip);
             }
             foreach (var equip in Masters.Waists)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                problem.ObjCoef[columnIndex++] = Score(equip);
             }
             foreach (var equip in Masters.Legs)
             {
-                problem.ObjCoef[columnIndex++] = equip.Maxdef;
+                problem.ObjCoef[columnIndex++] = Score(equip);
             }
+            foreach (var equip in Masters.Charms)
+            {
+                problem.ObjCoef[columnIndex++] = Score(equip);
+            }
+            foreach (var equip in Masters.Decos)
+            {
+                problem.ObjCoef[columnIndex++] = Score(equip);
+            }
+        }
+
+        private static int Score(Equipment equip)
+        {
+            int slot1 = 0;
+            int slot2 = 0;
+            int slot3 = 0;
+
+            if (equip.Kind != EquipKind.deco)
+            {
+                slot1 = equip.Slot1;
+                slot2 = equip.Slot2;
+                slot3 = equip.Slot3;
+            }
+            else
+            {
+                slot1 = -equip.Slot1;
+            }
+
+
+            int score = 0;
+
+            // 防御力
+            score += equip.Maxdef;
+
+            // スロット数
+            score *= 20;
+            score += Math.Sign(slot1);
+            score += Math.Sign(slot2);
+            score += Math.Sign(slot3);
+
+            // スロット大きさ
+            score *= 80;
+            score += slot1 + slot2 + slot3;
+
+            return score;
         }
 
         // 係数設定(防具データ)
@@ -698,7 +742,7 @@ namespace SimModel.Domain
         }
 
         // スロットの計算
-        // 例：3-1-1→1スロ以下3個2スロ以下3個3スロ以下1個
+        // 例：3-1-1→1スロ以下2個2スロ以下2個3スロ以下3個
         private int[] SlotCalc(int slot1, int slot2, int slot3)
         {
             int[] slotCond = new int[4];

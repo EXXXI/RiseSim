@@ -51,6 +51,7 @@
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="名前" Binding="{Binding Name, Mode=OneWay}" />
+                <DataGridTextColumn Header="空きスロ(目安)" Binding="{Binding EmptySlotNum, Mode=OneWay}" />
                 <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />

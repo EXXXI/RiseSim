@@ -135,6 +135,7 @@
                 <DataGridTextColumn Header="腰" Binding="{Binding Waist.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="足" Binding="{Binding Leg.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="護石" Binding="{Binding Charm.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="空きスロ(目安)" Binding="{Binding EmptySlotNum, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
                 <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
                 <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
