@@ -102,6 +102,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 説明
         public string Description { get; set; }
 
+        // 空きスロット数
+        public string EmptySlotNum { get; set; }
+
         // コンストラクタ
         public BindableEquipSet(EquipSet set)
         {
@@ -129,6 +132,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             WeaponSlotDisp = set.WeaponSlotDisp;
             SkillsDisp = set.SkillsDisp;
             Description = set.Description;
+            EmptySlotNum = set.EmptySlotNum;
             Original = set;
         }
 

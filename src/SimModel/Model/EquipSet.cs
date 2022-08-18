@@ -26,6 +26,8 @@ namespace SimModel.Model
     // 装備セット
     public class EquipSet
     {
+        private const string InvalidSlot = "invalid";
+
         // 頭装備
         public Equipment Head { get; set; } = new Equipment(EquipKind.head);
 
@@ -436,6 +438,9 @@ namespace SimModel.Model
                 sb.Append(EquipKind.deco.StrWithColon());
                 sb.Append(DecoNameCSV);
                 sb.Append('\n');
+                sb.Append("空きスロ：");
+                sb.Append(EmptySlotNum);
+                sb.Append('\n'); 
                 sb.Append("-----------");
                 foreach (var skill in Skills)
                 {
@@ -449,12 +454,14 @@ namespace SimModel.Model
             }
         }
 
-        // 装飾品がはめられる状態かチェック
-        public bool IsDecoValid { 
+        // 防具の空きスロット合計
+        public string EmptySlotNum
+        {
             get
             {
-                int[] reqSlots = { 0, 0, 0, 0 };
-                int[] hasSlots = { 0, 0, 0, 0 };
+                int[] reqSlots = { 0, 0, 0, 0 }; // 要求スロット
+                int[] hasSlots = { 0, 0, 0, 0 }; // 所持スロット
+                int[] restSlots = { 0, 0, 0, 0 }; // 空きスロット
 
                 foreach (var deco in Decos)
                 {
@@ -479,27 +486,42 @@ namespace SimModel.Model
                 CalcEquipHasSlot(hasSlots, Leg);
                 CalcEquipHasSlot(hasSlots, Charm);
 
-                if (reqSlots[3] > hasSlots[3])
+                // 空きスロット算出
+                for (int i = 0; i < 4; i++)
                 {
-                    return false;
+                    restSlots[i] = hasSlots[i] - reqSlots[i];
                 }
-                if (reqSlots[3] + reqSlots[2] > hasSlots[3] + hasSlots[2])
-                {
-                    return false;
-                }
-                if (reqSlots[3] + reqSlots[2] + reqSlots[1] > hasSlots[3] + hasSlots[2] + hasSlots[1])
-                {
-                    return false;
-                }
-                if (reqSlots[3] + reqSlots[2] + reqSlots[1] + reqSlots[0] > hasSlots[3] + hasSlots[2] + hasSlots[1] + hasSlots[0])
-                {
-                    return false;
-                }
-                return true;
 
+                // 足りない分は1Lv上を消費する
+                for (int i = 0; i < 3; i++)
+                {
+                    if (restSlots[i] < 0)
+                    {
+                        restSlots[i + 1] += restSlots[i];
+                        restSlots[i] = 0;
+                    }
+                }
+
+                if (restSlots[3] < 0)
+                {
+                    // スロット不足
+                    return InvalidSlot;
+                }
+
+                return $"Lv1:{restSlots[0]}, Lv2:{restSlots[1]}, Lv3:{restSlots[2]}, Lv4:{restSlots[3]}";
             }
         }
 
+        // 装飾品がはめられる状態かチェック
+        private bool IsDecoValid
+        {
+            get
+            {
+                return EmptySlotNum != InvalidSlot;
+            }
+        }
+
+        // 防具のスロット数計算
         private static void CalcEquipHasSlot(int[] hasSlots, Equipment equip)
         {
             if (equip.Slot1 > 0)
