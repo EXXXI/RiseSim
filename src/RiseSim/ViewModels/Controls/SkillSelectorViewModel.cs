@@ -19,7 +19,6 @@ using Reactive.Bindings;
 using RiseSim.Config;
 using SimModel.Model;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using RiseSim.Exceptions;
