@@ -6,27 +6,28 @@
              xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
              d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerSelectorViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="22" d:DesignWidth="167">
+             d:DesignHeight="30" d:DesignWidth="173">
 
     <Border>
         <Border.Style>
             <Style TargetType="{x:Type Border}">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderThickness" Value="4"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=Selected}" Value="true">
                         <Setter Property="BorderBrush" Value="Orange"/>
+                        <Setter Property="BorderThickness" Value="4"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        <ComboBox VerticalAlignment="Center"
-                  ItemsSource="{Binding Path=Items.Value, Mode=OneWay}" 
+        <ComboBox VerticalAlignment="Center" HorizontalContentAlignment="Center"
+                  ItemsSource="{Binding Path=Items, Mode=OneWay}" 
                   DisplayMemberPath="PickerSelectorDisplayName"
-                  HorizontalAlignment="Left"
                   SelectedIndex="0"
                   SelectedItem="{Binding Path=SelectedSkill.Value}"
+                  Height="22"
                   Width="165"/>
     </Border>
 </UserControl>
