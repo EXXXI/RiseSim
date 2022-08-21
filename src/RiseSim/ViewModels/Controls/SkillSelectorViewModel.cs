@@ -22,8 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RiseSim.Exceptions;
 
 namespace RiseSim.ViewModels.Controls
 {
@@ -91,6 +90,21 @@ namespace RiseSim.ViewModels.Controls
         {
             SkillName.Value = skill.Name;
             SkillLevel.Value = skill.Level;
+        }
+
+        /// <summary>
+        /// このSkillSelectorが選択しているスキルをSkillにして返す
+        /// </summary>
+        public Skill GetSelectedSkill()
+        {
+            var sameNameSkills = Masters.Skills.Where(s => s.Name == SkillName.Value).ToList();
+
+            if (!sameNameSkills.Any()) throw new SkillNotFoundException(SkillName.Value);
+
+            return sameNameSkills.First() with
+            {
+                Level = Math.Min(sameNameSkills.Max(s => s.Level), SkillLevel.Value)
+            };
         }
 
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
