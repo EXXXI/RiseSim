@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Prism.Mvvm;
-using Reactive.Bindings;
 using SimModel.Model;
 
 namespace RiseSim.ViewModels.Controls
@@ -13,12 +13,16 @@ namespace RiseSim.ViewModels.Controls
         /// Expanderに設定するタイトル。スキルカテゴリを設定する想定
         /// </summary>
         public string Header { get; init; }
-        public ReactivePropertySlim<ObservableCollection<SkillPickerSelectorViewModel>> SkillPickerSelectors { get; init; }
+
+        public ObservableCollection<SkillPickerSelectorViewModel> SkillPickerSelectors { get; init; }
 
         public SkillPickerContainerViewModel(string categoryName, IEnumerable<Skill> skills)
         {
             Header = categoryName;
-            SkillPickerSelectors = new ReactivePropertySlim<ObservableCollection<SkillPickerSelectorViewModel>>
+            SkillPickerSelectors = new ObservableCollection<SkillPickerSelectorViewModel>(skills.Select(x =>
+                new SkillPickerSelectorViewModel(x)));
+        }
+
         /// <summary>
         /// 特定のスキルを担当するSkillPickerSelectorのスキルを設定する
         /// </summary>
@@ -59,7 +63,7 @@ namespace RiseSim.ViewModels.Controls
         ~SkillPickerContainerViewModel() => Dispose(false);
 
         public void Dispose()
-            {
+        {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
