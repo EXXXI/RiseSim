@@ -49,6 +49,11 @@
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <StackPanel>
+                    <Button x:Name="LaunchSkillPicker" 
+                            Content="スキルピッカーを開く"
+                            Command="{Binding Path=LaunchSkillPickerCommand}"/>
+                </StackPanel>
+                <StackPanel>
                     <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
