@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Command="{Binding Path=OnAccepted}" Content="適用する" Margin="5"></Button>
-            <Button Grid.Column="1" Command="{Binding Path=OnCanceled}" Content="キャンセル" Margin="5"></Button>
+            <Button Grid.Column="1" Command="{Binding Path=OnCanceled}" Content="キャンセルする" Margin="5"></Button>
         </Grid>
     </Grid>
 </Window>
