@@ -31,6 +31,17 @@ namespace RiseSim.ViewModels.Controls
             if(selectorViewModel is null) return;
             selectorViewModel.SelectedSkill.Value = skill;
         }
+
+        /// <summary>
+        /// このコンテナにあるSelectorのうち選択されているスキルの配列を返す
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyList<Skill> SelectedSkills() => 
+            SkillPickerSelectors
+                .Where(s => s.Selected)
+                .Select(s => s.SelectedSkill.Value)
+                .ToList();
+
     private bool disposed;
         protected virtual void Dispose(bool disposing)
         {
