@@ -7,7 +7,7 @@ using SimModel.Model;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class SkillPickerContainerViewModel : BindableBase
+    internal class SkillPickerContainerViewModel : BindableBase, IDisposable
     {
         /// <summary>
         /// Expanderに設定するタイトル。スキルカテゴリを設定する想定
@@ -19,10 +19,26 @@ namespace RiseSim.ViewModels.Controls
         {
             Header = categoryName;
             SkillPickerSelectors = new ReactivePropertySlim<ObservableCollection<SkillPickerSelectorViewModel>>
+    private bool disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if(disposed) return;
+            if (!disposing) return;
+
+            foreach (var skillPickerSelectorViewModel in SkillPickerSelectors)
             {
-                Value = new ObservableCollection<SkillPickerSelectorViewModel>(skills.Select(x =>
-                    new SkillPickerSelectorViewModel(x)))
-            };
+                skillPickerSelectorViewModel.Dispose();
+            }
+
+            disposed = true;
+        }
+
+        ~SkillPickerContainerViewModel() => Dispose(false);
+
+        public void Dispose()
+            {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

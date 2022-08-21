@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Windows.Media;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using SimModel.Model;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class SkillPickerSelectorViewModel : BindableBase
+    internal class SkillPickerSelectorViewModel : BindableBase, IDisposable
     {
         /// <summary>
         /// ComboBox用のデータソース
         /// </summary>
-        public ReactivePropertySlim<ObservableCollection<Skill>> Items { get; init; }
+        public ObservableCollection<Skill> Items { get; init; }
 
         /// <summary>
         /// 選択されているスキル
         /// </summary>
         public ReactivePropertySlim<Skill> SelectedSkill { get; set; }
 
-        private bool skillSelected = false;
+        private bool skillSelected;
 
         public bool Selected
         {
@@ -31,18 +29,35 @@ namespace RiseSim.ViewModels.Controls
 
         public SkillPickerSelectorViewModel(Skill skill)
         {
-            Items = new ReactivePropertySlim<ObservableCollection<Skill>>
-            {
-                Value = new ObservableCollection<Skill>(
-                    Enumerable.Range(0, skill.Level + 1).Select(level => skill with { Level = level })
-                )
-            };
 
-            SelectedSkill = new ReactivePropertySlim<Skill> { Value = Items.Value.First() };
+            Items = new ObservableCollection<Skill>(Enumerable.Range(0, skill.Level + 1)
+                .Select(level => skill with { Level = level }));
+
+            SelectedSkill = new ReactivePropertySlim<Skill> { Value = Items.First() };
             SelectedSkill.Subscribe(selected =>
             {
                 Selected = selected.Level != 0;
             });
         }
+
+        private bool disposed = false;
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            if (!disposing) return;
+
+            SelectedSkill.Dispose();
+
+            disposed = true;
+        }
+
+        ~SkillPickerSelectorViewModel() => Dispose(false);
+
     }
 }
