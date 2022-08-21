@@ -83,6 +83,16 @@ namespace RiseSim.ViewModels.Controls
         {
         }
 
+        /// <summary>
+        /// 特定のスキルを選択した状態のSkillSelectorViewModelを作って返す
+        /// </summary>
+        /// <param name="skill"></param>
+        public SkillSelectorViewModel(Skill skill) : this(false)
+        {
+            SkillName.Value = skill.Name;
+            SkillLevel.Value = skill.Level;
+        }
+
         // 選択中スキル名にあわせてスキルレベルの選択肢を変更
         internal void SetLevels()
         {
