@@ -3,17 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:RiseSim.Views.Controls"
              xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
              d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerSelectorViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="22" d:DesignWidth="165">
-    <ComboBox VerticalAlignment="Center" 
-              ItemsSource="{Binding Path=Items.Value, Mode=OneWay}" 
-              DisplayMemberPath="PickerSelectorDisplayName"
-              HorizontalAlignment="Left"
-              SelectedIndex="0"
-              SelectedItem="{Binding Path=SelectedSkill.Value}"
-              Background="{Binding Path=BackgroundColor}"
-              Width="165"/>
+             d:DesignHeight="22" d:DesignWidth="167">
+
+    <Border>
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=Selected}" Value="true">
+                        <Setter Property="BorderBrush" Value="Orange"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <ComboBox VerticalAlignment="Center"
+                  ItemsSource="{Binding Path=Items.Value, Mode=OneWay}" 
+                  DisplayMemberPath="PickerSelectorDisplayName"
+                  HorizontalAlignment="Left"
+                  SelectedIndex="0"
+                  SelectedItem="{Binding Path=SelectedSkill.Value}"
+                  Width="165"/>
+    </Border>
 </UserControl>
