@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:RiseSim.ViewModels.Controls"
         d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerWindowViewModel}"
         mc:Ignorable="d"
-        Title="SkillPickerWindowView" Height="500" Width="1000" MinWidth="800">
+        Title="スキルピッカー" Height="500" Width="1000" MinWidth="800">
     <Grid Margin="10" Height="Auto" Width="Auto" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
