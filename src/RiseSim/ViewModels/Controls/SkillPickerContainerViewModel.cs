@@ -19,6 +19,18 @@ namespace RiseSim.ViewModels.Controls
         {
             Header = categoryName;
             SkillPickerSelectors = new ReactivePropertySlim<ObservableCollection<SkillPickerSelectorViewModel>>
+        /// <summary>
+        /// 特定のスキルを担当するSkillPickerSelectorのスキルを設定する
+        /// </summary>
+        /// <param name="skill"></param>
+        public void SetPickerSelected(Skill skill)
+        {
+            if(skill.Category != Header) return;
+            // 特定のスキルを担当するSkillPickerSelectorは一つしかないのでFirstで良い
+            var selectorViewModel = SkillPickerSelectors.FirstOrDefault(s => s.SelectedSkill.Value.Name == skill.Name);
+            if(selectorViewModel is null) return;
+            selectorViewModel.SelectedSkill.Value = skill;
+        }
     private bool disposed;
         protected virtual void Dispose(bool disposing)
         {
