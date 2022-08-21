@@ -7,7 +7,7 @@
              xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
              d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerContainerViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Expander 
             HorizontalAlignment="Center" 
             Height="Auto" 
@@ -17,7 +17,7 @@
             VerticalAlignment="Top" 
             Width="800"
         >
-        <ItemsControl ItemsSource="{Binding Path=SkillPickerSelectors.Value, Mode=OneWay}">
+        <ItemsControl ItemsSource="{Binding Path=SkillPickerSelectors, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <local:SkillPickerSelector Margin="5"/>
