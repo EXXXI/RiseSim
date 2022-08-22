@@ -95,6 +95,9 @@ namespace SimModel.Model
         // 装備種類
         public EquipKind Kind { get; set; }
 
+        // ベース防具(非錬成防具の場合null)
+        public Equipment? BaseEquipment { get; set; } = null;
+
         // デフォルトコンストラクタ
         public Equipment()
         {
@@ -222,6 +225,17 @@ namespace SimModel.Model
                 {
                     sb.Append('\n');
                     sb.Append(skill.Description);
+                }
+
+                // ベース防具情報
+                if (BaseEquipment != null)
+                {
+                    sb.Append('\n');
+                    sb.Append("-----------");
+                    sb.Append('\n');
+                    sb.Append("(ベース防具)");
+                    sb.Append('\n');
+                    sb.Append(BaseEquipment.Description);
                 }
 
                 return sb.ToString();
