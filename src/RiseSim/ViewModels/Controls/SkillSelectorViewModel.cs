@@ -98,7 +98,10 @@ namespace RiseSim.ViewModels.Controls
         {
             var sameNameSkills = Masters.Skills.Where(s => s.Name == SkillName.Value).ToList();
 
-            if (!sameNameSkills.Any()) throw new SkillNotFoundException(SkillName.Value);
+            if (!sameNameSkills.Any())
+            {
+                throw new SkillNotFoundException(SkillName.Value);
+            }
 
             return sameNameSkills.First() with
             {

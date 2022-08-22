@@ -49,8 +49,14 @@ namespace RiseSim.ViewModels.Controls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed) return;
-            if (!disposing) return;
+            if (disposed)
+            {
+                return;
+            }
+            if (!disposing)
+            {
+                return;
+            }
 
             SelectedSkill.Dispose();
 

@@ -31,7 +31,10 @@ internal class SkillPickerWindowViewModel : BindableBase, IDisposable
                 .Select(g =>
                 {
                     var vm = new SkillPickerContainerViewModel(g.Key, g);
-                    if (!preSelectedSkillDictionary.TryGetValue(g.Key, out var value)) return vm;
+                    if (!preSelectedSkillDictionary.TryGetValue(g.Key, out var value))
+                    {
+                        return vm;
+                    }
 
                     foreach (var skill in value)
                     {
@@ -60,8 +63,14 @@ internal class SkillPickerWindowViewModel : BindableBase, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if(disposed) return;
-        if(!disposing) return;
+        if (disposed)
+        {
+            return;
+        }
+        if (!disposing)
+        {
+            return;
+        }
 
         foreach (var skillPickerContainerViewModel in ContainerViewModels)
         {
