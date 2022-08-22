@@ -27,6 +27,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RiseSim.Views.SubViews;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -138,6 +139,7 @@ namespace RiseSim.ViewModels.SubViews
         // 防具を固定するコマンド
         public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
 
+        public ReactiveCommand LaunchSkillPickerCommand { get; } = new();
 
         // コマンドを設定
         private void SetCommand()
@@ -152,6 +154,31 @@ namespace RiseSim.ViewModels.SubViews
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
             ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
+            LaunchSkillPickerCommand.Subscribe(_ =>
+            {
+                var picker = new SkillPickerWindowView();
+                using var pickerViewModel = new SkillPickerWindowViewModel(
+                    // SkillSelectorVMsですでに選択しているスキルをスキルピッカーに反映
+                    SkillSelectorVMs.Value
+                        .Where(vm => vm.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                        .Select(vm => vm.GetSelectedSkill())
+                );
+                pickerViewModel.OnAccept += skills =>
+                {
+                    // ピッカーで選んだスキルをSkillSelectorVMsに反映する
+                    var vms = new List<SkillSelectorViewModel>(skills.Select(s => new SkillSelectorViewModel(s)));
+                    for (var i = vms.Count; i < SkillSelectorCount; i++) 
+                        vms.Add(new SkillSelectorViewModel());
+                    SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
+
+                    picker.Close();
+                };
+
+                pickerViewModel.OnCancel += () => picker.Close();
+                picker.DataContext = pickerViewModel;
+
+                picker.ShowDialog();
+            });
         }
 
         // 装備除外
