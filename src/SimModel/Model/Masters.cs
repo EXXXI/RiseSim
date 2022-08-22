@@ -114,6 +114,7 @@ namespace SimModel.Model
                     {
                         newEquip.Skills.Add(skill);
                     }
+                    newEquip.BaseEquipment = baseEquip;
                     equips.Add(newEquip);
                 }
             }

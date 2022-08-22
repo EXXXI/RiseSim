@@ -27,6 +27,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RiseSim.Views.SubViews;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -138,6 +139,8 @@ namespace RiseSim.ViewModels.SubViews
         // 防具を固定するコマンド
         public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
 
+        // スキルピッカー起動コマンド
+        public ReactiveCommand LaunchSkillPickerCommand { get; } = new();
 
         // コマンドを設定
         private void SetCommand()
@@ -152,6 +155,33 @@ namespace RiseSim.ViewModels.SubViews
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
             ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
+            LaunchSkillPickerCommand.Subscribe(_ =>
+            {
+                var picker = new SkillPickerWindowView();
+                using var pickerViewModel = new SkillPickerWindowViewModel(
+                    // SkillSelectorVMsですでに選択しているスキルをスキルピッカーに反映
+                    SkillSelectorVMs.Value
+                        .Where(vm => vm.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                        .Select(vm => vm.GetSelectedSkill())
+                );
+                pickerViewModel.OnAccept += skills =>
+                {
+                    // ピッカーで選んだスキルをSkillSelectorVMsに反映する
+                    var vms = new List<SkillSelectorViewModel>(skills.Select(s => new SkillSelectorViewModel(s)));
+                    for (var i = vms.Count; i < SkillSelectorCount; i++)
+                    { 
+                        vms.Add(new SkillSelectorViewModel());
+                    }
+                    SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
+
+                    picker.Close();
+                };
+
+                pickerViewModel.OnCancel += () => picker.Close();
+                picker.DataContext = pickerViewModel;
+
+                picker.ShowDialog();
+            });
         }
 
         // 装備除外
@@ -430,9 +460,9 @@ namespace RiseSim.ViewModels.SubViews
             // ログ表示用
             StringBuilder sb = new StringBuilder();
 
-            // スキル入力部品の数以上には実行しない(できない)
-            int count = Math.Min(SkillSelectorCount, mySet.Skills.Count);
-            for (int i = 0; i < count; i++)
+            // マイセットの内容を反映したスキル入力部品を用意
+            var vms = new List<SkillSelectorViewModel>();
+            for (int i = 0; i < mySet.Skills.Count; i++)
             {
                 if (mySet.Skills[i].Level <= 0)
                 {
@@ -440,19 +470,17 @@ namespace RiseSim.ViewModels.SubViews
                 }
 
                 // スキル情報反映
-                SkillSelectorVMs.Value[i].SkillName.Value = mySet.Skills[i].Name;
-                SkillSelectorVMs.Value[i].SkillLevel.Value = mySet.Skills[i].Level;
+                vms.Add(new SkillSelectorViewModel(mySet.Skills[i]));
 
                 // ログ表示用
                 sb.Append(mySet.Skills[i].Description);
                 sb.Append(',');
-
             }
-            for (int i = count; i < SkillSelectorCount; i++)
+            for (var i = vms.Count; i < SkillSelectorCount; i++)
             {
-                // 使わない行は選択状態をリセット
-                SkillSelectorVMs.Value[i].SetDefault();
+                vms.Add(new SkillSelectorViewModel());
             }
+            SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
 
             // スロット情報反映
             WeaponSlots.Value = mySet.WeaponSlotDisp;
@@ -470,10 +498,12 @@ namespace RiseSim.ViewModels.SubViews
         // 全ての検索条件をクリア
         private void ClearSearchCondition()
         {
-            foreach (var vm in SkillSelectorVMs.Value)
+            var vms = new List<SkillSelectorViewModel>();
+            for (var i = 0; i < SkillSelectorCount; i++)
             {
-                vm.SetDefault();
+                vms.Add(new SkillSelectorViewModel());
             }
+            SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
             WeaponSlots.Value = "0-0-0";
             Def.Value = string.Empty;
             Fire.Value = string.Empty;
