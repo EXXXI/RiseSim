@@ -31,7 +31,8 @@ namespace SimModel.Model
         waist,
         leg,
         deco,
-        charm
+        charm,
+        error
     }
     public static class EquipKindExt
     {

@@ -385,19 +385,44 @@ namespace SimModel.Domain
         // 錬成装備マスタ読み込み
         static internal void LoadAugmentationCSV()
         {
-            Masters.Augmentations = new();
+
+            // 一時置き場
+            List<Augmentation> augList = new();
 
             string csv = ReadAllText(AugmentationCsv);
             var x = CsvReader.ReadFromText(csv);
             foreach (ICsvLine line in x)
             {
                 Augmentation aug = new Augmentation();
-                aug.DispName = line[@"名前"];
                 aug.BaseName = line[@"ベース装備"];
-                aug.Kind = ToEquipKind(line[@"種類"]);
-                aug.Slot1 = Parse(line[@"スロット1"]);
-                aug.Slot2 = Parse(line[@"スロット2"]);
-                aug.Slot3 = Parse(line[@"スロット3"]);
+                // TODO: 例外処理は重いから別の方法で判別できないか
+                try
+                {
+                    aug.Kind = ToEquipKind(line[@"種類"]);
+                }
+                catch (InvalidOperationException)
+                {
+                    aug.Kind = EquipKind.error;
+                }
+                // 種類の指定がない場合泣きシミュデータ読み込みモード
+                if (aug.Kind == EquipKind.error)
+                {
+                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
+                    aug.Kind = baseEquip.Kind;
+                    aug.Slot1 = baseEquip.Slot1 + Parse(line[@"泣読込用1"]);
+                    aug.Slot2 = baseEquip.Slot2 + Parse(line[@"泣読込用2"]);
+                    aug.Slot3 = baseEquip.Slot3 + Parse(line[@"泣読込用3"]);
+
+                    aug.Name = Guid.NewGuid().ToString();
+                }
+                else
+                {
+                    aug.Slot1 = Parse(line[@"スロット1"]);
+                    aug.Slot2 = Parse(line[@"スロット2"]);
+                    aug.Slot3 = Parse(line[@"スロット3"]);
+                    aug.DispName = line[@"名前"];
+                    aug.Name = line[@"管理用ID"];
+                }
                 aug.Def = Parse(line[@"防御力増減"]);
                 aug.Fire = Parse(line[@"火耐性増減"]);
                 aug.Water = Parse(line[@"水耐性増減"]);
@@ -420,11 +445,48 @@ namespace SimModel.Domain
                     skills.Add(new Skill(skill, Parse(level), true));
                 }
                 aug.Skills = skills;
-                aug.Name = line[@"管理用ID"];
 
+                augList.Add(aug);
+                    
+            }
+
+            // Masters.Augmentationsに移し替え
+            // このとき、名前が空欄のものはデフォルト名をつける
+            Masters.Augmentations = new();
+            foreach (var aug in augList)
+            {
+                if (string.IsNullOrWhiteSpace(aug.DispName))
+                {
+                    aug.DispName = MakeDefaultDispName(aug.BaseName);
+                }
                 Masters.Augmentations.Add(aug);
             }
+
+            // GUID等保存のためにSaveを呼び出し
+            SaveAugmentationCSV();
         }
+
+        // 泣データ読み込み時のデフォルト名
+        private static string MakeDefaultDispName(string baseName)
+        {
+            bool isExist = true;
+            string name = baseName + "_" + 0;
+            for (int i = 1; isExist; i++)
+            {
+                isExist = false;
+                name = baseName + "_" + i;
+                foreach (var aug in Masters.Augmentations)
+                {
+                    if (aug.DispName == name)
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+            }
+            return name;
+        }
+
 
         // 錬成装備マスタ書き込み
         static internal void SaveAugmentationCSV()
@@ -432,29 +494,32 @@ namespace SimModel.Domain
             List<string[]> body = new List<string[]>();
             foreach (var aug in Masters.Augmentations)
             {
+                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
                 List<string> bodyStrings = new List<string>();
-                bodyStrings.Add(aug.DispName ?? string.Empty);
                 bodyStrings.Add(aug.BaseName);
-                bodyStrings.Add(aug.Kind.Str());
-                bodyStrings.Add(aug.Slot1.ToString());
-                bodyStrings.Add(aug.Slot2.ToString());
-                bodyStrings.Add(aug.Slot3.ToString());
                 bodyStrings.Add(aug.Def.ToString());
                 bodyStrings.Add(aug.Fire.ToString());
                 bodyStrings.Add(aug.Water.ToString());
                 bodyStrings.Add(aug.Thunder.ToString());
                 bodyStrings.Add(aug.Ice.ToString());
                 bodyStrings.Add(aug.Dragon.ToString());
+                bodyStrings.Add((aug.Slot1 - baseEquip.Slot1).ToString());
+                bodyStrings.Add((aug.Slot2 - baseEquip.Slot2).ToString());
+                bodyStrings.Add((aug.Slot3 - baseEquip.Slot3).ToString());
                 for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
                 {
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Name : string.Empty);
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Level.ToString() : string.Empty);
                 }
+                bodyStrings.Add(aug.DispName ?? string.Empty);
+                bodyStrings.Add(aug.Kind.Str());
+                bodyStrings.Add(aug.Slot1.ToString());
+                bodyStrings.Add(aug.Slot2.ToString());
+                bodyStrings.Add(aug.Slot3.ToString());
                 bodyStrings.Add(aug.Name);
                 body.Add(bodyStrings.ToArray());
             }
-
-            string[] header = new string[] { "名前", "ベース装備", "種類", "スロット1", "スロット2", "スロット3", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "スキル系統3", "スキル値3", "スキル系統4", "スキル値4", "スキル系統5", "スキル値5", "管理用ID" };
+            string[] header = new string[] { "ベース装備", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "泣読込用1", "泣読込用2", "泣読込用3", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "スキル系統3", "スキル値3", "スキル系統4", "スキル値4", "スキル系統5", "スキル値5", "名前", "種類", "スロット1", "スロット2", "スロット3", "管理用ID" };
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(AugmentationCsv, export);
         }
@@ -526,7 +591,7 @@ namespace SimModel.Domain
                     // 誤記
                     return EquipKind.leg;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return EquipKind.error;
             }
         }
     }
