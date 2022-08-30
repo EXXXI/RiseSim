@@ -278,6 +278,7 @@ namespace RiseSim.ViewModels.SubViews
             MainViewModel.Instance.LoadEquips();
         }
 
+        // TODO: 泣データ読み込み時にも同じ処理をしているので共通化したい
         // 錬成設定のデフォルト名
         private string MakeDefaultDispName(string baseName)
         {
