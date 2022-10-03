@@ -181,7 +181,7 @@ namespace RiseSim.ViewModels.SubViews
             Ice.Value = aug.Ice.ToString();
             Dragon.Value = aug.Dragon.ToString();
 
-            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
+            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
             {
                 if (i < aug.Skills.Count)
                 {
@@ -206,7 +206,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // スキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
-            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
+            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
             {
                 selectorVMs.Add(new SkillSelectorViewModel(true));
             }

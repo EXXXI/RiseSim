@@ -55,7 +55,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="save\augmentation.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="save\myset.csv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

@@ -391,8 +391,24 @@ namespace SimModel.Domain
 
             string csv = ReadAllText(AugmentationCsv);
             var x = CsvReader.ReadFromText(csv);
+            bool isFirst = true;
             foreach (ICsvLine line in x)
             {
+                // スキル数確認
+                // 1行目でのみ実行
+                if (isFirst)
+                {
+                    for (int i = 1; true; i++)
+                    {
+                        if (!line.Headers.Contains(@"スキル系統" + i))
+                        {
+                            LogicConfig.Instance.MaxAugmentationSkillCountActual = Math.Max(LogicConfig.Instance.MaxAugmentationSkillCount, i - 1);
+                            break;
+                        }
+                    }
+                    isFirst = false;
+                }
+
                 Augmentation aug = new Augmentation();
                 aug.BaseName = line[@"ベース装備"];
                 // TODO: 例外処理は重いから別の方法で判別できないか
@@ -430,7 +446,7 @@ namespace SimModel.Domain
                 aug.Ice = Parse(line[@"氷耐性増減"]);
                 aug.Dragon = Parse(line[@"龍耐性増減"]);
                 List<Skill> skills = new List<Skill>();
-                for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCount; i++)
+                for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
                 {
                     if (!line.Headers.Contains(@"スキル系統" + i))
                     {
@@ -447,7 +463,6 @@ namespace SimModel.Domain
                 aug.Skills = skills;
 
                 augList.Add(aug);
-                    
             }
 
             // Masters.Augmentationsに移し替え
@@ -461,6 +476,18 @@ namespace SimModel.Domain
                 }
                 Masters.Augmentations.Add(aug);
             }
+
+            // スキル数再確認
+            // Column数ではなく実際のスキル数を数える(設定値優先)
+            int skillCount = LogicConfig.Instance.MaxAugmentationSkillCount;
+            foreach (var aug in Masters.Augmentations)
+            {
+                if (skillCount < aug.Skills.Count)
+                {
+                    skillCount = aug.Skills.Count;
+                }
+            }
+            LogicConfig.Instance.MaxAugmentationSkillCountActual = skillCount;
 
             // GUID等保存のためにSaveを呼び出し
             SaveAugmentationCSV();
@@ -506,7 +533,7 @@ namespace SimModel.Domain
                 bodyStrings.Add((aug.Slot1 - baseEquip.Slot1).ToString());
                 bodyStrings.Add((aug.Slot2 - baseEquip.Slot2).ToString());
                 bodyStrings.Add((aug.Slot3 - baseEquip.Slot3).ToString());
-                for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCount; i++)
+                for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
                 {
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Name : string.Empty);
                     bodyStrings.Add(aug.Skills.Count > i ? aug.Skills[i].Level.ToString() : string.Empty);
@@ -519,7 +546,17 @@ namespace SimModel.Domain
                 bodyStrings.Add(aug.Name);
                 body.Add(bodyStrings.ToArray());
             }
-            string[] header = new string[] { "ベース装備", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "泣読込用1", "泣読込用2", "泣読込用3", "スキル系統1", "スキル値1", "スキル系統2", "スキル値2", "スキル系統3", "スキル値3", "スキル系統4", "スキル値4", "スキル系統5", "スキル値5", "名前", "種類", "スロット1", "スロット2", "スロット3", "管理用ID" };
+
+            string[] header1 = new string[] { "ベース装備", "防御力増減", "火耐性増減", "水耐性増減", "雷耐性増減", "氷耐性増減", "龍耐性増減", "泣読込用1", "泣読込用2", "泣読込用3" };
+            List<string> header2List = new();
+            for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
+            {
+                header2List.Add(@"スキル系統" + i);
+                header2List.Add(@"スキル値" + i);
+            }
+            string[] header2 = header2List.ToArray();
+            string[] header3 = new string[] { "名前", "種類", "スロット1", "スロット2", "スロット3", "管理用ID" };
+            string[] header = header1.Concat(header2).Concat(header3).ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(AugmentationCsv, export);
         }

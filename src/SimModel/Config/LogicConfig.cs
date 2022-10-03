@@ -32,6 +32,9 @@ namespace SimModel.Config
         // ロジック設定ファイル
         private const string ConfCsv = "conf/logicConfig.csv";
 
+        // 傀異錬成防具のスキル数の設定下限(泣シミュとの連携用)
+        private const int MinAugmentationSkillCount = 5;
+
         // 最近使ったスキルの記憶容量
         public int MaxRecentSkillCount { get; set; }
 
@@ -44,9 +47,12 @@ namespace SimModel.Config
         // 護石のスキル最大個数
         public int MaxCharmSkillCount { get; set; }
 
-        // TODO: 変更可能にするならCSVあたりもいじる必要あり
-        // 傀異錬成防具のスキル最大個数
-        public int MaxAugmentationSkillCount { get; set; } = 5;
+        // 傀異錬成防具のスキル最大個数(設定値)
+        public int MaxAugmentationSkillCount { get; set; }
+
+        // 傀異錬成防具のスキル最大個数(実際の値)
+        // 設定値を超える数のスキル情報がCSVにあった場合にそれに合わせて変更される
+        public int MaxAugmentationSkillCountActual { get; set; }
 
         // 風雷合一
         public string FuraiName { get; } = "風雷合一";
@@ -61,10 +67,16 @@ namespace SimModel.Config
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                MaxRecentSkillCount = Parse(line[@"最近使ったスキルの記憶容量"], 20);
-                MaxEquipSkillCount = Parse(line[@"防具のスキル最大個数"], 5);
-                MaxDecoSkillCount = Parse(line[@"装飾品のスキル最大個数"], 2);
-                MaxCharmSkillCount = Parse(line[@"護石のスキル最大個数"], 2);
+                MaxRecentSkillCount = LoadConfigItem(line, @"最近使ったスキルの記憶容量", 20);
+                MaxEquipSkillCount = LoadConfigItem(line, @"防具のスキル最大個数", 5);
+                MaxDecoSkillCount = LoadConfigItem(line, @"装飾品のスキル最大個数", 2);
+                MaxCharmSkillCount = LoadConfigItem(line, @"護石のスキル最大個数", 2);
+                MaxAugmentationSkillCount = LoadConfigItem(line, @"傀異錬成防具のスキル最大個数", 7);
+                if (MaxAugmentationSkillCount < MinAugmentationSkillCount)
+                {
+                    MaxAugmentationSkillCount = MinAugmentationSkillCount;
+                }
+                MaxAugmentationSkillCountActual = MaxAugmentationSkillCount;
             }
         }
 
@@ -78,6 +90,21 @@ namespace SimModel.Config
                     instance = new LogicConfig();
                 }
                 return instance;
+            }
+        }
+
+        // TODO: ViewConfigでも同じことをしたい&共通化したい
+        // Configの各項目を読み込み
+        // 読み込み失敗時はdefの値を利用
+        static private int LoadConfigItem(ICsvLine line, string columnName, int def)
+        {
+            try
+            {
+                return Parse(line[columnName], 3);
+            }
+            catch (Exception)
+            {
+                return def;
             }
         }
 
