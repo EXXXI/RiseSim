@@ -122,8 +122,10 @@ namespace SimModel.Model
         }
 
         // 装備名から装備を取得
-        public static Equipment GetEquipByName(string name)
+        public static Equipment GetEquipByName(string equipName)
         {
+            string? name = equipName?.Trim();
+
             foreach (var equip in Heads)
             {
                 if (equip.Name == name)
