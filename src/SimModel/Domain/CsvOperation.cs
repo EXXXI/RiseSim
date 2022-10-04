@@ -400,7 +400,7 @@ namespace SimModel.Domain
                 {
                     for (int i = 1; true; i++)
                     {
-                        if (!line.Headers.Contains(@"スキル系統" + i))
+                        if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
                         {
                             LogicConfig.Instance.MaxAugmentationSkillCountActual = Math.Max(LogicConfig.Instance.MaxAugmentationSkillCount, i - 1);
                             break;
@@ -448,17 +448,25 @@ namespace SimModel.Domain
                 List<Skill> skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
                 {
-                    if (!line.Headers.Contains(@"スキル系統" + i))
+                    if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
                     {
                         break;
                     }
-                    string skill = line[@"スキル系統" + i];
-                    string level = line[@"スキル値" + i];
-                    if (string.IsNullOrWhiteSpace(skill))
+                    try
                     {
+                        string skill = line[@"スキル系統" + i];
+                        string level = line[@"スキル値" + i];
+                        if (string.IsNullOrWhiteSpace(skill))
+                        {
+                            break;
+                        }
+                        skills.Add(new Skill(skill, Parse(level), true));
+                    }
+                    catch (Exception)
+                    {
+                        // カラムが存在しない場合
                         break;
                     }
-                    skills.Add(new Skill(skill, Parse(level), true));
                 }
                 aug.Skills = skills;
 
