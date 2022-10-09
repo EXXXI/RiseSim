@@ -14,6 +14,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using SimModel.Config;
 using SimModel.Domain;
 using SimModel.Model;
 using System;
@@ -122,7 +123,7 @@ namespace SimModel.Service
 
             // 全スキル全レベルを走査
             Parallel.ForEach(Masters.Skills,
-                new ParallelOptions { MaxDegreeOfParallelism = 4 }, // TODO: マジックナンバー
+                new ParallelOptions { MaxDegreeOfParallelism = LogicConfig.Instance.MaxDegreeOfParallelism },
                 () => new List<Skill>(),
                 (skill, loop, subResult) =>
                 {

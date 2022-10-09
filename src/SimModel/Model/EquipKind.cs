@@ -65,5 +65,20 @@ namespace SimModel.Model
         {
             return Str(kind) + '：';
         }
+
+        // 文字列をEquipKindに
+        public static EquipKind ToEquipKind(this string? str)
+        {
+            return str switch
+            {
+                "頭" => EquipKind.head,
+                "胴" => EquipKind.body,
+                "腕" => EquipKind.arm,
+                "腰" => EquipKind.waist,
+                "足" => EquipKind.leg,
+                "脚" => EquipKind.leg,// 誤記
+                _ => EquipKind.error,
+            };
+        }
     }
 }

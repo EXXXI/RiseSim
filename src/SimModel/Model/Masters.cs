@@ -241,5 +241,26 @@ namespace SimModel.Model
             }
             throw new ArgumentException();
         }
+
+        // 錬成防具のデフォルト名作成
+        public static string MakeAugmentaionDefaultDispName(string baseName)
+        {
+            bool isExist = true;
+            string name = baseName + "_" + 0;
+            for (int i = 1; isExist; i++)
+            {
+                isExist = false;
+                name = baseName + "_" + i;
+                foreach (var aug in Augmentations)
+                {
+                    if (aug.DispName == name)
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+            }
+            return name;
+        }
     }
 }
