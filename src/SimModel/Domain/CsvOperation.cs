@@ -56,7 +56,7 @@ namespace SimModel.Domain
                 .Select(line => new
                 {
                     Name = line[SkillMasterHeaderName],
-                    Level = Parse(line[SkillMasterHeaderRequiredPoints]),
+                    Level = ParseUtil.Parse(line[SkillMasterHeaderRequiredPoints]),
                     Category = line[SkillMasterHeaderCategory]
                 })
                 // マスタのCSVにある同名スキルのうち、スキルレベルが最大のものだけを選ぶ
@@ -115,18 +115,18 @@ namespace SimModel.Domain
             {
                 Equipment equip = new Equipment(kind);
                 equip.Name = line[@"名前"];
-                equip.Sex = (Sex)Parse(line[@"性別(0=両,1=男,2=女)"]);
-                equip.Rare = Parse(line[@"レア度"]);
-                equip.Slot1 = Parse(line[@"スロット1"]);
-                equip.Slot2 = Parse(line[@"スロット2"]);
-                equip.Slot3 = Parse(line[@"スロット3"]);
-                equip.Mindef = Parse(line[@"初期防御力"]);
-                equip.Maxdef = Parse(line[@"最終防御力"], equip.Mindef); // 読み込みに失敗した場合は初期防御力と同値とみなす
-                equip.Fire = Parse(line[@"火耐性"]);
-                equip.Water = Parse(line[@"水耐性"]);
-                equip.Thunder = Parse(line[@"雷耐性"]);
-                equip.Ice = Parse(line[@"氷耐性"]);
-                equip.Dragon = Parse(line[@"龍耐性"]);
+                equip.Sex = (Sex)ParseUtil.Parse(line[@"性別(0=両,1=男,2=女)"]);
+                equip.Rare = ParseUtil.Parse(line[@"レア度"]);
+                equip.Slot1 = ParseUtil.Parse(line[@"スロット1"]);
+                equip.Slot2 = ParseUtil.Parse(line[@"スロット2"]);
+                equip.Slot3 = ParseUtil.Parse(line[@"スロット3"]);
+                equip.Mindef = ParseUtil.Parse(line[@"初期防御力"]);
+                equip.Maxdef = ParseUtil.Parse(line[@"最終防御力"], equip.Mindef); // 読み込みに失敗した場合は初期防御力と同値とみなす
+                equip.Fire = ParseUtil.Parse(line[@"火耐性"]);
+                equip.Water = ParseUtil.Parse(line[@"水耐性"]);
+                equip.Thunder = ParseUtil.Parse(line[@"雷耐性"]);
+                equip.Ice = ParseUtil.Parse(line[@"氷耐性"]);
+                equip.Dragon = ParseUtil.Parse(line[@"龍耐性"]);
                 List<Skill> skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxEquipSkillCount; i++)
                 {
@@ -136,7 +136,7 @@ namespace SimModel.Domain
                     {
                         break;
                     }
-                    skills.Add(new Skill(skill, Parse(level)));
+                    skills.Add(new Skill(skill, ParseUtil.Parse(level)));
                 }
                 equip.Skills = skills;
 
@@ -156,8 +156,8 @@ namespace SimModel.Domain
                 Equipment equip = new Equipment(EquipKind.deco);
                 equip.Name = line[@"名前"];
                 equip.Sex = Sex.all;
-                equip.Rare = Parse(line[@"レア度"]);
-                equip.Slot1 = Parse(line[@"スロットサイズ"]);
+                equip.Rare = ParseUtil.Parse(line[@"レア度"]);
+                equip.Slot1 = ParseUtil.Parse(line[@"スロットサイズ"]);
                 equip.Slot2 = 0;
                 equip.Slot3 = 0;
                 equip.Mindef = 0;
@@ -176,7 +176,7 @@ namespace SimModel.Domain
                     {
                         break;
                     }
-                    skills.Add(new Skill(skill, Parse(level)));
+                    skills.Add(new Skill(skill, ParseUtil.Parse(level)));
                 }
                 equip.Skills = skills;
 
@@ -215,7 +215,7 @@ namespace SimModel.Domain
                 Clude clude = new Clude
                 {
                     Name = line[@"対象"],
-                    Kind = (CludeKind)Parse(line[@"種別"])
+                    Kind = (CludeKind)ParseUtil.Parse(line[@"種別"])
                 };
 
                 Masters.Cludes.Add(clude);
@@ -265,13 +265,13 @@ namespace SimModel.Domain
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
                 Equipment charm = new Equipment(EquipKind.charm);
-                charm.Slot1 = Parse(line[@"スロット1"]);
-                charm.Slot2 = Parse(line[@"スロット2"]);
-                charm.Slot3 = Parse(line[@"スロット3"]);
+                charm.Slot1 = ParseUtil.Parse(line[@"スロット1"]);
+                charm.Slot2 = ParseUtil.Parse(line[@"スロット2"]);
+                charm.Slot3 = ParseUtil.Parse(line[@"スロット3"]);
                 charm.Skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxCharmSkillCount; i++)
                 {
-                    Skill skill = new Skill(line[@"スキル系統" + i], Parse(line[@"スキル値" + i]));
+                    Skill skill = new Skill(line[@"スキル系統" + i], ParseUtil.Parse(line[@"スキル値" + i]));
                     if (!string.IsNullOrWhiteSpace(skill.Name))
                     {
                         charm.Skills.Add(skill);
@@ -326,9 +326,9 @@ namespace SimModel.Domain
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
                 EquipSet set = new EquipSet();
-                set.WeaponSlot1 = Parse(line[@"武器スロ1"]);
-                set.WeaponSlot2 = Parse(line[@"武器スロ2"]);
-                set.WeaponSlot3 = Parse(line[@"武器スロ3"]);
+                set.WeaponSlot1 = ParseUtil.Parse(line[@"武器スロ1"]);
+                set.WeaponSlot2 = ParseUtil.Parse(line[@"武器スロ2"]);
+                set.WeaponSlot3 = ParseUtil.Parse(line[@"武器スロ3"]);
                 set.Head = Masters.GetEquipByName(line[@"頭"]);
                 set.Body = Masters.GetEquipByName(line[@"胴"]);
                 set.Arm = Masters.GetEquipByName(line[@"腕"]);
@@ -414,7 +414,7 @@ namespace SimModel.Domain
                 // TODO: 例外処理は重いから別の方法で判別できないか
                 try
                 {
-                    aug.Kind = ToEquipKind(line[@"種類"]);
+                    aug.Kind = line[@"種類"].ToEquipKind();
                 }
                 catch (InvalidOperationException)
                 {
@@ -425,26 +425,26 @@ namespace SimModel.Domain
                 {
                     Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
                     aug.Kind = baseEquip.Kind;
-                    aug.Slot1 = baseEquip.Slot1 + Parse(line[@"泣読込用1"]);
-                    aug.Slot2 = baseEquip.Slot2 + Parse(line[@"泣読込用2"]);
-                    aug.Slot3 = baseEquip.Slot3 + Parse(line[@"泣読込用3"]);
+                    aug.Slot1 = baseEquip.Slot1 + ParseUtil.Parse(line[@"泣読込用1"]);
+                    aug.Slot2 = baseEquip.Slot2 + ParseUtil.Parse(line[@"泣読込用2"]);
+                    aug.Slot3 = baseEquip.Slot3 + ParseUtil.Parse(line[@"泣読込用3"]);
 
                     aug.Name = Guid.NewGuid().ToString();
                 }
                 else
                 {
-                    aug.Slot1 = Parse(line[@"スロット1"]);
-                    aug.Slot2 = Parse(line[@"スロット2"]);
-                    aug.Slot3 = Parse(line[@"スロット3"]);
+                    aug.Slot1 = ParseUtil.Parse(line[@"スロット1"]);
+                    aug.Slot2 = ParseUtil.Parse(line[@"スロット2"]);
+                    aug.Slot3 = ParseUtil.Parse(line[@"スロット3"]);
                     aug.DispName = line[@"名前"];
                     aug.Name = line[@"管理用ID"];
                 }
-                aug.Def = Parse(line[@"防御力増減"]);
-                aug.Fire = Parse(line[@"火耐性増減"]);
-                aug.Water = Parse(line[@"水耐性増減"]);
-                aug.Thunder = Parse(line[@"雷耐性増減"]);
-                aug.Ice = Parse(line[@"氷耐性増減"]);
-                aug.Dragon = Parse(line[@"龍耐性増減"]);
+                aug.Def = ParseUtil.Parse(line[@"防御力増減"]);
+                aug.Fire = ParseUtil.Parse(line[@"火耐性増減"]);
+                aug.Water = ParseUtil.Parse(line[@"水耐性増減"]);
+                aug.Thunder = ParseUtil.Parse(line[@"雷耐性増減"]);
+                aug.Ice = ParseUtil.Parse(line[@"氷耐性増減"]);
+                aug.Dragon = ParseUtil.Parse(line[@"龍耐性増減"]);
                 List<Skill> skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
                 {
@@ -460,7 +460,7 @@ namespace SimModel.Domain
                         {
                             break;
                         }
-                        skills.Add(new Skill(skill, Parse(level), true));
+                        skills.Add(new Skill(skill, ParseUtil.Parse(level), true));
                     }
                     catch (Exception)
                     {
@@ -480,7 +480,7 @@ namespace SimModel.Domain
             {
                 if (string.IsNullOrWhiteSpace(aug.DispName))
                 {
-                    aug.DispName = MakeDefaultDispName(aug.BaseName);
+                    aug.DispName = Masters.MakeAugmentaionDefaultDispName(aug.BaseName);
                 }
                 Masters.Augmentations.Add(aug);
             }
@@ -500,28 +500,6 @@ namespace SimModel.Domain
             // GUID等保存のためにSaveを呼び出し
             SaveAugmentationCSV();
         }
-
-        // 泣データ読み込み時のデフォルト名
-        private static string MakeDefaultDispName(string baseName)
-        {
-            bool isExist = true;
-            string name = baseName + "_" + 0;
-            for (int i = 1; isExist; i++)
-            {
-                isExist = false;
-                name = baseName + "_" + i;
-                foreach (var aug in Masters.Augmentations)
-                {
-                    if (aug.DispName == name)
-                    {
-                        isExist = true;
-                        break;
-                    }
-                }
-            }
-            return name;
-        }
-
 
         // 錬成装備マスタ書き込み
         static internal void SaveAugmentationCSV()
@@ -593,50 +571,6 @@ namespace SimModel.Domain
             catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
             {
                 return string.Empty;
-            }
-        }
-
-        // int.Parseを実行
-        // 失敗した場合は0として扱う
-        static private int Parse(string str)
-        {
-            return Parse(str, 0);
-        }
-        // int.Parseを実行
-        // 失敗した場合は指定したデフォルト値として扱う
-        static private int Parse(string str, int def)
-        {
-            if (int.TryParse(str, out int num))
-            {
-                return num;
-            }
-            else
-            {
-                return def;
-            }
-        }
-
-        // TODO: 別の場所に定義したい
-        // 文字列をEquipKindに変換
-        static private EquipKind ToEquipKind(string str)
-        {
-            switch (str)
-            {
-                case "頭":
-                    return EquipKind.head;
-                case "胴":
-                    return EquipKind.body;
-                case "腕":
-                    return EquipKind.arm;
-                case "腰":
-                    return EquipKind.waist;
-                case "足":
-                    return EquipKind.leg;
-                case "脚":
-                    // 誤記
-                    return EquipKind.leg;
-                default:
-                    return EquipKind.error;
             }
         }
     }

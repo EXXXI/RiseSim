@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Csv;
+using SimModel.Domain;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
@@ -55,11 +56,11 @@ namespace RiseSim.Config
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                SkillSelectorCount = Parse(line[@"スキル選択部品の個数"], 15);
-                MaxSlotSize = Parse(line[@"スロットの最大の大きさ"], 4);
-                DefaultLimit = Parse(line[@"デフォルトの頑張り度"], 100).ToString();
-                NoSkillName = line[@"スキル未選択時の表示"];
-                Sex defSex = line[@"性別の初期値"].StrToSex();
+                SkillSelectorCount = ParseUtil.LoadConfigItem(line, @"スキル選択部品の個数", 15);
+                MaxSlotSize = ParseUtil.LoadConfigItem(line, @"スロットの最大の大きさ", 4);
+                DefaultLimit = ParseUtil.LoadConfigItem(line, @"デフォルトの頑張り度", 100).ToString();
+                NoSkillName = ParseUtil.LoadConfigItem(line, @"スキル未選択時の表示", @"スキル選択");
+                Sex defSex = ParseUtil.LoadConfigItem(line, @"性別の初期値", @"男性").StrToSex();
                 if (defSex == Sex.all)
                 {
                     // 指定が不正な場合、ひとまず男性とする
@@ -79,20 +80,6 @@ namespace RiseSim.Config
                     instance = new ViewConfig();
                 }
                 return instance;
-            }
-        }
-
-        // int.Parseを実行
-        // 失敗した場合は指定したデフォルト値として扱う
-        static private int Parse(string str, int def)
-        {
-            if (int.TryParse(str, out int num))
-            {
-                return num;
-            }
-            else
-            {
-                return def;
             }
         }
     }

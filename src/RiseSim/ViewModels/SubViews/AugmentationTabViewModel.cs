@@ -1,9 +1,26 @@
-﻿using Prism.Mvvm;
+﻿/*    RiseSim : MHRise skill simurator for Windows
+ *    Copyright (C) 2022  EXXXI
+ *
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
+using SimModel.Domain;
 using SimModel.Model;
 using SimModel.Service;
 using System;
@@ -112,7 +129,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // ベースが変わっている場合は新規に回す
-            if (ToEquipKind(Kind.Value) != SelectedAugmentation.Value.Kind ||
+            if (Kind.Value.ToEquipKind() != SelectedAugmentation.Value.Kind ||
                 SelectedEquip.Value.Name != SelectedAugmentation.Value.BaseName)
             {
                 AddAugmentation();
@@ -124,21 +141,21 @@ namespace RiseSim.ViewModels.SubViews
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
-                dispName = MakeDefaultDispName(SelectedEquip.Value.Name);
+                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Name);
             }
             aug.DispName = dispName;
-            aug.Kind = ToEquipKind(Kind.Value);
+            aug.Kind = Kind.Value.ToEquipKind();
             aug.BaseName = SelectedEquip.Value.Name;
             string[] slots = Slots.Value.Split('-');
-            aug.Slot1 = Parse(slots[0]);
-            aug.Slot2 = Parse(slots[1]);
-            aug.Slot3 = Parse(slots[2]);
-            aug.Def = Parse(Def.Value);
-            aug.Fire = Parse(Fire.Value);
-            aug.Water = Parse(Water.Value);
-            aug.Thunder = Parse(Thunder.Value);
-            aug.Ice = Parse(Ice.Value);
-            aug.Dragon = Parse(Dragon.Value);
+            aug.Slot1 = ParseUtil.Parse(slots[0]);
+            aug.Slot2 = ParseUtil.Parse(slots[1]);
+            aug.Slot3 = ParseUtil.Parse(slots[2]);
+            aug.Def = ParseUtil.Parse(Def.Value);
+            aug.Fire = ParseUtil.Parse(Fire.Value);
+            aug.Water = ParseUtil.Parse(Water.Value);
+            aug.Thunder = ParseUtil.Parse(Thunder.Value);
+            aug.Ice = ParseUtil.Parse(Ice.Value);
+            aug.Dragon = ParseUtil.Parse(Dragon.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
                 if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
@@ -249,21 +266,21 @@ namespace RiseSim.ViewModels.SubViews
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
-                dispName = MakeDefaultDispName(SelectedEquip.Value.Name);
+                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Name);
             }
             aug.DispName = dispName;
-            aug.Kind = ToEquipKind(Kind.Value);
+            aug.Kind = Kind.Value.ToEquipKind();
             aug.BaseName = SelectedEquip.Value.Name;
             string[] slots = Slots.Value.Split('-');
-            aug.Slot1 = Parse(slots[0]);
-            aug.Slot2 = Parse(slots[1]);
-            aug.Slot3 = Parse(slots[2]);
-            aug.Def = Parse(Def.Value);
-            aug.Fire = Parse(Fire.Value);
-            aug.Water = Parse(Water.Value);
-            aug.Thunder = Parse(Thunder.Value);
-            aug.Ice = Parse(Ice.Value);
-            aug.Dragon = Parse(Dragon.Value);
+            aug.Slot1 = ParseUtil.Parse(slots[0]);
+            aug.Slot2 = ParseUtil.Parse(slots[1]);
+            aug.Slot3 = ParseUtil.Parse(slots[2]);
+            aug.Def = ParseUtil.Parse(Def.Value);
+            aug.Fire = ParseUtil.Parse(Fire.Value);
+            aug.Water = ParseUtil.Parse(Water.Value);
+            aug.Thunder = ParseUtil.Parse(Thunder.Value);
+            aug.Ice = ParseUtil.Parse(Ice.Value);
+            aug.Dragon = ParseUtil.Parse(Dragon.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
                 if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
@@ -276,28 +293,6 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.AddAugmentation(aug);
 
             MainViewModel.Instance.LoadEquips();
-        }
-
-        // TODO: 泣データ読み込み時にも同じ処理をしているので共通化したい
-        // 錬成設定のデフォルト名
-        private string MakeDefaultDispName(string baseName)
-        {
-            bool isExist = true;
-            string name = baseName + "_" + 0;
-            for (int i = 1; isExist; i++)
-            {
-                isExist = false;
-                name = baseName + "_" + i;
-                foreach (var aug in Masters.Augmentations)
-                {
-                    if (aug.DispName == name)
-                    {
-                        isExist = true;
-                        break;
-                    }
-                }
-            }
-            return name;
         }
 
         // 錬成情報を削除
@@ -383,57 +378,12 @@ namespace RiseSim.ViewModels.SubViews
             Augmentations.Value = BindableAugmentation.BeBindableList(Masters.Augmentations);
         }
 
-        // TODO: 別の場所に定義したい
-        // 文字列をEquipKindに変換
-        static private EquipKind ToEquipKind(string str)
-        {
-            switch (str)
-            {
-                case "頭":
-                    return EquipKind.head;
-                case "胴":
-                    return EquipKind.body;
-                case "腕":
-                    return EquipKind.arm;
-                case "腰":
-                    return EquipKind.waist;
-                case "足":
-                    return EquipKind.leg;
-                case "脚":
-                    // 誤記
-                    return EquipKind.leg;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
         // スロットの初期値を反映
         private void SetSlots()
         {
             if (SelectedEquip?.Value != null)
             {
                 Slots.Value = SelectedEquip.Value.SlotStr;
-            }
-        }
-
-        // TODO: あちこちにあるからUtilクラスか何かにまとめたい
-        // int.Parseを実行
-        // 失敗した場合は0として扱う
-        static private int Parse(string str)
-        {
-            return Parse(str, 0);
-        }
-        // int.Parseを実行
-        // 失敗した場合は指定したデフォルト値として扱う
-        static private int Parse(string str, int def)
-        {
-            if (int.TryParse(str, out int num))
-            {
-                return num;
-            }
-            else
-            {
-                return def;
             }
         }
     }

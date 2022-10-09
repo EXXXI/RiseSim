@@ -15,6 +15,7 @@
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 using Csv;
+using SimModel.Domain;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +55,9 @@ namespace SimModel.Config
         // 設定値を超える数のスキル情報がCSVにあった場合にそれに合わせて変更される
         public int MaxAugmentationSkillCountActual { get; set; }
 
+        // 最大並列処理数
+        public int MaxDegreeOfParallelism { get; set; }
+
         // 風雷合一
         public string FuraiName { get; } = "風雷合一";
 
@@ -67,16 +71,17 @@ namespace SimModel.Config
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                MaxRecentSkillCount = LoadConfigItem(line, @"最近使ったスキルの記憶容量", 20);
-                MaxEquipSkillCount = LoadConfigItem(line, @"防具のスキル最大個数", 5);
-                MaxDecoSkillCount = LoadConfigItem(line, @"装飾品のスキル最大個数", 2);
-                MaxCharmSkillCount = LoadConfigItem(line, @"護石のスキル最大個数", 2);
-                MaxAugmentationSkillCount = LoadConfigItem(line, @"傀異錬成防具のスキル最大個数", 7);
+                MaxRecentSkillCount = ParseUtil.LoadConfigItem(line, @"最近使ったスキルの記憶容量", 20);
+                MaxEquipSkillCount = ParseUtil.LoadConfigItem(line, @"防具のスキル最大個数", 5);
+                MaxDecoSkillCount = ParseUtil.LoadConfigItem(line, @"装飾品のスキル最大個数", 2);
+                MaxCharmSkillCount = ParseUtil.LoadConfigItem(line, @"護石のスキル最大個数", 2);
+                MaxAugmentationSkillCount = ParseUtil.LoadConfigItem(line, @"傀異錬成防具のスキル最大個数", 7);
                 if (MaxAugmentationSkillCount < MinAugmentationSkillCount)
                 {
                     MaxAugmentationSkillCount = MinAugmentationSkillCount;
                 }
                 MaxAugmentationSkillCountActual = MaxAugmentationSkillCount;
+                MaxDegreeOfParallelism = ParseUtil.LoadConfigItem(line, @"最大並列処理数", 4);
             }
         }
 
@@ -90,35 +95,6 @@ namespace SimModel.Config
                     instance = new LogicConfig();
                 }
                 return instance;
-            }
-        }
-
-        // TODO: ViewConfigでも同じことをしたい&共通化したい
-        // Configの各項目を読み込み
-        // 読み込み失敗時はdefの値を利用
-        static private int LoadConfigItem(ICsvLine line, string columnName, int def)
-        {
-            try
-            {
-                return Parse(line[columnName], 3);
-            }
-            catch (Exception)
-            {
-                return def;
-            }
-        }
-
-        // int.Parseを実行
-        // 失敗した場合は指定したデフォルト値として扱う
-        static private int Parse(string str, int def)
-        {
-            if (int.TryParse(str, out int num))
-            {
-                return num;
-            }
-            else
-            {
-                return def;
             }
         }
     }
