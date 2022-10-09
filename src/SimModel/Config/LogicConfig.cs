@@ -54,6 +54,9 @@ namespace SimModel.Config
         // 設定値を超える数のスキル情報がCSVにあった場合にそれに合わせて変更される
         public int MaxAugmentationSkillCountActual { get; set; }
 
+        // 最大並列処理数
+        public int MaxDegreeOfParallelism { get; set; }
+
         // 風雷合一
         public string FuraiName { get; } = "風雷合一";
 
@@ -77,6 +80,7 @@ namespace SimModel.Config
                     MaxAugmentationSkillCount = MinAugmentationSkillCount;
                 }
                 MaxAugmentationSkillCountActual = MaxAugmentationSkillCount;
+                MaxDegreeOfParallelism = LoadConfigItem(line, @"最大並列処理数", 4);
             }
         }
 

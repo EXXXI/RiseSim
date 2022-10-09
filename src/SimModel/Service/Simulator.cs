@@ -121,42 +121,67 @@ namespace SimModel.Service
             List<Skill> exSkills = new();
 
             // 全スキル全レベルを走査
+            Parallel.ForEach(Masters.Skills,
+                new ParallelOptions { MaxDegreeOfParallelism = 4 }, // TODO: マジックナンバー
+                () => new List<Skill>(),
+                (skill, loop, subResult) =>
+                {
+                    for (int i = 1; i <= skill.Level; i++)
+                    {
+                        // 現在の検索条件をコピー
+                        SearchCondition condition = new(Searcher.Condition);
+
+                        // スキルを検索条件に追加
+                        Skill exSkill = new(skill.Name, i);
+                        bool isNewSkill = condition.AddSkill(new Skill(skill.Name, i));
+
+                        // 新規スキルor既存だが上位Lvのスキルの場合のみ検索を実行
+                        if (isNewSkill)
+                        {
+                            // 頑張り度1で検索
+                            ISearcher exSearcher;
+                            if (IntPtr.Size == 4)
+                            {
+                                exSearcher = new Searcher_x86(condition);
+                            }
+                            else
+                            {
+                                exSearcher = new Searcher(condition);
+                            }
+                            exSearcher.ExecSearch(1);
+
+                            // 1件でもヒットすれば追加スキル一覧に追加
+                            if (exSearcher.ResultSets.Count > 0)
+                            {
+                                subResult.Add(exSkill);
+                            }
+                        }
+                    }
+                    return subResult;
+                },
+                (finalResult) =>
+                {
+                    lock (exSkills)
+                    {
+                        exSkills.AddRange(finalResult);
+                    }
+                }
+            );
+
+            // skill.csv順にソート
+            List<Skill> sortedSkills = new();
             foreach (var skill in Masters.Skills)
             {
-                for (int i = 1; i <= skill.Level; i++)
+                foreach (var result in exSkills)
                 {
-                    // 現在の検索条件をコピー
-                    SearchCondition condition = new(Searcher.Condition);
-
-                    // スキルを検索条件に追加
-                    Skill exSkill = new(skill.Name, i);
-                    bool isNewSkill = condition.AddSkill(new Skill(skill.Name, i));
-
-                    // 新規スキルor既存だが上位Lvのスキルの場合のみ検索を実行
-                    if (isNewSkill)
+                    if (skill.Name == result.Name)
                     {
-                        // 頑張り度1で検索
-                        ISearcher exSearcher;
-                        if (IntPtr.Size == 4)
-                        {
-                            exSearcher = new Searcher_x86(condition);
-                        }
-                        else
-                        {
-                            exSearcher = new Searcher(condition);
-                        }
-                        exSearcher.ExecSearch(1);
-
-                        // 1件でもヒットすれば追加スキル一覧に追加
-                        if(exSearcher.ResultSets.Count > 0)
-                        {
-                            exSkills.Add(exSkill);
-                        }
+                        sortedSkills.Add(result);
                     }
                 }
             }
 
-            return exSkills;
+            return sortedSkills;
         }
 
         // 除外装備登録
