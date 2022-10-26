@@ -39,7 +39,7 @@ namespace RiseSim.ViewModels.SubViews
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");
-            sb.Append("20221009.0\n");
+            sb.Append("20221026.0\n");
             sb.Append('\n');
             sb.Append("■このシミュのライセンス\n");
             sb.Append("GNU General Public License v3.0\n");
@@ -66,6 +66,9 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append("・ReactiveProperty\n");
             sb.Append("プロジェクト：https://github.com/runceel/ReactiveProperty\n");
             sb.Append("ライセンス：https://github.com/runceel/ReactiveProperty/blob/main/LICENSE.txt\n");
+            sb.Append('\n');
+            sb.Append("・NLog\n");
+            sb.Append("プロジェクト：https://nlog-project.org/\n");
             sb.Append('\n');
             sb.Append("■スペシャルサンクス\n");
             sb.Append("・5chモンハン板シミュスレの方々\n");
