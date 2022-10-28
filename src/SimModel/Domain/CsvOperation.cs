@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
 namespace SimModel.Domain
 {
@@ -46,6 +47,7 @@ namespace SimModel.Domain
         private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
         private const string SkillMasterHeaderCategory = @"カテゴリ";
 
+        static Logger logger = LogManager.GetCurrentClassLogger();
 
         // スキルマスタ読み込み
         static internal void LoadSkillCSV()
@@ -366,7 +368,14 @@ namespace SimModel.Domain
             }
             string[] header = new string[] { "スキル名" };
             string export = CsvWriter.WriteToText(header, body);
-            File.WriteAllText(RecentSkillCsv, export);
+            try
+            {
+                File.WriteAllText(RecentSkillCsv, export);
+            }
+            catch (Exception e)
+            {
+                logger.Warn(e, "エラーが発生しました。");
+            }
         }
 
         // 最近使ったスキル読み込み
