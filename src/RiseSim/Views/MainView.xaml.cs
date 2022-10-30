@@ -14,7 +14,9 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using RiseSim.Config;
 using RiseSim.Properties;
+using RiseSim.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,27 +45,36 @@ namespace RiseSim.Views
 
 			// ウィンドウサイズ復元
 			RecoverWindowBounds();
+
+            // DataGridの列順復元
+            if (ViewConfig.Instance.UseSavedColumnIndexes)
+            {
+				RecoverDataGridColumnIndex();
+			}
 		}
 
-		// 終了時
-		protected override void OnClosing(CancelEventArgs e)
+        // 終了時
+        protected override void OnClosing(CancelEventArgs e)
 		{
 			// ウィンドウサイズ保存
 			SaveWindowBounds();
+
+			// DataGridの列順保存
+			SaveDataGridColumnIndex();
 
 			base.OnClosing(e);
 		}
 
 		// ウィンドウサイズ保存
-		void SaveWindowBounds()
+		private void SaveWindowBounds()
 		{
 			var settings = Settings.Default;
 			if (WindowState == WindowState.Maximized)
-            {
+			{
 				settings.WindowMaximized = true;
-            }
-            else
-            {
+			}
+			else
+			{
 				settings.WindowMaximized = false;
 			}
 
@@ -79,7 +90,7 @@ namespace RiseSim.Views
 		}
 
 		// ウィンドウサイズ復元
-		void RecoverWindowBounds()
+		private void RecoverWindowBounds()
 		{
 			var settings = Settings.Default;
 			// 左
@@ -105,5 +116,78 @@ namespace RiseSim.Views
 				Loaded += (o, e) => WindowState = WindowState.Maximized;
 			}
 		}
+
+		// DataGridの列順保存
+		private void SaveDataGridColumnIndex()
+		{
+			var settings = Settings.Default;
+
+			// 各DataGridの情報を保存
+			settings.SimulatorIndexes = GetColumnIndexes(simulator.grid);
+			settings.AugmentationIndexes = GetColumnIndexes(augmentation.grid);
+			settings.MySetIndexes = GetColumnIndexes(myset.grid);
+
+			// 保存
+			settings.Save();
+		}
+
+		// DataGridの列順をcsv形式の文字列に変換
+		private string GetColumnIndexes(DataGrid grid)
+        {
+			bool isFirst = true;
+			StringBuilder indexes = new();
+			foreach (var column in grid.Columns)
+            {
+				if (isFirst)
+                {
+					isFirst = false;
+                }
+                else
+                {
+					indexes.Append(',');
+				}
+				indexes.Append(column.DisplayIndex);
+			}
+			return indexes.ToString();
+        }
+		// DataGridの列順復元
+		private void RecoverDataGridColumnIndex()
+		{
+			var settings = Settings.Default;
+
+			// 各DataGridに列情報を復元
+			SetColumnIndexes(simulator.grid, settings.SimulatorIndexes);
+			SetColumnIndexes(augmentation.grid, settings.AugmentationIndexes);
+			SetColumnIndexes(myset.grid, settings.MySetIndexes);
+		}
+
+		// 前回終了時の列順をDataGridに設定
+		private void SetColumnIndexes(DataGrid grid, string indexes)
+		{
+			if (string.IsNullOrWhiteSpace(indexes))
+			{
+				return;
+			}
+
+			string[] indexArray = indexes.Split(',');
+
+			try
+			{
+				for (int i = 0; i < grid.Columns.Count; i++)
+				{
+					grid.Columns[i].DisplayIndex = int.Parse(indexArray[i]);
+				}
+			}
+			catch (Exception)
+			{
+				for (int i = 0; i < grid.Columns.Count; i++)
+				{
+					grid.Columns[i].DisplayIndex = i;
+				}
+			}
+
+		}
+
+
 	}
 }

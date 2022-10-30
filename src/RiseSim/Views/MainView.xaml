@@ -15,7 +15,7 @@
         
         <TabControl>
             <TabItem Header="シミュレータ">
-                <subviews:SimulatorTabView DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
+                <subviews:SimulatorTabView x:Name="simulator" DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="除外・固定設定">
@@ -27,11 +27,11 @@
             </TabItem>
 
             <TabItem Header="傀異錬成設定">
-                <subviews:AugmentationTabView DataContext="{Binding AugmentationTabVM.Value, Mode=OneWay}"/>
+                <subviews:AugmentationTabView x:Name="augmentation" DataContext="{Binding AugmentationTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="マイセット">
-                <subviews:MySetTabView DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
+                <subviews:MySetTabView x:Name="myset" DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem Header="ライセンス・謝辞">

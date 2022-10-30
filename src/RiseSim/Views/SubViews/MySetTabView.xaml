@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- マイセット一覧 -->
-        <DataGrid x:Name="mySetGrid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
+        <DataGrid x:Name="grid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{Binding MyDetailSet.Value.Head.DispName, Mode=OneWay}">

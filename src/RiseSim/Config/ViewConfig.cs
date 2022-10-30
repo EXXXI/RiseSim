@@ -49,6 +49,10 @@ namespace RiseSim.Config
         // 性別の初期値
         public Sex DefaultSex { get; set; }
 
+        // グリッドの列順保存有無
+        public bool UseSavedColumnIndexes { get; set; }
+
+
         // プライベートコンストラクタ
         private ViewConfig()
         {
@@ -67,6 +71,7 @@ namespace RiseSim.Config
                     defSex = Sex.male;
                 }
                 DefaultSex = defSex;
+                UseSavedColumnIndexes = ParseUtil.LoadConfigItem(line, @"グリッドの列順保存有無", @"有").Equals(@"有");
             }
         }
 
