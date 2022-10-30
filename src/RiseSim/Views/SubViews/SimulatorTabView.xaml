@@ -100,7 +100,7 @@
         </Grid>
 
         <!-- 中央ペイン：結果出力 -->
-        <DataGrid Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
+        <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding SearchResult.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding DetailSet.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{Binding DetailSet.Value.Head.DispName, Mode=OneWay}">
@@ -132,7 +132,7 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
+                <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}"/>
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="頭" Binding="{Binding Head.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="胴" Binding="{Binding Body.DispName, Mode=OneWay}" />

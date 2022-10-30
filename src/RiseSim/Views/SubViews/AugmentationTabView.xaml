@@ -82,7 +82,7 @@
         </StackPanel>
 
         <!-- 一覧 -->
-        <DataGrid Grid.Column="1" ItemsSource="{Binding Augmentations.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAugmentation.Value}">
+        <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Augmentations.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAugmentation.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{Binding SelectedAugmentation.Value.Equip.Description}"/>
