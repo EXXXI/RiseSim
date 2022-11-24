@@ -175,19 +175,27 @@ namespace RiseSim.Views
 			{
 				for (int i = 0; i < grid.Columns.Count; i++)
 				{
-					grid.Columns[i].DisplayIndex = int.Parse(indexArray[i]);
+					int index = int.Parse(indexArray[i]);
+                    if (index < 0 || index >= grid.Columns.Count)
+                    {
+						SetDefaultColumnIndexes(grid);
+					}
+
+					grid.Columns[i].DisplayIndex = index;
 				}
 			}
 			catch (Exception)
 			{
-				for (int i = 0; i < grid.Columns.Count; i++)
-				{
-					grid.Columns[i].DisplayIndex = i;
-				}
+				SetDefaultColumnIndexes(grid);
 			}
-
 		}
 
-
+		private void SetDefaultColumnIndexes(DataGrid grid)
+        {
+			for (int i = 0; i < grid.Columns.Count; i++)
+			{
+				grid.Columns[i].DisplayIndex = i;
+			}
+		}
 	}
 }
