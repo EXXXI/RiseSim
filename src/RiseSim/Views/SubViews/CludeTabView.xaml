@@ -20,15 +20,20 @@
 
         <!-- 登録 -->
         <StackPanel Grid.Row="0" Grid.Column="0">
-            <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value, Mode=OneWay}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ctrl:EquipSelectRow/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ctrl:EquipSelectRow/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel>
+                <Button Command="{Binding DeleteAllCludeCommand}">除外・固定を全て解除</Button>
+                <Button Command="{Binding ExcludeAllAugmentationCommand}">錬成防具を全て除外</Button>
+            </StackPanel>
         </StackPanel>
-
         <!-- 一覧 -->
         <ScrollViewer Grid.Row="0" Grid.Column="1">
             <StackPanel>
