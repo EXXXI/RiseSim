@@ -74,6 +74,24 @@ namespace SimModel.Domain
             return AddClude(name, CludeKind.include);
         }
 
+        // 錬成防具を全て除外設定に追加
+        static internal bool ExcludeAllAugmentation()
+        {
+            foreach (var aug in Masters.Augmentations)
+            {
+                string name = aug.Name;
+                Equipment? equip = Masters.GetEquipByName(name);
+                if (equip == null)
+                {
+                    return false;
+                }
+
+                AddClude(name, CludeKind.exclude);
+            }
+            return true;
+        }
+
+
         // 除外・固定の追加
         static private Clude? AddClude(string name, CludeKind kind)
         {
@@ -120,6 +138,15 @@ namespace SimModel.Domain
                     break;
                 }
             }
+
+            // マスタへ反映
+            CsvOperation.SaveCludeCSV();
+        }
+
+        // 除外・固定設定の全削除
+        static internal void DeleteAllClude()
+        {
+            Masters.Cludes.Clear();
 
             // マスタへ反映
             CsvOperation.SaveCludeCSV();

@@ -41,6 +41,18 @@ namespace RiseSim.ViewModels.SubViews
         // 除外・固定画面の一覧表示の各行のVM
         public ReactivePropertySlim<ObservableCollection<CludeRowViewModel>> CludeRowVMs { get; } = new();
 
+        // 防具を除外するコマンド
+        public ReactiveCommand DeleteAllCludeCommand { get; } = new ReactiveCommand();
+
+        // 防具を除外するコマンド
+        public ReactiveCommand ExcludeAllAugmentationCommand { get; } = new ReactiveCommand();
+
+        // コマンドを設定
+        private void SetCommand()
+        {
+            DeleteAllCludeCommand.Subscribe(_ => DeleteAllClude());
+            ExcludeAllAugmentationCommand.Subscribe(_ => ExcludeAllAugmentation());
+        }
 
         // コンストラクタ
         public CludeTabViewModel()
@@ -48,6 +60,9 @@ namespace RiseSim.ViewModels.SubViews
             // MainViewModelから参照を取得
             Simulator = MainViewModel.Instance.Simulator;
             StatusBarText = MainViewModel.Instance.StatusBarText;
+            
+            // コマンドを設定
+            SetCommand();
         }
 
         // 装備のマスタ情報をVMにロード
@@ -132,6 +147,32 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             StatusBarText.Value = "解除：" + dispName;
+        }
+
+        // 除外・固定の全解除
+        internal void DeleteAllClude()
+        {
+            // 解除
+            Simulator.DeleteAllClude();
+
+            // 除外固定のマスタをリロード
+            LoadCludes();
+
+            // ログ表示
+            StatusBarText.Value = "固定・除外を全解除";
+        }
+
+        // 錬成防具を全て除外
+        internal void ExcludeAllAugmentation()
+        {
+            // 解除
+            Simulator.ExcludeAllAugmentation();
+
+            // 除外固定のマスタをリロード
+            LoadCludes();
+
+            // ログ表示
+            StatusBarText.Value = "錬成防具を全て除外";
         }
     }
 }

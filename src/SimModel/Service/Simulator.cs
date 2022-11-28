@@ -203,6 +203,18 @@ namespace SimModel.Service
             DataManagement.DeleteClude(name);
         }
 
+        // 除外・固定全解除
+        public void DeleteAllClude()
+        {
+            DataManagement.DeleteAllClude();
+        }
+
+        // 錬成防具を全除外
+        public void ExcludeAllAugmentation()
+        {
+            DataManagement.ExcludeAllAugmentation();
+        }
+
         // 護石追加
         public Equipment AddCharm(List<Skill> skill, int slot1, int slot2, int slot3)
         {
