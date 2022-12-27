@@ -32,6 +32,7 @@ namespace SimModel.Model
         leg,
         deco,
         charm,
+        gskill,
         error
     }
     public static class EquipKindExt
@@ -55,6 +56,8 @@ namespace SimModel.Model
                     return "装飾品";
                 case EquipKind.charm:
                     return "護石";
+                case EquipKind.gskill:
+                    return "錬成";
                 default:
                     return string.Empty;
             }

@@ -58,6 +58,10 @@ namespace SimModel.Model
         // 性別
         public Sex Sex { get; set; }
 
+        // 理想錬成を利用するか否か
+        // TODO:  (理想錬成)デフォルト値は本来falseの予定
+        public bool IncludeIdealAugmentation { get; set; } = true;
+
         // デフォルトコンストラクタ
         public SearchCondition()
         {

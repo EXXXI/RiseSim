@@ -42,10 +42,12 @@ namespace SimModel.Domain
         private const string MySetCsv = "save/myset.csv";
         private const string RecentSkillCsv = "save/recentSkill.csv";
         private const string AugmentationCsv = "save/augmentation.csv";
+        private const string IdealCsv = "save/ideal.csv";
 
         private const string SkillMasterHeaderName = @"スキル系統";
         private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
         private const string SkillMasterHeaderCategory = @"カテゴリ";
+        private const string SkillMasterHeaderCost = @"コスト";
 
         static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -65,6 +67,52 @@ namespace SimModel.Domain
                 .GroupBy(x => new { x.Name, x.Category })
                 .Select(group => new Skill(group.Key.Name, group.Max(x => x.Level), group.Key.Category))
                 .ToList();
+
+
+            // 理想錬成用スキル
+            foreach (ICsvLine line in CsvReader.ReadFromText(csv))
+            {
+                // 既に登録済みの場合パス
+                bool isExist = false;
+                foreach (var gSkill in Masters.GenericSkills)
+                {
+                    if (gSkill.Skills[0].Name == line[SkillMasterHeaderName])
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if (isExist)
+                {
+                    continue;
+                }
+                Equipment equip = new Equipment();
+                equip.Kind = EquipKind.gskill;
+                equip.Name = line[SkillMasterHeaderName] + "(c" + line[SkillMasterHeaderCost] + ")";
+                equip.DispName = equip.Name;
+                equip.Skills.Add(new Skill(line[SkillMasterHeaderName], 1));
+                switch (ParseUtil.Parse(line[SkillMasterHeaderCost]))
+                {
+                    case 3:
+                        equip.GenericSkills[0] = 1;
+                        break;
+                    case 6:
+                        equip.GenericSkills[1] = 1;
+                        break;
+                    case 9:
+                        equip.GenericSkills[2] = 1;
+                        break;
+                    case 12:
+                        equip.GenericSkills[3] = 1;
+                        break;
+                    case 15:
+                        equip.GenericSkills[4] = 1;
+                        break;
+                    default:
+                        continue;
+                }
+                Masters.GenericSkills.Add(equip);
+            }
         }
 
         // 頭防具マスタ読み込み
@@ -141,6 +189,7 @@ namespace SimModel.Domain
                     skills.Add(new Skill(skill, ParseUtil.Parse(level)));
                 }
                 equip.Skills = skills;
+                equip.AugmentationTable = ParseUtil.Parse(line[@"錬成テーブル"]);
 
                 equipments.Add(equip);
             }
@@ -331,12 +380,12 @@ namespace SimModel.Domain
                 set.WeaponSlot1 = ParseUtil.Parse(line[@"武器スロ1"]);
                 set.WeaponSlot2 = ParseUtil.Parse(line[@"武器スロ2"]);
                 set.WeaponSlot3 = ParseUtil.Parse(line[@"武器スロ3"]);
-                set.Head = Masters.GetEquipByName(line[@"頭"]);
-                set.Body = Masters.GetEquipByName(line[@"胴"]);
-                set.Arm = Masters.GetEquipByName(line[@"腕"]);
-                set.Waist = Masters.GetEquipByName(line[@"腰"]);
-                set.Leg = Masters.GetEquipByName(line[@"足"]);
-                set.Charm = Masters.GetEquipByName(line[@"護石"]);
+                set.Head = Masters.GetEquipByName(line[@"頭"], false);
+                set.Body = Masters.GetEquipByName(line[@"胴"], false);
+                set.Arm = Masters.GetEquipByName(line[@"腕"], false);
+                set.Waist = Masters.GetEquipByName(line[@"腰"], false);
+                set.Leg = Masters.GetEquipByName(line[@"足"], false);
+                set.Charm = Masters.GetEquipByName(line[@"護石"], false);
                 set.Head.Kind = EquipKind.head;
                 set.Body.Kind = EquipKind.body;
                 set.Arm.Kind = EquipKind.arm;
@@ -401,6 +450,7 @@ namespace SimModel.Domain
             string csv = ReadAllText(AugmentationCsv);
             var x = CsvReader.ReadFromText(csv);
             bool isFirst = true;
+            int skillCount = LogicConfig.Instance.MaxAugmentationSkillCountActual;
             foreach (ICsvLine line in x)
             {
                 // スキル数確認
@@ -411,7 +461,7 @@ namespace SimModel.Domain
                     {
                         if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
                         {
-                            LogicConfig.Instance.MaxAugmentationSkillCountActual = Math.Max(LogicConfig.Instance.MaxAugmentationSkillCount, i - 1);
+                            skillCount = Math.Max(skillCount, i - 1);
                             break;
                         }
                     }
@@ -432,7 +482,7 @@ namespace SimModel.Domain
                 // 種類の指定がない場合泣きシミュデータ読み込みモード
                 if (aug.Kind == EquipKind.error)
                 {
-                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
+                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
                     aug.Kind = baseEquip.Kind;
                     aug.Slot1 = baseEquip.Slot1 + ParseUtil.Parse(line[@"泣読込用1"]);
                     aug.Slot2 = baseEquip.Slot2 + ParseUtil.Parse(line[@"泣読込用2"]);
@@ -455,7 +505,7 @@ namespace SimModel.Domain
                 aug.Ice = ParseUtil.Parse(line[@"氷耐性増減"]);
                 aug.Dragon = ParseUtil.Parse(line[@"龍耐性増減"]);
                 List<Skill> skills = new List<Skill>();
-                for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
+                for (int i = 1; i <= skillCount; i++)
                 {
                     if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
                     {
@@ -495,8 +545,8 @@ namespace SimModel.Domain
             }
 
             // スキル数再確認
-            // Column数ではなく実際のスキル数を数える(設定値優先)
-            int skillCount = LogicConfig.Instance.MaxAugmentationSkillCount;
+            // Column数ではなく実際のスキル数を数える(設定値と大きい方を優先)
+            skillCount = LogicConfig.Instance.MaxAugmentationSkillCountActual;
             foreach (var aug in Masters.Augmentations)
             {
                 if (skillCount < aug.Skills.Count)
@@ -516,7 +566,7 @@ namespace SimModel.Domain
             List<string[]> body = new List<string[]>();
             foreach (var aug in Masters.Augmentations)
             {
-                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
+                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
                 List<string> bodyStrings = new List<string>();
                 bodyStrings.Add(aug.BaseName);
                 bodyStrings.Add(aug.Def.ToString());
@@ -554,6 +604,169 @@ namespace SimModel.Domain
             string[] header = header1.Concat(header2).Concat(header3).ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(AugmentationCsv, export);
+        }
+
+        // 理想錬成装備マスタ読み込み
+        static internal void LoadIdealCSV()
+        {
+
+            // 一時置き場
+            List<IdealAugmentation> idealList = new();
+
+            string csv = ReadAllText(IdealCsv);
+            var x = CsvReader.ReadFromText(csv);
+            bool isFirst = true;
+            int skillCount = LogicConfig.Instance.MaxAugmentationSkillCountActual;
+            foreach (ICsvLine line in x)
+            {
+                // スキル数確認
+                // 1行目でのみ実行
+                if (isFirst)
+                {
+                    for (int i = 1; true; i++)
+                    {
+                        if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
+                        {
+                            skillCount = Math.Max(skillCount, i - 1);
+                            break;
+                        }
+                    }
+                    isFirst = false;
+                }
+
+                IdealAugmentation ideal = new IdealAugmentation();
+                ideal.Table = ParseUtil.Parse(line[@"テーブル"]);
+                ideal.IsOne = line[@"部位制限フラグ"].Equals("1");
+                ideal.SlotIncrement = ParseUtil.Parse(line[@"スロット"]);
+                ideal.DispName = line[@"名前"];
+                ideal.Name = line[@"管理用ID"];
+                /*
+                ideal.Def = ParseUtil.Parse(line[@"防御力増減"]);
+                ideal.Fire = ParseUtil.Parse(line[@"火耐性増減"]);
+                ideal.Water = ParseUtil.Parse(line[@"水耐性増減"]);
+                ideal.Thunder = ParseUtil.Parse(line[@"雷耐性増減"]);
+                ideal.Ice = ParseUtil.Parse(line[@"氷耐性増減"]);
+                ideal.Dragon = ParseUtil.Parse(line[@"龍耐性増減"]);
+                */
+                List<Skill> skills = new List<Skill>();
+                for (int i = 1; i <= skillCount; i++)
+                {
+                    if (!line.Headers.Contains(@"スキル系統" + i) || !line.Headers.Contains(@"スキル値" + i))
+                    {
+                        break;
+                    }
+                    try
+                    {
+                        string skill = line[@"スキル系統" + i];
+                        string level = line[@"スキル値" + i];
+                        if (string.IsNullOrWhiteSpace(skill))
+                        {
+                            break;
+                        }
+                        skills.Add(new Skill(skill, ParseUtil.Parse(level), true));
+                    }
+                    catch (Exception)
+                    {
+                        // カラムが存在しない場合
+                        break;
+                    }
+                }
+                ideal.Skills = skills;
+                List<int> skillMinuses = new();
+                string originalMinuses = line[@"スキルマイナス位置"];
+                string[] splitedMinuses = originalMinuses.Split('-');
+                foreach (var minusIndex in splitedMinuses)
+                {
+                    skillMinuses.Add(ParseUtil.Parse(minusIndex));
+                }
+                ideal.SkillMinuses = skillMinuses;
+                ideal.GenericSkills[0] = ParseUtil.Parse(line[@"c3スキル数"]);
+                ideal.GenericSkills[1] = ParseUtil.Parse(line[@"c6スキル数"]);
+                ideal.GenericSkills[2] = ParseUtil.Parse(line[@"c9スキル数"]);
+                ideal.GenericSkills[3] = ParseUtil.Parse(line[@"c12スキル数"]);
+                ideal.GenericSkills[4] = ParseUtil.Parse(line[@"c15スキル数"]);
+
+                idealList.Add(ideal);
+            }
+
+            // Masters.Idealsに移し替え
+            // このとき、名前が空欄のものはデフォルト名をつける
+            Masters.Ideals = new();
+            foreach (var ideal in idealList)
+            {
+                if (string.IsNullOrWhiteSpace(ideal.DispName))
+                {
+                    ideal.DispName = Masters.MakeIdealAugmentaionDefaultDispName(ideal.Table);
+                }
+                Masters.Ideals.Add(ideal);
+            }
+
+            // スキル数再確認
+            // Column数ではなく実際のスキル数を数える(設定値と大きい方を優先)
+            skillCount = LogicConfig.Instance.MaxAugmentationSkillCountActual;
+            foreach (var ideal in Masters.Ideals)
+            {
+                if (skillCount < ideal.Skills.Count)
+                {
+                    skillCount = ideal.Skills.Count;
+                }
+                if (skillCount < ideal.SkillMinuses.Count)
+                {
+                    skillCount = ideal.SkillMinuses.Count;
+                }
+
+            }
+            LogicConfig.Instance.MaxAugmentationSkillCountActual = skillCount;
+
+            // GUID等保存のためにSaveを呼び出し
+            SaveIdealCSV();
+        }
+
+        // 錬成装備マスタ書き込み
+        static internal void SaveIdealCSV()
+        {
+            List<string[]> body = new List<string[]>();
+            foreach (var ideal in Masters.Ideals)
+            {
+                List<string> bodyStrings = new List<string>();
+                bodyStrings.Add(ideal.Table.ToString());
+                /*
+                bodyStrings.Add(ideal.Def.ToString());
+                bodyStrings.Add(ideal.Fire.ToString());
+                bodyStrings.Add(ideal.Water.ToString());
+                bodyStrings.Add(ideal.Thunder.ToString());
+                bodyStrings.Add(ideal.Ice.ToString());
+                bodyStrings.Add(ideal.Dragon.ToString());
+                */
+                bodyStrings.Add(ideal.IsOne ? "1" : "0");
+                bodyStrings.Add(ideal.SlotIncrement.ToString());
+                bodyStrings.Add(ideal.DispName ?? string.Empty);
+                bodyStrings.Add(ideal.Name);
+                bodyStrings.Add(ideal.GenericSkills[0].ToString());
+                bodyStrings.Add(ideal.GenericSkills[1].ToString());
+                bodyStrings.Add(ideal.GenericSkills[2].ToString());
+                bodyStrings.Add(ideal.GenericSkills[3].ToString());
+                bodyStrings.Add(ideal.GenericSkills[4].ToString());
+                bodyStrings.Add(string.Join('-', ideal.SkillMinuses));
+                for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
+                {
+                    bodyStrings.Add(ideal.Skills.Count > i ? ideal.Skills[i].Name : string.Empty);
+                    bodyStrings.Add(ideal.Skills.Count > i ? ideal.Skills[i].Level.ToString() : string.Empty);
+                }
+                body.Add(bodyStrings.ToArray());
+            }
+
+            string[] header1 = new string[] { "テーブル", "部位制限フラグ", "スロット", "名前", "管理用ID", "c3スキル数", "c6スキル数", "c9スキル数", "c12スキル数", "c15スキル数", "スキルマイナス位置" };
+            List<string> header2List = new();
+            for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
+            {
+                header2List.Add(@"スキル系統" + i);
+                header2List.Add(@"スキル値" + i);
+            }
+            string[] header2 = header2List.ToArray();
+            string[] header = header1.Concat(header2).ToArray();
+            string export = CsvWriter.WriteToText(header, body);
+            File.WriteAllText(IdealCsv, export);
         }
 
         // ファイル読み込み

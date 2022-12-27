@@ -98,6 +98,15 @@ namespace SimModel.Model
         // ベース防具(非錬成防具の場合null)
         public Equipment? BaseEquipment { get; set; } = null;
 
+        // 錬成テーブル
+        public int AugmentationTable { get; set; }
+
+        // 各コストごとの追加可能スキル数(理想錬成用)
+        public int[] GenericSkills { get; set; } = new int[5];
+
+        // 理想錬成データ
+        public IdealAugmentation Ideal { get; set; }
+
         // デフォルトコンストラクタ
         public Equipment()
         {
@@ -226,6 +235,31 @@ namespace SimModel.Model
                     sb.Append('\n');
                     sb.Append(skill.Description);
                 }
+                if (GenericSkills[0] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c3スキル +" + GenericSkills[0]);
+                }
+                if (GenericSkills[1] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c6スキル +" + GenericSkills[1]);
+                }
+                if (GenericSkills[2] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c9スキル +" + GenericSkills[2]);
+                }
+                if (GenericSkills[3] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c12スキル +" + GenericSkills[3]);
+                }
+                if (GenericSkills[4] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c15スキル +" + GenericSkills[4]);
+                }
 
                 // ベース防具情報
                 if (BaseEquipment != null)
@@ -260,6 +294,14 @@ namespace SimModel.Model
                         sb.Append(Slot2);
                         sb.Append('-');
                         sb.Append(Slot3);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        for (int j = 0; j < GenericSkills[i]; j++)
+                        {
+                            sb.Append(',');
+                            sb.Append("c" + ((i * 3) + 3));
+                        }
                     }
                 }
 

@@ -112,6 +112,9 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<string>> SexMaster { get; } = new();
 
 
+        // マイセット追加可能フラグ
+        public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
+
         // 検索コマンド
         public AsyncReactiveCommand SearchCommand { get; private set; }
 
@@ -122,7 +125,7 @@ namespace RiseSim.ViewModels.SubViews
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
 
         // マイセット追加コマンド
-        public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand AddMySetCommand { get; private set; }
 
         // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
@@ -149,7 +152,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search());
             SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
-            AddMySetCommand.Subscribe(_ => AddMySet());
+            AddMySetCommand = CanAddMySet.ToReactiveCommand().WithSubscribe(() => AddMySet());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
@@ -219,7 +222,10 @@ namespace RiseSim.ViewModels.SubViews
             SkillSelectorVMs.Value = selectorVMs;
 
             // シミュ画面の検索結果と装備詳細を紐づけ
-            DetailSet.Subscribe(set => EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set));
+            DetailSet.Subscribe(set => {
+                EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
+                CanAddMySet.Value = !set?.HasIdeal ?? false;
+            });
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
             ObservableCollection<string> slots = new();

@@ -41,6 +41,9 @@ namespace RiseSim.ViewModels.Controls
         // 固定可能フラグ
         public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
 
+        // 除外可能フラグ
+        public ReactivePropertySlim<bool> CanExclude { get; } = new(true);
+
         // 管理用装備種類
         public EquipKind TrueKind { get; set; }
 
@@ -48,7 +51,7 @@ namespace RiseSim.ViewModels.Controls
         public string TrueName { get; set; }
 
         // 除外コマンド
-        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand ExcludeCommand { get; private set; }
 
         // 固定コマンド
         public ReactiveCommand IncludeCommand { get; private set; }
@@ -56,7 +59,7 @@ namespace RiseSim.ViewModels.Controls
         // コマンドを設定
         private void SetCommand()
         {
-            ExcludeCommand.Subscribe(_ => Exclude());
+            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude());
             IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
@@ -68,6 +71,11 @@ namespace RiseSim.ViewModels.Controls
             if (TrueKind.Equals(EquipKind.deco))
             {
                 CanInclude.Value = false;
+            }
+            if (TrueKind.Equals(EquipKind.gskill))
+            {
+                CanInclude.Value = false;
+                CanExclude.Value = false;
             }
             TrueName = equip.Name;
             Description.Value = equip.Description;
@@ -91,6 +99,10 @@ namespace RiseSim.ViewModels.Controls
                 foreach (var deco in set.Decos)
                 {
                     list.Add(new EquipRowViewModel(deco));
+                }
+                foreach (var gskill in set.GenericSkills)
+                {
+                    list.Add(new EquipRowViewModel(gskill));
                 }
             }
             return list;

@@ -49,6 +49,9 @@ namespace SimModel.Model
         // 装飾品(リスト)
         public List<Equipment> Decos { get; set; } = new();
 
+        // 理想錬成用のコストでつくスキル
+        public List<Equipment> GenericSkills { get; set; } = new();
+
         // 武器スロ1つ目
         public int WeaponSlot1 { get; set; }
 
@@ -76,6 +79,10 @@ namespace SimModel.Model
                 foreach (var deco in Decos)
                 {
                     ret.Add(deco);
+                }
+                foreach (var gSkill in GenericSkills)
+                {
+                    ret.Add(gSkill);
                 }
                 return ret;
             }
@@ -283,43 +290,47 @@ namespace SimModel.Model
                     sb.Append(deco.DispName);
                 }
 
+                foreach (Equipment gSkill in GenericSkills)
+                {
+                    sb.Append(',');
+                    sb.Append(gSkill.DispName);
+                }
+
                 return sb.ToString();
             }
         }
 
         // 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
-        public List<int> EquipIndexsWithOutDecos
+        public List<int> EquipIndexsWithOutDecos(bool includeIdealAugmentation)
         {
-            get
+            List<int> list = new();
+            if (!string.IsNullOrWhiteSpace(Head.Name))
             {
-                List<int> list = new();
-                if (!string.IsNullOrWhiteSpace(Head.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Head.Name));
-                }
-                if (!string.IsNullOrWhiteSpace(Body.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Body.Name));
-                }
-                if (!string.IsNullOrWhiteSpace(Arm.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Arm.Name));
-                }
-                if (!string.IsNullOrWhiteSpace(Waist.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Waist.Name));
-                }
-                if (!string.IsNullOrWhiteSpace(Leg.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Leg.Name));
-                }
-                if (!string.IsNullOrWhiteSpace(Charm.Name))
-                {
-                    list.Add(Masters.GetEquipIndexByName(Charm.Name));
-                }
-                return list;
+                list.Add(Masters.GetEquipIndexByName(Head.Name, includeIdealAugmentation));
             }
+            if (!string.IsNullOrWhiteSpace(Body.Name))
+            {
+                list.Add(Masters.GetEquipIndexByName(Body.Name, includeIdealAugmentation));
+            }
+            if (!string.IsNullOrWhiteSpace(Arm.Name))
+            {
+                list.Add(Masters.GetEquipIndexByName(Arm.Name, includeIdealAugmentation));
+            }
+            if (!string.IsNullOrWhiteSpace(Waist.Name))
+            {
+                list.Add(Masters.GetEquipIndexByName(Waist.Name, includeIdealAugmentation));
+            }
+            if (!string.IsNullOrWhiteSpace(Leg.Name))
+            {
+                list.Add(Masters.GetEquipIndexByName(Leg.Name, includeIdealAugmentation));
+            }
+            if (!string.IsNullOrWhiteSpace(Charm.Name))
+            {
+                list.Add(Masters.GetEquipIndexByName(Charm.Name, includeIdealAugmentation));
+            }
+            return list;
         }
+
 
         // 装飾品のCSV表記 Set可能
         public string DecoNameCSV
@@ -349,12 +360,32 @@ namespace SimModel.Model
                     {
                         continue;
                     }
-                    Equipment? deco = Masters.GetEquipByName(decoName);
+                    Equipment? deco = Masters.GetEquipByName(decoName, false);
                     if (deco != null)
                     {
                         Decos.Add(deco);
                     }
                 }
+            }
+        }
+
+        // 理想錬成の追加スキルのCSV表記
+        public string GSkillNameCSV
+        {
+            get
+            {
+                StringBuilder sb = new();
+                bool isFirst = true;
+                foreach (var gskill in GenericSkills)
+                {
+                    if (!isFirst)
+                    {
+                        sb.Append(',');
+                    }
+                    sb.Append(gskill.DispName);
+                    isFirst = false;
+                }
+                return sb.ToString();
             }
         }
 
@@ -390,6 +421,7 @@ namespace SimModel.Model
             }
         }
 
+        // 装備の説明
         public string Description
         {
             get
@@ -437,6 +469,12 @@ namespace SimModel.Model
                 sb.Append('\n');
                 sb.Append(EquipKind.deco.StrWithColon());
                 sb.Append(DecoNameCSV);
+                if (GenericSkills.Count > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append(EquipKind.gskill.StrWithColon());
+                    sb.Append(GSkillNameCSV);
+                }
                 sb.Append('\n');
                 sb.Append("空きスロ：");
                 sb.Append(EmptySlotNum);
@@ -518,6 +556,22 @@ namespace SimModel.Model
             get
             {
                 return EmptySlotNum != InvalidSlot;
+            }
+        }
+
+        // 理想錬成を利用しているかどうかチェック
+        public bool HasIdeal
+        {
+            get
+            {
+                foreach (var equip in Equipments)
+                {
+                    if (equip.Ideal != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 

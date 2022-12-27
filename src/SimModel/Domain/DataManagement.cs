@@ -32,7 +32,7 @@ namespace SimModel.Domain
         // 除外設定を追加
         static internal Clude? AddExclude(string name)
         {
-            Equipment? equip = Masters.GetEquipByName(name);
+            Equipment? equip = Masters.GetEquipByName(name, false);
             if (equip == null)
             {
                 return null;
@@ -43,7 +43,7 @@ namespace SimModel.Domain
         // 固定設定を追加
         static internal Clude? AddInclude(string name)
         {
-            Equipment? equip = Masters.GetEquipByName(name);
+            Equipment? equip = Masters.GetEquipByName(name, false);
             if (equip == null || equip.Kind == EquipKind.deco)
             {
                 // 装飾品は固定しない
@@ -59,7 +59,7 @@ namespace SimModel.Domain
                     continue;
                 }
 
-                Equipment? oldEquip = Masters.GetEquipByName(clude.Name);
+                Equipment? oldEquip = Masters.GetEquipByName(clude.Name, false);
                 if (oldEquip == null || oldEquip.Kind.Equals(equip.Kind))
                 {
                     toDelete = clude.Name;
@@ -80,7 +80,7 @@ namespace SimModel.Domain
             foreach (var aug in Masters.Augmentations)
             {
                 string name = aug.Name;
-                Equipment? equip = Masters.GetEquipByName(name);
+                Equipment? equip = Masters.GetEquipByName(name, false);
                 if (equip == null)
                 {
                     return false;

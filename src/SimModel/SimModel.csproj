@@ -65,6 +65,9 @@
     <None Update="save\augmentation.csv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="save\ideal.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="save\myset.csv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>

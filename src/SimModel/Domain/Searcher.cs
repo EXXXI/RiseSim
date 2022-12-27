@@ -46,12 +46,32 @@ namespace SimModel.Domain
         const int ThunderRowIndex = 14;
         const int IceRowIndex = 15;
         const int DragonRowIndex = 16;
+        const int c3RowIndex = 17;
+        const int c6RowIndex = 18;
+        const int c9RowIndex = 19;
+        const int c12RowIndex = 20;
+        const int c15RowIndex = 21;
 
         // 検索条件
         public SearchCondition Condition { get; set; }
 
         // 検索結果
         public List<EquipSet> ResultSets { get; set; }
+
+        // 検索対象の頭一覧
+        private List<Equipment> Heads { get; set; }
+
+        // 検索対象の胴一覧
+        private List<Equipment> Bodys { get; set; }
+
+        // 検索対象の腕一覧
+        private List<Equipment> Arms { get; set; }
+
+        // 検索対象の腰一覧
+        private List<Equipment> Waists { get; set; }
+
+        // 検索対象の足一覧
+        private List<Equipment> Legs { get; set; }
 
         // スキル条件の制約式の開始Index
         private int FirstSkillRowIndex { get; set; }
@@ -68,12 +88,31 @@ namespace SimModel.Domain
         // 風雷合一：フラグ条件の制約式の開始Index
         private int FirstFuraiFlagRowIndex { get; set; }
 
-        
+        // 理想錬成：部位制限つきの理想編成の名前・Index
+        private Dictionary<string, int> LimitedIdealAugmentationDictionary { get; set; }
+
         // コンストラクタ：検索条件を指定する
         public Searcher(SearchCondition condition)
         {
             Condition = condition;
             ResultSets = new List<EquipSet>();
+
+            if (condition.IncludeIdealAugmentation)
+            {
+                Heads = Masters.IdealHeads;
+                Bodys = Masters.IdealBodys;
+                Arms = Masters.IdealArms;
+                Waists = Masters.IdealWaists;
+                Legs = Masters.IdealLegs;
+            }
+            else
+            {
+                Heads = Masters.Heads;
+                Bodys = Masters.Bodys;
+                Arms = Masters.Arms;
+                Waists = Masters.Waists;
+                Legs = Masters.Legs;
+            }
         }
 
         // 検索 全件検索完了した場合trueを返す
@@ -121,6 +160,16 @@ namespace SimModel.Domain
         // 制約式設定
         private Constraint[] SetConstraints(Solver solver)
         {
+            // 理想錬成の部位制限をサマリ(数を把握するため先に実施)
+            int isOneCount = 0;
+            foreach (var ideal in Masters.Ideals)
+            {
+                if (ideal.IsOne)
+                {
+                    isOneCount++;
+                }
+            }
+
             int numConstraints = 0;
             numConstraints += 5; // 防具5部位
             numConstraints += 1; // 護石
@@ -128,9 +177,11 @@ namespace SimModel.Domain
             numConstraints += 1; // 性別
             numConstraints += 1; // 防御力
             numConstraints += 5; // 耐性
+            numConstraints += 5; // 理想錬成スキルコスト
             numConstraints += Condition.Skills.Count; // スキル数
             numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
             numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
+            numConstraints += isOneCount; // 理想錬成：部位制限
             numConstraints += ResultSets.Count; // 検索済み結果の除外
             numConstraints += Masters.Cludes.Count; // 除外固定装備設定
 
@@ -149,7 +200,6 @@ namespace SimModel.Domain
             int[] slotCond = SlotCalc(Condition.WeaponSlot1, Condition.WeaponSlot2, Condition.WeaponSlot3);
 
             // 残りスロット数は0以上
-
             y[index++] = solver.MakeConstraint(0.0 - slotCond[0], double.PositiveInfinity, "Slot1");
             y[index++] = solver.MakeConstraint(0.0 - slotCond[1], double.PositiveInfinity, "Slot2");
             y[index++] = solver.MakeConstraint(0.0 - slotCond[2], double.PositiveInfinity, "Slot3");
@@ -165,6 +215,13 @@ namespace SimModel.Domain
             y[index++] = solver.MakeConstraint(Condition.Thunder ?? double.NegativeInfinity, double.PositiveInfinity, "Thunder");
             y[index++] = solver.MakeConstraint(Condition.Ice ?? double.NegativeInfinity, double.PositiveInfinity, "Ice");
             y[index++] = solver.MakeConstraint(Condition.Dragon ?? double.NegativeInfinity, double.PositiveInfinity, "Dragon");
+
+            // 理想錬成スキルコスト
+            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c3");
+            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c6");
+            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c9");
+            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c12");
+            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c15");
 
             // スキル条件
             FirstSkillRowIndex = index;
@@ -188,11 +245,23 @@ namespace SimModel.Domain
                 y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, skill.Name + "風雷フラグ");
             }
 
+            LimitedIdealAugmentationDictionary = new();
+            // 理想錬成：部位制限
+            foreach (var ideal in Masters.Ideals)
+            {
+                if (ideal.IsOne)
+                {
+                    LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
+                    y[index++] = solver.MakeConstraint(0.0, 1.0, ideal.Name);
+                }
+            }
+
             // 検索済み結果の除外
             FirstResultExcludeRowIndex = index;
             foreach (var set in ResultSets)
             {
-                y[index++] = solver.MakeConstraint(0.0, set.EquipIndexsWithOutDecos.Count - 1, set.GlpkRowName);
+                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
             }
 
             // 除外固定装備設定
@@ -217,13 +286,14 @@ namespace SimModel.Domain
         {
             // 変数の数
             int numVars = 0;
-            numVars += Masters.Heads.Count;
-            numVars += Masters.Bodys.Count;
-            numVars += Masters.Arms.Count;
-            numVars += Masters.Waists.Count;
-            numVars += Masters.Legs.Count;
+            numVars += Heads.Count;
+            numVars += Bodys.Count;
+            numVars += Arms.Count;
+            numVars += Waists.Count;
+            numVars += Legs.Count;
             numVars += Masters.Charms.Count;
             numVars += Masters.Decos.Count;
+            numVars += Masters.GenericSkills.Count;
             numVars += Condition.Skills.Count;
             numVars += Condition.Skills.Count;
 
@@ -231,23 +301,23 @@ namespace SimModel.Domain
 
             // 各装備は0個以上で整数
             int index = 0;
-            foreach (var equip in Masters.Heads)
+            foreach (var equip in Heads)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
-            foreach (var equip in Masters.Bodys)
+            foreach (var equip in Bodys)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
-            foreach (var equip in Masters.Arms)
+            foreach (var equip in Arms)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
-            foreach (var equip in Masters.Waists)
+            foreach (var equip in Waists)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
-            foreach (var equip in Masters.Legs)
+            foreach (var equip in Legs)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
@@ -256,6 +326,10 @@ namespace SimModel.Domain
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
             foreach (var equip in Masters.Decos)
+            {
+                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+            }
+            foreach (var equip in Masters.GenericSkills)
             {
                 x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
             }
@@ -277,29 +351,29 @@ namespace SimModel.Domain
 
         // TODO: 目的関数、防御力以外も対応する？
         // 目的関数設定(防御力)
-        private static void SetObjective(Solver solver, Variable[] x)
+        private void SetObjective(Solver solver, Variable[] x)
         {
             Objective objective = solver.Objective();
 
             // 各装備の防御力が、目的関数における各装備の項の係数となる
             int index = 0;
-            foreach (var equip in Masters.Heads)
+            foreach (var equip in Heads)
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
-            foreach (var equip in Masters.Bodys)
+            foreach (var equip in Bodys)
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
-            foreach (var equip in Masters.Arms)
+            foreach (var equip in Arms)
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
-            foreach (var equip in Masters.Waists)
+            foreach (var equip in Waists)
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
-            foreach (var equip in Masters.Legs)
+            foreach (var equip in Legs)
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
@@ -355,27 +429,27 @@ namespace SimModel.Domain
         {
             // 防具データ
             int columnIndex = 0;
-            foreach (var equip in Masters.Heads)
+            foreach (var equip in Heads)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
-            foreach (var equip in Masters.Bodys)
+            foreach (var equip in Bodys)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
-            foreach (var equip in Masters.Arms)
+            foreach (var equip in Arms)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
-            foreach (var equip in Masters.Waists)
+            foreach (var equip in Waists)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
             }
-            foreach (var equip in Masters.Legs)
+            foreach (var equip in Legs)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
@@ -386,6 +460,11 @@ namespace SimModel.Domain
                 columnIndex++;
             }
             foreach (var equip in Masters.Decos)
+            {
+                SetEquipData(x[columnIndex], y, equip);
+                columnIndex++;
+            }
+            foreach (var equip in Masters.GenericSkills)
             {
                 SetEquipData(x[columnIndex], y, equip);
                 columnIndex++;
@@ -430,7 +509,7 @@ namespace SimModel.Domain
             int resultExcludeRowIndex = FirstResultExcludeRowIndex;
             foreach (var set in ResultSets)
             {
-                List<int> indexList = set.EquipIndexsWithOutDecos;
+                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
                 foreach (var index in indexList)
                 {
                     // 各装備に対応する係数を1とする
@@ -444,7 +523,7 @@ namespace SimModel.Domain
             foreach (var clude in Masters.Cludes)
             {
                 // 装備に対応する係数を1とする
-                int index = Masters.GetEquipIndexByName(clude.Name);
+                int index = Masters.GetEquipIndexByName(clude.Name, Condition.IncludeIdealAugmentation);
                 y[cludeRowIndex].SetCoefficient(x[index], 1);
                 cludeRowIndex++;
             }
@@ -455,7 +534,7 @@ namespace SimModel.Domain
         {
             // 部位情報
             int kindIndex = 0;
-            bool isDeco = false;
+            bool isDecoOrGSkill = false;
             switch (equip.Kind)
             {
                 case EquipKind.head:
@@ -477,17 +556,18 @@ namespace SimModel.Domain
                     kindIndex = CharmRowIndex;
                     break;
                 default:
-                    isDeco = true;
+                    isDecoOrGSkill
+                        = true;
                     break;
             }
-            if (!isDeco)
+            if (!isDecoOrGSkill)
             {
                 y[kindIndex].SetCoefficient(xvar, 1);
             }
 
             // スロット情報
             int[] slotCond = SlotCalc(equip.Slot1, equip.Slot2, equip.Slot3);
-            if (isDeco)
+            if (isDecoOrGSkill)
             {
                 for (int i = 0; i < slotCond.Length; i++)
                 {
@@ -512,6 +592,22 @@ namespace SimModel.Domain
             y[ThunderRowIndex].SetCoefficient(xvar, equip.Thunder);
             y[IceRowIndex].SetCoefficient(xvar, equip.Ice);
             y[DragonRowIndex].SetCoefficient(xvar, equip.Dragon);
+
+            // 理想錬成スキルコスト情報
+
+            int[] costCond = CostCalc(equip.GenericSkills);
+            if (isDecoOrGSkill)
+            {
+                for (int i = 0; i < costCond.Length; i++)
+                {
+                    costCond[i] = costCond[i] * -1;
+                }
+            }
+            y[c3RowIndex].SetCoefficient(xvar, costCond[0]);
+            y[c6RowIndex].SetCoefficient(xvar, costCond[1]);
+            y[c9RowIndex].SetCoefficient(xvar, costCond[2]);
+            y[c12RowIndex].SetCoefficient(xvar, costCond[3]);
+            y[c15RowIndex].SetCoefficient(xvar, costCond[4]);
 
             // スキル情報
             foreach (var condSkill in Condition.Skills)
@@ -559,6 +655,13 @@ namespace SimModel.Domain
                 }
             }
 
+            // 理想錬成：部位制限
+            if (equip.Ideal?.IsOne == true)
+            {
+                int index = LimitedIdealAugmentationDictionary[equip.Ideal.Name];
+                y[index].SetCoefficient(xvar, 1);
+            }
+
         }
 
         // 計算結果整理
@@ -574,7 +677,7 @@ namespace SimModel.Domain
                     string name = x[i].Name();
 
                     // 存在チェック
-                    Equipment? equip = Masters.GetEquipByName(name);
+                    Equipment? equip = Masters.GetEquipByName(name, Condition.IncludeIdealAugmentation);
                     if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
                     {
                         // 存在しない装備名の場合無視
@@ -610,6 +713,13 @@ namespace SimModel.Domain
                             break;
                         case EquipKind.charm:
                             equipSet.Charm = equip;
+                            break;
+                        case EquipKind.gskill:
+                            for (int j = 0; j < x[i].SolutionValue(); j++)
+                            {
+                                // 錬成スキルは個数を確認し、その数追加
+                                equipSet.GenericSkills.Add(equip);
+                            }
                             break;
                         default:
                             break;
@@ -703,6 +813,19 @@ namespace SimModel.Domain
                 slotCond[i]++;
             }
             return slotCond;
+        }
+
+        // コスト計算
+        private int[] CostCalc(int[] genericSkills)
+        {
+            int[] result = new int[5];
+            result[4] = genericSkills[4];
+            result[3] = result[4] + genericSkills[3];
+            result[2] = result[3] + genericSkills[2];
+            result[1] = result[2] + genericSkills[1];
+            result[0] = result[1] + genericSkills[0];
+
+            return result;
         }
     }
 }

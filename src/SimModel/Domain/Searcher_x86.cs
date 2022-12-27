@@ -196,7 +196,8 @@ namespace SimModel.Domain
             foreach (var set in ResultSets)
             {
                 problem.AddRow(set.GlpkRowName);
-                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Upper, 0.0, set.EquipIndexsWithOutDecos.Count - 1);
+                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                problem.SetRowBounds(problem.RowsCount - 1, BoundsType.Upper, 0.0, equipIndexes.Count - 1);
             }
 
             // 除外固定装備設定
@@ -447,7 +448,7 @@ namespace SimModel.Domain
             int resultExcludeRowIndex = FirstResultExcludeRowIndex;
             foreach (var set in ResultSets)
             {
-                List<int> indexList = set.EquipIndexsWithOutDecos;
+                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
                 foreach (var index in indexList)
                 {
                     // 各装備に対応する係数を1とする
@@ -463,7 +464,7 @@ namespace SimModel.Domain
             foreach (var clude in Masters.Cludes)
             {
                 // 装備に対応する係数を1とする
-                int index = Masters.GetEquipIndexByName(clude.Name);
+                int index = Masters.GetEquipIndexByName(clude.Name, Condition.IncludeIdealAugmentation);
                 iaList.Add(cludeRowIndex);
                 jaList.Add(index);
                 arList.Add(1);
@@ -630,7 +631,7 @@ namespace SimModel.Domain
                     string name = problem.ColumnName[i];
 
                     // 存在チェック
-                    Equipment? equip = Masters.GetEquipByName(name);
+                    Equipment? equip = Masters.GetEquipByName(name, Condition.IncludeIdealAugmentation);
                     if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
                     {
                         // 存在しない装備名の場合無視

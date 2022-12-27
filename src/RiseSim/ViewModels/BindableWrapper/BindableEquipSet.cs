@@ -48,6 +48,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 装飾品(リスト)
         public ObservableCollection<BindableEquipment> Decos { get; set; } = new();
 
+        // 理想錬成スキル(リスト)
+        public ObservableCollection<BindableEquipment> GenericSkills { get; set; } = new();
+
         // 武器スロ1つ目
         public int WeaponSlot1 { get; set; }
 
@@ -105,6 +108,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 空きスロット数
         public string EmptySlotNum { get; set; }
 
+        // 理想錬成防具を含むかどうか
+        public bool HasIdeal { get; set; }
+
         // コンストラクタ
         public BindableEquipSet(EquipSet set)
         {
@@ -133,6 +139,8 @@ namespace RiseSim.ViewModels.BindableWrapper
             SkillsDisp = set.SkillsDisp;
             Description = set.Description;
             EmptySlotNum = set.EmptySlotNum;
+            GenericSkills = BindableEquipment.BeBindableList(set.GenericSkills);
+            HasIdeal = set.HasIdeal;
             Original = set;
         }
 

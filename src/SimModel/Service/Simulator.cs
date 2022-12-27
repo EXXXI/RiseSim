@@ -50,6 +50,7 @@ namespace SimModel.Service
             CsvOperation.LoadCludeCSV();
             CsvOperation.LoadCharmCSV();
             CsvOperation.LoadAugmentationCSV();
+            CsvOperation.LoadIdealCSV();
             CsvOperation.LoadRecentSkillCSV();
 
             // 錬成装備込みのマスタデータ作成&マイセット読み込み
