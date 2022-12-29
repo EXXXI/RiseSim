@@ -245,6 +245,51 @@ namespace SimModel.Model
                     sb.Append("c15スキル +" + GenericSkills[4]);
                 }
 
+                // 理想錬成情報
+                if (Ideal != null)
+                {
+                    sb.Append('\n');
+                    sb.Append("-----------");
+                    sb.Append('\n');
+                    sb.Append("(理想錬成の内容)");
+                    sb.Append('\n');
+                    sb.Append("スロット追加：");
+                    sb.Append(Ideal.SlotIncrement);
+                    foreach (var skill in Skills)
+                    {
+                        if (skill.IsAdditional)
+                        {
+                            sb.Append('\n');
+                            sb.Append(skill.Description);
+                        }
+                    }
+                    if (GenericSkills[0] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c3スキル +" + GenericSkills[0]);
+                    }
+                    if (GenericSkills[1] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c6スキル +" + GenericSkills[1]);
+                    }
+                    if (GenericSkills[2] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c9スキル +" + GenericSkills[2]);
+                    }
+                    if (GenericSkills[3] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c12スキル +" + GenericSkills[3]);
+                    }
+                    if (GenericSkills[4] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c15スキル +" + GenericSkills[4]);
+                    }
+                }
+
                 // ベース防具情報
                 if (BaseEquipment != null)
                 {

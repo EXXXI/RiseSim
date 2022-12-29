@@ -88,6 +88,12 @@ namespace RiseSim.ViewModels.SubViews
         // 上書きコマンド
         public ReactiveCommand UpdateCommand { get; private set; } = new();
 
+        // 全無効化コマンド
+        public ReactiveCommand AllDisableCommand { get; private set; } = new();
+
+        // 全有効化コマンド
+        public ReactiveCommand AllEnableCommand { get; private set; } = new();
+
 
         // コマンドを設定
         private void SetCommand()
@@ -97,7 +103,30 @@ namespace RiseSim.ViewModels.SubViews
             AddCommand.Subscribe(_ => AddIdeal());
             DeleteCommand.Subscribe(_ => DeleteIdeal());
             UpdateCommand.Subscribe(_ => UpdateIdeal());
+            AllDisableCommand.Subscribe(_ => AllDisable());
+            AllEnableCommand.Subscribe(_ => AllEnable());
         }
+
+        // 全有効化
+        private void AllEnable()
+        {
+            SetAllIsEnabled(true);
+        }
+
+        // 全無効化
+        private void AllDisable()
+        {
+            SetAllIsEnabled(false);
+        }
+
+        // 全ての理想錬成に有効無効を設定
+        private void SetAllIsEnabled(bool isEnabled)
+        {
+            foreach (var bindableIdeal in Ideals.Value)
+            {
+                bindableIdeal.IsEnabled.Value = isEnabled;
+            }
+        } 
 
 
         // コンストラクタ
@@ -334,14 +363,15 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append('\n');
             sb.Append("■注意\n");
             sb.Append("・「理想錬成を使う」をオンにしないと機能しません。\n");
-            sb.Append("・理想錬成単位での固定・除外はできません(検索時はベース装備の固定・除外設定に準じます)。\n");
+            sb.Append("・理想錬成を適用した装備の固定・除外設定はベース防具の固定・除外設定に準じます。\n");
+            sb.Append("・特定の理想錬成自体を有効・無効にしたい場合はこの画面で行ってください。\n");
             sb.Append("・装飾品と錬成追加スキルのパターンは1種類しか提示されません(つまり、入れ替えが可能な場合があります)。\n");
             sb.Append("・本来存在しない錬成も登録できてしまいます。\n");
             sb.Append('\n');
             sb.Append("■使用例１\n");
             sb.Append("「T6で『スキル1つ欠けのs3』『スキル1つ欠けのs2c3』『スキル1つ欠けのs1c15』『s2』『c3s1』『c15』までなら頑張る。何を錬成するといい？」\n");
             sb.Append("部位制限を『全部位可』にして、これらを登録してシミュしてください。\n");
-            sb.Append("(スキルの欠けは、『どれか1つをLv-1』を選択してください。)\n");
+            sb.Append("(スキルの欠けは、『どれか1つをLv-1』を選択すれば全パターン検索します。)\n");
             sb.Append("候補に出てきた装備が狙い目です。\n");
             sb.Append('\n');
             sb.Append("■使用例２\n");
@@ -351,7 +381,7 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append("ただし、検索結果は『移植が成功した場合』の結果であり、移植が成功することを保証するものではありません。\n");
             sb.Append('\n');
             sb.Append("■備考\n");
-            sb.Append("・指定したコストより低コストのスキルも計算対象です(c9を1つ指定した場合に、その枠に回復量UP(c3)が入ることもあります)。\n");
+            sb.Append("・指定したコストより低コストのスキルも計算対象です(例えばc9を1つ指定した場合、その枠に回復量UP(c3)が入ることもあります)。\n");
             HowToUse.Value = sb.ToString();
         }
     }

@@ -566,9 +566,14 @@ namespace SimModel.Model
                 int[] hasGSkills = { 0, 0, 0, 0, 0 }; // 所持
                 int[] restGSkills = { 0, 0, 0, 0, 0 }; // 空き
 
-                foreach (var deco in Decos)
+
+                
+                foreach (var gskill in GenericSkills)
                 {
-                    reqGSkills[deco.Slot1 - 1]++;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        reqGSkills[i] += gskill.GenericSkills[i];
+                    }
                 }
                 CalcEquipHasGSkill(hasGSkills, Head);
                 CalcEquipHasGSkill(hasGSkills, Body);

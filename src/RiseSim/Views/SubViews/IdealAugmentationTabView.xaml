@@ -90,6 +90,8 @@
             <Button Content="追加する" Command="{Binding AddCommand}" />
             <Button Content="選択中の錬成防具の内容を上の入力欄に反映" Command="{Binding InputCommand}" Margin="0,30,0,0"/>
             <Button Content="上の入力欄の情報を選択中の理想錬成に上書き" Command="{Binding UpdateCommand}" xml:space="preserve"/>
+            <Button Content="全ての理想錬成を有効化" Command="{Binding AllEnableCommand}" xml:space="preserve" Margin="0,30,0,0"/>
+            <Button Content="全ての理想錬成を無効化" Command="{Binding AllDisableCommand}" xml:space="preserve"/>
         </StackPanel>
 
         <!-- 一覧 -->
@@ -107,6 +109,14 @@
                 <DataGridTextColumn Header="部位制限" Binding="{Binding IsOneDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="追加スキル" Binding="{Binding SimpleSkillDiscription, Mode=OneWay}" />
                 <DataGridTextColumn Header="削除スキル" Binding="{Binding SimpleSkillMinusDiscription, Mode=OneWay}" />
+                <DataGridTemplateColumn IsReadOnly="True" Header="有効化">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsEnabled.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 

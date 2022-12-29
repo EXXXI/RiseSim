@@ -57,6 +57,9 @@ namespace SimModel.Model
         // true: 1部位のみ、false: 全部位可能
         public bool IsOne { get; set; }
 
+        // 検索時に有効か無効か
+        public bool IsEnabled { get; set; } = true;
+
         // 表示用スキル一覧
         public string SimpleSkillDiscription
         {

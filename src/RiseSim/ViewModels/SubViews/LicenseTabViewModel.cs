@@ -23,10 +23,10 @@ namespace RiseSim.ViewModels.SubViews
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");
-            sb.Append("20221229.0\n");
+            sb.Append("20221230.0\n");
             sb.Append('\n');
             sb.Append("■このシミュのライセンス\n");
-            sb.Append("The MIT License\n");
+            sb.Append("MIT License\n");
             sb.Append('\n');
             sb.Append("■使わせていただいたOSS(+必要であればライセンス)\n");
             sb.Append("・Google OR-Tools\n");

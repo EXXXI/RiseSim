@@ -1,9 +1,11 @@
 ﻿using Prism.Mvvm;
+using Reactive.Bindings;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +37,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 表示用スキルマイナス一覧
         public string SimpleSkillMinusDiscription { get; set; }
 
+        // 有効無効
+        public ReactivePropertySlim<bool> IsEnabled { get; set; } = new(true);
+
         public IdealAugmentation Original { get; set; }
 
         // コンストラクタ
@@ -49,6 +54,12 @@ namespace RiseSim.ViewModels.BindableWrapper
             SimpleSkillDiscription = ideal.SimpleSkillDiscription;
             SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
             Original = ideal;
+            IsEnabled.Subscribe(x => ChangeIsEnabled(x));
+        }
+
+        private void ChangeIsEnabled(bool x)
+        {
+            Original.IsEnabled = x;
         }
 
         // リストをまとめてバインド用クラスに変換

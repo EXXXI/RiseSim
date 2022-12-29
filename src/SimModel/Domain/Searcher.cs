@@ -143,15 +143,6 @@ namespace SimModel.Domain
         // 制約式設定
         private Constraint[] SetConstraints(Solver solver)
         {
-            // 理想錬成の部位制限をサマリ(数を把握するため先に実施)
-            int isOneCount = 0;
-            foreach (var ideal in Masters.Ideals)
-            {
-                if (ideal.IsOne)
-                {
-                    isOneCount++;
-                }
-            }
 
             int numConstraints = 0;
             numConstraints += 5; // 防具5部位
@@ -164,7 +155,7 @@ namespace SimModel.Domain
             numConstraints += Condition.Skills.Count; // スキル数
             numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
             numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
-            numConstraints += isOneCount; // 理想錬成：部位制限
+            numConstraints += Masters.Ideals.Count; // 理想錬成：部位制限
             numConstraints += ResultSets.Count; // 検索済み結果の除外
             numConstraints += Masters.Cludes.Count; // 除外固定装備設定
 
@@ -229,14 +220,20 @@ namespace SimModel.Domain
             }
 
             LimitedIdealAugmentationDictionary = new();
-            // 理想錬成：部位制限
+            // 理想錬成：部位制限や有効無効制限
             foreach (var ideal in Masters.Ideals)
             {
+                double max = 5.0;
                 if (ideal.IsOne)
                 {
-                    LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
-                    y[index++] = solver.MakeConstraint(0.0, 1.0, ideal.Name);
+                    max = 1.0;
                 }
+                if (!ideal.IsEnabled)
+                {
+                    max = 0.0;
+                }
+                LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
+                y[index++] = solver.MakeConstraint(0.0, max, ideal.Name);
             }
 
             // 検索済み結果の除外
@@ -655,8 +652,8 @@ namespace SimModel.Domain
                 }
             }
 
-            // 理想錬成：部位制限
-            if (equip.Ideal?.IsOne == true)
+            // 理想錬成：部位制限・有効無効制限
+            if (equip.Ideal != null)
             {
                 int index = LimitedIdealAugmentationDictionary[equip.Ideal.Name];
                 y[index].SetCoefficient(xvar, 1);
