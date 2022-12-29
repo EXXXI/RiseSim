@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using SimModel.Config;
+﻿using SimModel.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +11,7 @@ namespace SimModel.Model
     public class EquipSet
     {
         private const string InvalidSlot = "invalid";
+        private const string InvalidGSkill = "invalid";
 
         // 頭装備
         public Equipment Head { get; set; } = new Equipment(EquipKind.head);
@@ -360,7 +345,7 @@ namespace SimModel.Model
                     {
                         continue;
                     }
-                    Equipment? deco = Masters.GetEquipByName(decoName, false);
+                    Equipment? deco = Masters.GetEquipByName(decoName);
                     if (deco != null)
                     {
                         Decos.Add(deco);
@@ -386,6 +371,23 @@ namespace SimModel.Model
                     isFirst = false;
                 }
                 return sb.ToString();
+            }
+            set
+            {
+                GenericSkills = new List<Equipment>();
+                string[] splitted = value.Split(',');
+                foreach (var label in splitted)
+                {
+                    if (string.IsNullOrWhiteSpace(label))
+                    {
+                        continue;
+                    }
+                    Equipment? gskill = Masters.GetEquipByName(label);
+                    if (gskill != null)
+                    {
+                        GenericSkills.Add(gskill);
+                    }
+                }
             }
         }
 
@@ -431,6 +433,11 @@ namespace SimModel.Model
                 {
                     sb.Append("※傀異錬成防具のスロットを減らしたため、\n");
                     sb.Append("※このマイセットの装飾品は装備しきれません\n");
+                }
+                if (!IsGSkillValid)
+                {
+                    sb.Append("※理想錬成防具の追加スキル数を減らしたため、\n");
+                    sb.Append("※このマイセットの追加スキルは実現できません\n");
                 }
                 sb.Append("武器スロ：");
                 sb.Append(WeaponSlotDisp);
@@ -550,12 +557,66 @@ namespace SimModel.Model
             }
         }
 
+        // 理想錬成防具の錬成スキルの空き
+        public string EmptyGSkillNum
+        {
+            get
+            {
+                int[] reqGSkills = { 0, 0, 0, 0, 0 }; // 要求
+                int[] hasGSkills = { 0, 0, 0, 0, 0 }; // 所持
+                int[] restGSkills = { 0, 0, 0, 0, 0 }; // 空き
+
+                foreach (var deco in Decos)
+                {
+                    reqGSkills[deco.Slot1 - 1]++;
+                }
+                CalcEquipHasGSkill(hasGSkills, Head);
+                CalcEquipHasGSkill(hasGSkills, Body);
+                CalcEquipHasGSkill(hasGSkills, Arm);
+                CalcEquipHasGSkill(hasGSkills, Waist);
+                CalcEquipHasGSkill(hasGSkills, Leg);
+
+                // 空き算出
+                for (int i = 0; i < 5; i++)
+                {
+                    restGSkills[i] = hasGSkills[i] - reqGSkills[i];
+                }
+
+                // 足りない分は1Lv上を消費する
+                for (int i = 0; i < 4; i++)
+                {
+                    if (restGSkills[i] < 0)
+                    {
+                        restGSkills[i + 1] += restGSkills[i];
+                        restGSkills[i] = 0;
+                    }
+                }
+
+                if (restGSkills[4] < 0)
+                {
+                    // スロット不足
+                    return InvalidGSkill;
+                }
+
+                return $"c3:{restGSkills[0]}, c6:{restGSkills[1]}, c9:{restGSkills[2]}, c12:{restGSkills[3]}, c15:{restGSkills[4]}";
+            }
+        }
+
         // 装飾品がはめられる状態かチェック
         private bool IsDecoValid
         {
             get
             {
                 return EmptySlotNum != InvalidSlot;
+            }
+        }
+
+        // 理想錬成の追加スキルが実現可能な状態かチェック
+        private bool IsGSkillValid
+        {
+            get
+            {
+                return EmptyGSkillNum != InvalidGSkill;
             }
         }
 
@@ -589,6 +650,15 @@ namespace SimModel.Model
             if (equip.Slot3 > 0)
             {
                 hasSlots[equip.Slot3 - 1]++;
+            }
+        }
+
+        // 防具のコスト数計算
+        private static void CalcEquipHasGSkill(int[] hasGSkills, Equipment equip)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += equip.GenericSkills[i];
             }
         }
 

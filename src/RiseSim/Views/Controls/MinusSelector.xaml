@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="RiseSim.Views.Controls.MinusSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views.Controls" xmlns:controls="clr-namespace:RiseSim.ViewModels.Controls" d:DataContext="{d:DesignInstance Type=controls:MinusSelectorViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="22" d:DesignWidth="165">
+    <ComboBox Width="165" ItemsSource="{Binding ItemMaster.Value, Mode=OneWay}" DisplayMemberPath="Disp" SelectedIndex="0" SelectedItem="{Binding SelectedItem.Value}">
+    </ComboBox>
+</UserControl>

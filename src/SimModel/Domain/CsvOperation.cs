@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using Csv;
+﻿using Csv;
 using SimModel.Model;
 using SimModel.Config;
 using System;
@@ -360,9 +344,9 @@ namespace SimModel.Domain
                 string weaponSlot1 = set.WeaponSlot1.ToString();
                 string weaponSlot2 = set.WeaponSlot2.ToString();
                 string weaponSlot3 = set.WeaponSlot3.ToString();
-                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.Head.Name, set.Body.Name, set.Arm.Name, set.Waist.Name, set.Leg.Name, set.Charm.Name, set.DecoNameCSV, set.Name });
+                body.Add(new string[] { weaponSlot1, weaponSlot2, weaponSlot3, set.Head.Name, set.Body.Name, set.Arm.Name, set.Waist.Name, set.Leg.Name, set.Charm.Name, set.DecoNameCSV, set.GSkillNameCSV, set.Name });
             }
-            string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品", "名前" };
+            string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品", "錬成スキル", "名前" };
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(MySetCsv, export);
         }
@@ -380,12 +364,12 @@ namespace SimModel.Domain
                 set.WeaponSlot1 = ParseUtil.Parse(line[@"武器スロ1"]);
                 set.WeaponSlot2 = ParseUtil.Parse(line[@"武器スロ2"]);
                 set.WeaponSlot3 = ParseUtil.Parse(line[@"武器スロ3"]);
-                set.Head = Masters.GetEquipByName(line[@"頭"], false);
-                set.Body = Masters.GetEquipByName(line[@"胴"], false);
-                set.Arm = Masters.GetEquipByName(line[@"腕"], false);
-                set.Waist = Masters.GetEquipByName(line[@"腰"], false);
-                set.Leg = Masters.GetEquipByName(line[@"足"], false);
-                set.Charm = Masters.GetEquipByName(line[@"護石"], false);
+                set.Head = Masters.GetEquipByName(line[@"頭"]);
+                set.Body = Masters.GetEquipByName(line[@"胴"]);
+                set.Arm = Masters.GetEquipByName(line[@"腕"]);
+                set.Waist = Masters.GetEquipByName(line[@"腰"]);
+                set.Leg = Masters.GetEquipByName(line[@"足"]);
+                set.Charm = Masters.GetEquipByName(line[@"護石"]);
                 set.Head.Kind = EquipKind.head;
                 set.Body.Kind = EquipKind.body;
                 set.Arm.Kind = EquipKind.arm;
@@ -402,6 +386,11 @@ namespace SimModel.Domain
                 else
                 {
                     set.Name = LogicConfig.Instance.DefaultMySetName;
+                }
+                // 前バージョンとの互換性のため存在確認
+                if (line.Headers.Contains(@"錬成スキル"))
+                {
+                    set.GSkillNameCSV = line[@"錬成スキル"];
                 }
                 Masters.MySets.Add(set);
             }
@@ -482,7 +471,7 @@ namespace SimModel.Domain
                 // 種類の指定がない場合泣きシミュデータ読み込みモード
                 if (aug.Kind == EquipKind.error)
                 {
-                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
+                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
                     aug.Kind = baseEquip.Kind;
                     aug.Slot1 = baseEquip.Slot1 + ParseUtil.Parse(line[@"泣読込用1"]);
                     aug.Slot2 = baseEquip.Slot2 + ParseUtil.Parse(line[@"泣読込用2"]);
@@ -566,7 +555,7 @@ namespace SimModel.Domain
             List<string[]> body = new List<string[]>();
             foreach (var aug in Masters.Augmentations)
             {
-                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
+                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
                 List<string> bodyStrings = new List<string>();
                 bodyStrings.Add(aug.BaseName);
                 bodyStrings.Add(aug.Def.ToString());
@@ -677,7 +666,10 @@ namespace SimModel.Domain
                 string[] splitedMinuses = originalMinuses.Split('-');
                 foreach (var minusIndex in splitedMinuses)
                 {
-                    skillMinuses.Add(ParseUtil.Parse(minusIndex));
+                    if (!string.IsNullOrWhiteSpace(minusIndex))
+                    {
+                        skillMinuses.Add(ParseUtil.Parse(minusIndex));
+                    }
                 }
                 ideal.SkillMinuses = skillMinuses;
                 ideal.GenericSkills[0] = ParseUtil.Parse(line[@"c3スキル数"]);
@@ -722,7 +714,7 @@ namespace SimModel.Domain
             SaveIdealCSV();
         }
 
-        // 錬成装備マスタ書き込み
+        // 理想錬成装備マスタ書き込み
         static internal void SaveIdealCSV()
         {
             List<string[]> body = new List<string[]>();

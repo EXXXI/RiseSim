@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using SimModel.Config;
+﻿using SimModel.Config;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
@@ -32,18 +16,26 @@ namespace SimModel.Domain
         // 除外設定を追加
         static internal Clude? AddExclude(string name)
         {
-            Equipment? equip = Masters.GetEquipByName(name, false);
+            Equipment? equip = Masters.GetEquipByName(name);
+            if (equip.Ideal != null)
+            {
+                equip = equip.BaseEquipment;
+            }
             if (equip == null)
             {
                 return null;
             }
-            return AddClude(name, CludeKind.exclude);
+            return AddClude(equip.Name, CludeKind.exclude);
         }
 
         // 固定設定を追加
         static internal Clude? AddInclude(string name)
         {
-            Equipment? equip = Masters.GetEquipByName(name, false);
+            Equipment? equip = Masters.GetEquipByName(name);
+            if (equip.Ideal != null)
+            {
+                equip = equip.BaseEquipment;
+            }
             if (equip == null || equip.Kind == EquipKind.deco)
             {
                 // 装飾品は固定しない
@@ -59,7 +51,7 @@ namespace SimModel.Domain
                     continue;
                 }
 
-                Equipment? oldEquip = Masters.GetEquipByName(clude.Name, false);
+                Equipment? oldEquip = Masters.GetEquipByName(clude.Name);
                 if (oldEquip == null || oldEquip.Kind.Equals(equip.Kind))
                 {
                     toDelete = clude.Name;
@@ -71,7 +63,7 @@ namespace SimModel.Domain
             }
 
             // 追加
-            return AddClude(name, CludeKind.include);
+            return AddClude(equip.Name, CludeKind.include);
         }
 
         // 錬成防具を全て除外設定に追加
@@ -80,7 +72,7 @@ namespace SimModel.Domain
             foreach (var aug in Masters.Augmentations)
             {
                 string name = aug.Name;
-                Equipment? equip = Masters.GetEquipByName(name, false);
+                Equipment? equip = Masters.GetEquipByName(name);
                 if (equip == null)
                 {
                     return false;
@@ -321,6 +313,56 @@ namespace SimModel.Domain
 
             // 万一更新先が見つからなかった場合は新規登録
             AddAugmentation(newAugData);
+        }
+
+        // 理想錬成の追加
+        internal static void AddIdealAugmentation(IdealAugmentation ideal)
+        {
+            // 追加
+            Masters.Ideals.Add(ideal);
+
+            // マスタへ反映
+            CsvOperation.SaveIdealCSV();
+        }
+
+        // 理想錬成の削除
+        internal static void DeleteIdealAugmentation(IdealAugmentation ideal)
+        {
+            // 削除
+            Masters.Ideals.Remove(ideal);
+
+            // マスタへ反映
+            CsvOperation.SaveIdealCSV();
+        }
+
+        // 理想錬成の更新
+        internal static void UpdateIdealAugmentation(IdealAugmentation newIdeal)
+        {
+            foreach (var ideal in Masters.Ideals)
+            {
+                if (ideal.Name == newIdeal.Name)
+                {
+                    ideal.Table = newIdeal.Table;
+                    ideal.DispName = newIdeal.DispName;
+                    ideal.SlotIncrement = newIdeal.SlotIncrement;
+                    ideal.GenericSkills[0] = newIdeal.GenericSkills[0];
+                    ideal.GenericSkills[1] = newIdeal.GenericSkills[1];
+                    ideal.GenericSkills[2] = newIdeal.GenericSkills[2];
+                    ideal.GenericSkills[3] = newIdeal.GenericSkills[3];
+                    ideal.GenericSkills[4] = newIdeal.GenericSkills[4];
+                    ideal.Skills = newIdeal.Skills;
+                    ideal.SkillMinuses = newIdeal.SkillMinuses;
+                    ideal.IsOne = newIdeal.IsOne;
+
+                    // マスタへ反映
+                    CsvOperation.SaveIdealCSV();
+
+                    return;
+                }
+            }
+
+            // 万一更新先が見つからなかった場合は新規登録
+            AddIdealAugmentation(newIdeal);
         }
     }
 }

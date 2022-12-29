@@ -1,21 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-using SimModel.Config;
+﻿using SimModel.Config;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
@@ -385,6 +368,10 @@ namespace SimModel.Domain
             {
                 objective.SetCoefficient(x[index++], Score(equip));
             }
+            foreach (var equip in Masters.GenericSkills)
+            {
+                objective.SetCoefficient(x[index++], Score(equip));
+            }
             objective.SetMaximization();
         }
 
@@ -410,6 +397,16 @@ namespace SimModel.Domain
 
             // 防御力
             score += equip.Maxdef;
+
+            // 錬成コスト
+            score *= 100;
+            if (equip.Kind == EquipKind.gskill)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    score -= equip.GenericSkills[i] * (i + 1) * 3;
+                }
+            }
 
             // スロット数
             score *= 20;
@@ -523,8 +520,11 @@ namespace SimModel.Domain
             foreach (var clude in Masters.Cludes)
             {
                 // 装備に対応する係数を1とする
-                int index = Masters.GetEquipIndexByName(clude.Name, Condition.IncludeIdealAugmentation);
-                y[cludeRowIndex].SetCoefficient(x[index], 1);
+                List<int> indexs = Masters.GetCludeIndexsByName(clude.Name, Condition.IncludeIdealAugmentation);
+                foreach (var index in indexs)
+                {
+                    y[cludeRowIndex].SetCoefficient(x[index], 1);
+                }
                 cludeRowIndex++;
             }
         }
@@ -677,7 +677,7 @@ namespace SimModel.Domain
                     string name = x[i].Name();
 
                     // 存在チェック
-                    Equipment? equip = Masters.GetEquipByName(name, Condition.IncludeIdealAugmentation);
+                    Equipment? equip = Masters.GetEquipByName(name);
                     if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
                     {
                         // 存在しない装備名の場合無視

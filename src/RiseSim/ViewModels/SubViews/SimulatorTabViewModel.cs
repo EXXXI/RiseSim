@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.ViewModels.BindableWrapper;
@@ -111,6 +95,8 @@ namespace RiseSim.ViewModels.SubViews
         // 性別選択の選択肢
         public ReactivePropertySlim<ObservableCollection<string>> SexMaster { get; } = new();
 
+        // 理想錬成利用フラグ
+        public ReactivePropertySlim<bool> IsIncludeIdeal { get; } = new(false);
 
         // マイセット追加可能フラグ
         public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
@@ -224,7 +210,7 @@ namespace RiseSim.ViewModels.SubViews
             // シミュ画面の検索結果と装備詳細を紐づけ
             DetailSet.Subscribe(set => {
                 EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
-                CanAddMySet.Value = !set?.HasIdeal ?? false;
+                CanAddMySet.Value = true;//!set?.HasIdeal ?? false;
             });
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
@@ -306,6 +292,9 @@ namespace RiseSim.ViewModels.SubViews
             int? ice = ParseOrNull(Ice.Value);
             int? dragon = ParseOrNull(Dragon.Value);
 
+            // 理想錬成の有無
+            bool isIncludeIdeal = IsIncludeIdeal.Value;
+
 
             // 開始ログ表示
             LogSb.Clear();
@@ -330,7 +319,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(
-                skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon));
+                skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon, isIncludeIdeal));
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
             // ビジーフラグ解除

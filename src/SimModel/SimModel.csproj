@@ -4,7 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
 	<DebugType Condition="'$(Configuration)' == 'Debug'">portable</DebugType>
 	<DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
     <DebugType Condition="'$(Configuration)'=='ReleaseWithSymbol'">none</DebugType>
@@ -25,12 +25,6 @@
   <ItemGroup>
     <None Update="conf\LogicConfig.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="glpk_4_61.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="libglpk-cli.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="libglpk_cli_native.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -66,7 +60,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="save\ideal.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="save\myset.csv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

@@ -21,7 +21,7 @@ namespace SimModel.Model
         // スロット追加数
         public int SlotIncrement { get; set; }
 
-        // TODO:  (理想錬成)防御・耐性は需要があれば
+        // TODO: 防御・耐性は需要があれば
         /* 
         // 防御力増減
         public int Def { get; set; }
@@ -57,6 +57,65 @@ namespace SimModel.Model
         // true: 1部位のみ、false: 全部位可能
         public bool IsOne { get; set; }
 
+        // 表示用スキル一覧
+        public string SimpleSkillDiscription
+        {
+            get
+            {
+                bool isFirst = true;
+                StringBuilder sb = new StringBuilder();
+                foreach (var skill in Skills)
+                {
+                    if (!isFirst)
+                    {
+                        sb.Append(", ");
+                    }
+                    isFirst = false;
+                    sb.Append(skill.Description);
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    if (GenericSkills[i] > 0)
+                    {
+                        if (!isFirst)
+                        {
+                            sb.Append(", ");
+                        }
+                        isFirst = false;
+                        sb.Append("c" + ((i * 3) + 3) + "スキル +" + GenericSkills[i]);
+                    }
 
+                }
+                return sb.ToString();
+            }
+        }
+
+        // 表示用スキルマイナス一覧
+        public string SimpleSkillMinusDiscription
+        {
+            get
+            {
+                bool isFirst = true;
+                StringBuilder sb = new StringBuilder();
+                foreach (var index in SkillMinuses)
+                {
+                    if (!isFirst)
+                    {
+                        sb.Append(", ");
+                    }
+                    isFirst = false;
+
+                    if (index == 0)
+                    {
+                        sb.Append("どれか1つ");
+                    }
+                    else
+                    {
+                        sb.Append(index + "番目");
+                    }
+                }
+                return sb.ToString();
+            }
+        }
     }
 }

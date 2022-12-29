@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -106,7 +90,6 @@ namespace SimModel.Model
             Waists = MakeEquipmentMaster(OriginalWaists, EquipKind.waist);
             Legs = MakeEquipmentMaster(OriginalLegs, EquipKind.leg);
 
-            // TODO:  (理想錬成)ここじゃない。理想錬成検索開始時に評価しよう
             IdealHeads = MakeIdealEquipmentMaster(Heads, EquipKind.head);
             IdealBodys = MakeIdealEquipmentMaster(Bodys, EquipKind.body);
             IdealArms = MakeIdealEquipmentMaster(Arms, EquipKind.arm);
@@ -135,11 +118,12 @@ namespace SimModel.Model
                         int baseSkillCount = equip.Skills.Count;
                         List<List<int>> minusPatterns = MakeMinusPatterns(ideal.SkillMinuses, baseSkillCount, 0);
 
+                        int patternIndex = 0;
                         foreach (List<int> minusPattern in minusPatterns)
                         {
                             Equipment newEquip = new Equipment(equip);
-                            newEquip.Name = Guid.NewGuid().ToString();
-                            newEquip.DispName = equip.DispName + "_" + ideal.DispName;
+                            newEquip.Name = equip.Name + "_" + patternIndex + "_" + ideal.Name;
+                            newEquip.DispName = equip.DispName + "_" + ideal.DispName + "(" + patternIndex++ + ")";
                             /*
                             newEquip.Mindef += ideal.Def;
                             newEquip.Maxdef += ideal.Def;
@@ -277,7 +261,7 @@ namespace SimModel.Model
             {
                 if (aug.Kind == kind)
                 {
-                    Equipment baseEquip = GetEquipByName(aug.BaseName, false);
+                    Equipment baseEquip = GetEquipByName(aug.BaseName);
                     Equipment newEquip = new Equipment(baseEquip);
                     newEquip.Name = aug.Name;
                     newEquip.DispName = aug.DispName;
@@ -303,55 +287,38 @@ namespace SimModel.Model
         }
 
         // 装備名から装備を取得
-        public static Equipment GetEquipByName(string equipName, bool includeIdealAugmentation)
+        public static Equipment GetEquipByName(string equipName)
         {
             string? name = equipName?.Trim();
-            List<Equipment> heads, bodys, arms, waists, legs;
-            if (includeIdealAugmentation)
-            {
-                heads = IdealHeads;
-                bodys = IdealBodys;
-                arms = IdealArms;
-                waists = IdealWaists;
-                legs = IdealLegs;
-            }
-            else
-            {
-                heads = Heads;
-                bodys = Bodys;
-                arms = Arms;
-                waists = Waists;
-                legs = Legs;
-            }
-            foreach (var equip in heads)
+            foreach (var equip in IdealHeads)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in bodys)
+            foreach (var equip in IdealBodys)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in arms)
+            foreach (var equip in IdealArms)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in waists)
+            foreach (var equip in IdealWaists)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in legs)
+            foreach (var equip in IdealLegs)
             {
                 if (equip.Name == name)
                 {
@@ -381,6 +348,106 @@ namespace SimModel.Model
             }
 
             return new Equipment();
+        }
+
+        // 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
+        // 理想錬成の除外固定検索用
+        // 装備そのものとその理想錬成を全て返す
+        public static List<int> GetCludeIndexsByName(string name, bool includeIdealAugmentation)
+        {
+            List<int> result = new();
+            List<Equipment> heads, bodys, arms, waists, legs;
+            if (includeIdealAugmentation)
+            {
+                heads = IdealHeads;
+                bodys = IdealBodys;
+                arms = IdealArms;
+                waists = IdealWaists;
+                legs = IdealLegs;
+            }
+            else
+            {
+                heads = Heads;
+                bodys = Bodys;
+                arms = Arms;
+                waists = Waists;
+                legs = Legs;
+            }
+
+            int index = 0;
+            foreach (var equip in heads)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in bodys)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in arms)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in waists)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in legs)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in Charms)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in Decos)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            foreach (var equip in GenericSkills)
+            {
+                if (equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
+                {
+                    result.Add(index);
+                }
+                index++;
+            }
+            return result;
         }
 
         // 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
