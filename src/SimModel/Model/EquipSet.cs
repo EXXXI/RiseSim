@@ -345,7 +345,7 @@ namespace SimModel.Model
                     {
                         continue;
                     }
-                    Equipment? deco = Masters.GetEquipByName(decoName);
+                    Equipment? deco = Masters.GetEquipByName(decoName, false);
                     if (deco != null)
                     {
                         Decos.Add(deco);
@@ -382,7 +382,7 @@ namespace SimModel.Model
                     {
                         continue;
                     }
-                    Equipment? gskill = Masters.GetEquipByName(label);
+                    Equipment? gskill = Masters.GetEquipByName(label, false);
                     if (gskill != null)
                     {
                         GenericSkills.Add(gskill);

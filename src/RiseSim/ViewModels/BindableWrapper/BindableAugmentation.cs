@@ -69,7 +69,7 @@ namespace RiseSim.ViewModels.BindableWrapper
         public BindableEquipment Equip { 
             get
             {
-                return new BindableEquipment(Masters.GetEquipByName(Name));
+                return new BindableEquipment(Masters.GetEquipByName(Name, false));
             }
         }
 
