@@ -38,7 +38,7 @@ namespace RiseSim.ViewModels.Controls
         // コンストラクタ
         public CludeRowViewModel(Clude clude)
         {
-            Equipment? equip = Masters.GetEquipByName(clude.Name);
+            Equipment? equip = Masters.GetEquipByName(clude.Name, false);
             if (equip == null)
             {
                 throw new ArgumentException(clude.Name + "is not found.");
