@@ -471,7 +471,7 @@ namespace SimModel.Domain
                 // 種類の指定がない場合泣きシミュデータ読み込みモード
                 if (aug.Kind == EquipKind.error)
                 {
-                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
+                    Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
                     aug.Kind = baseEquip.Kind;
                     aug.Slot1 = baseEquip.Slot1 + ParseUtil.Parse(line[@"泣読込用1"]);
                     aug.Slot2 = baseEquip.Slot2 + ParseUtil.Parse(line[@"泣読込用2"]);
@@ -555,7 +555,7 @@ namespace SimModel.Domain
             List<string[]> body = new List<string[]>();
             foreach (var aug in Masters.Augmentations)
             {
-                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName);
+                Equipment baseEquip = Masters.GetEquipByName(aug.BaseName, false);
                 List<string> bodyStrings = new List<string>();
                 bodyStrings.Add(aug.BaseName);
                 bodyStrings.Add(aug.Def.ToString());

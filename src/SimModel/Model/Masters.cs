@@ -261,7 +261,7 @@ namespace SimModel.Model
             {
                 if (aug.Kind == kind)
                 {
-                    Equipment baseEquip = GetEquipByName(aug.BaseName);
+                    Equipment baseEquip = GetEquipByName(aug.BaseName, false);
                     Equipment newEquip = new Equipment(baseEquip);
                     newEquip.Name = aug.Name;
                     newEquip.DispName = aug.DispName;
@@ -289,36 +289,60 @@ namespace SimModel.Model
         // 装備名から装備を取得
         public static Equipment GetEquipByName(string equipName)
         {
+            return GetEquipByName(equipName, true);
+        }
+
+        // 装備名から装備を取得
+        public static Equipment GetEquipByName(string equipName, bool useIdeal)
+        {
             string? name = equipName?.Trim();
-            foreach (var equip in IdealHeads)
+            List<Equipment> heads, bodys, arms, waists, legs;
+            if (useIdeal)
+            {
+                heads = IdealHeads;
+                bodys = IdealBodys;
+                arms = IdealArms;
+                waists = IdealWaists;
+                legs = IdealLegs;
+            }
+            else
+            {
+                heads = Heads;
+                bodys = Bodys;
+                arms = Arms;
+                waists = Waists;
+                legs = Legs;
+            }
+
+            foreach (var equip in heads)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in IdealBodys)
+            foreach (var equip in bodys)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in IdealArms)
+            foreach (var equip in arms)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in IdealWaists)
+            foreach (var equip in waists)
             {
                 if (equip.Name == name)
                 {
                     return equip;
                 }
             }
-            foreach (var equip in IdealLegs)
+            foreach (var equip in legs)
             {
                 if (equip.Name == name)
                 {

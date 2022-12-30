@@ -51,7 +51,7 @@ namespace SimModel.Domain
                     continue;
                 }
 
-                Equipment? oldEquip = Masters.GetEquipByName(clude.Name);
+                Equipment? oldEquip = Masters.GetEquipByName(clude.Name, false);
                 if (oldEquip == null || oldEquip.Kind.Equals(equip.Kind))
                 {
                     toDelete = clude.Name;
@@ -72,7 +72,7 @@ namespace SimModel.Domain
             foreach (var aug in Masters.Augmentations)
             {
                 string name = aug.Name;
-                Equipment? equip = Masters.GetEquipByName(name);
+                Equipment? equip = Masters.GetEquipByName(name, false);
                 if (equip == null)
                 {
                     return false;
