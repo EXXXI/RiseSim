@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using SimModel.Config;
+﻿using SimModel.Config;
 using SimModel.Domain;
 using SimModel.Model;
 using System;
@@ -50,6 +34,7 @@ namespace SimModel.Service
             CsvOperation.LoadCludeCSV();
             CsvOperation.LoadCharmCSV();
             CsvOperation.LoadAugmentationCSV();
+            CsvOperation.LoadIdealCSV();
             CsvOperation.LoadRecentSkillCSV();
 
             // 錬成装備込みのマスタデータ作成&マイセット読み込み
@@ -59,7 +44,7 @@ namespace SimModel.Service
 
         // 新規検索
         public List<EquipSet> Search(
-            List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit, Sex sex, int? def, int? fire, int? water, int? thunder, int? ice, int? dragon)
+            List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit, Sex sex, int? def, int? fire, int? water, int? thunder, int? ice, int? dragon, bool isIncludeIdeal)
         {
             // 検索条件を整理
             SearchCondition condition = new();
@@ -78,16 +63,10 @@ namespace SimModel.Service
             condition.Ice = ice;
             condition.Dragon = dragon;
             condition.Def = def;
+            condition.IncludeIdealAugmentation = isIncludeIdeal;
 
             // 検索
-            if (IntPtr.Size == 4)
-            {
-                Searcher = new Searcher_x86(condition);
-            }
-            else
-            {
-                Searcher = new Searcher(condition);
-            }
+            Searcher = new Searcher(condition);
             IsSearchedAll = Searcher.ExecSearch(limit);
 
             // 最近使ったスキル更新
@@ -141,14 +120,7 @@ namespace SimModel.Service
                         {
                             // 頑張り度1で検索
                             ISearcher exSearcher;
-                            if (IntPtr.Size == 4)
-                            {
-                                exSearcher = new Searcher_x86(condition);
-                            }
-                            else
-                            {
-                                exSearcher = new Searcher(condition);
-                            }
+                            exSearcher = new Searcher(condition);
                             exSearcher.ExecSearch(1);
 
                             // 1件でもヒットすれば追加スキル一覧に追加
@@ -273,6 +245,24 @@ namespace SimModel.Service
         public void UpdateAugmentation(Augmentation aug)
         {
             DataManagement.UpdateAugmentation(aug);
+        }
+
+        // 理想錬成登録
+        public void AddIdealAugmentation(IdealAugmentation ideal)
+        {
+            DataManagement.AddIdealAugmentation(ideal);
+        }
+
+        // 理想錬成削除
+        public void DeleteIdealAugmentation(IdealAugmentation ideal)
+        {
+            DataManagement.DeleteIdealAugmentation(ideal);
+        }
+
+        // 理想錬成更新
+        public void UpdateIdealAugmentation(IdealAugmentation ideal)
+        {
+            DataManagement.UpdateIdealAugmentation(ideal);
         }
 
         // 装備マスタリロード

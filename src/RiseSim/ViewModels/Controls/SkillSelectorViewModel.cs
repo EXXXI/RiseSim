@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.Config;
 using SimModel.Model;
@@ -42,8 +26,8 @@ namespace RiseSim.ViewModels.Controls
         // 選択中スキルレベル
         public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
-        // 傀異錬成フラグ
-        public bool IsAugmentation { get; set; } = false;
+        // 画面の種類
+        public SkillSelectorKind Kind { get; set; } = SkillSelectorKind.Normal;
 
 
         // クリアコマンド
@@ -57,9 +41,9 @@ namespace RiseSim.ViewModels.Controls
 
 
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
-        public SkillSelectorViewModel(bool isAugmentation)
+        public SkillSelectorViewModel(SkillSelectorKind kind)
         {
-            IsAugmentation = isAugmentation;
+            Kind = kind;
 
             ObservableCollection<string> skillList = new();
             skillList.Add(NoSkillName);
@@ -77,7 +61,7 @@ namespace RiseSim.ViewModels.Controls
             SetCommand();
         }
 
-        public SkillSelectorViewModel() : this(false)
+        public SkillSelectorViewModel() : this(SkillSelectorKind.Normal)
         {
         }
 
@@ -85,7 +69,7 @@ namespace RiseSim.ViewModels.Controls
         /// 特定のスキルを選択した状態のSkillSelectorViewModelを作って返す
         /// </summary>
         /// <param name="skill"></param>
-        public SkillSelectorViewModel(Skill skill) : this(false)
+        public SkillSelectorViewModel(Skill skill) : this(SkillSelectorKind.Normal)
         {
             SkillName.Value = skill.Name;
             SkillLevel.Value = skill.Level;
@@ -128,13 +112,22 @@ namespace RiseSim.ViewModels.Controls
                 // スキルが選択されていないときは0とする
                 list.Add(0);
             }
-            else if (IsAugmentation)
+            else if (Kind == SkillSelectorKind.Augmentation)
             {
                 // スキルが存在して傀異錬成画面の場合は固定
+                list.Add(3);
                 list.Add(2);
                 list.Add(1);
                 list.Add(-1);
                 list.Add(-2);
+                list.Add(-3);
+            }
+            else if (Kind == SkillSelectorKind.IdealAugmentation)
+            {
+                // スキルが存在して理想錬成画面の場合は固定
+                list.Add(3);
+                list.Add(2);
+                list.Add(1);
             }
             else
             {
@@ -146,8 +139,8 @@ namespace RiseSim.ViewModels.Controls
             }
             SkillLevels.Value = list;
 
-            // 初期値は通常は最大レベル、傀異錬成時は1とする
-            if (maxLevel != 0 && IsAugmentation)
+            // 初期値は通常は最大レベル、傀異錬成・理想錬成時は1とする
+            if (maxLevel != 0 && Kind != SkillSelectorKind.Normal)
             {
                 SkillLevel.Value = 1;
             }
