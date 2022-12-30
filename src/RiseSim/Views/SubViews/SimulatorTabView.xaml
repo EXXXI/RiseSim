@@ -86,6 +86,7 @@
                     <TextBlock Width="12" Text="龍"/>
                     <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
                 </StackPanel>
+                <CheckBox IsChecked="{Binding IsIncludeIdeal.Value}">理想錬成を使う</CheckBox>
                 <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                 <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
                 <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />

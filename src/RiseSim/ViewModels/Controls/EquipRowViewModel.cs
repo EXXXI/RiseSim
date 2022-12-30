@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
@@ -41,6 +25,9 @@ namespace RiseSim.ViewModels.Controls
         // 固定可能フラグ
         public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
 
+        // 除外可能フラグ
+        public ReactivePropertySlim<bool> CanExclude { get; } = new(true);
+
         // 管理用装備種類
         public EquipKind TrueKind { get; set; }
 
@@ -48,7 +35,7 @@ namespace RiseSim.ViewModels.Controls
         public string TrueName { get; set; }
 
         // 除外コマンド
-        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand ExcludeCommand { get; private set; }
 
         // 固定コマンド
         public ReactiveCommand IncludeCommand { get; private set; }
@@ -56,7 +43,7 @@ namespace RiseSim.ViewModels.Controls
         // コマンドを設定
         private void SetCommand()
         {
-            ExcludeCommand.Subscribe(_ => Exclude());
+            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude());
             IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
@@ -68,6 +55,11 @@ namespace RiseSim.ViewModels.Controls
             if (TrueKind.Equals(EquipKind.deco))
             {
                 CanInclude.Value = false;
+            }
+            if (TrueKind.Equals(EquipKind.gskill))
+            {
+                CanInclude.Value = false;
+                CanExclude.Value = false;
             }
             TrueName = equip.Name;
             Description.Value = equip.Description;
@@ -91,6 +83,10 @@ namespace RiseSim.ViewModels.Controls
                 foreach (var deco in set.Decos)
                 {
                     list.Add(new EquipRowViewModel(deco));
+                }
+                foreach (var gskill in set.GenericSkills)
+                {
+                    list.Add(new EquipRowViewModel(gskill));
                 }
             }
             return list;

@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.ViewModels.SubViews;
 using SimModel.Model;
@@ -40,8 +24,11 @@ namespace RiseSim.ViewModels
         // 護石画面のVM
         public ReactivePropertySlim<CharmTabViewModel> CharmTabVM { get; } = new();
 
-        // 怪異錬成画面のVM
+        // 傀異錬成画面のVM
         public ReactivePropertySlim<AugmentationTabViewModel> AugmentationTabVM { get; } = new();
+
+        // 理想錬成画面のVM
+        public ReactivePropertySlim<IdealAugmentationTabViewModel> IdealAugmentationTabVM { get; } = new();
 
         // マイセット画面のVM
         public ReactivePropertySlim<MySetTabViewModel> MySetTabVM { get; } = new();
@@ -75,6 +62,7 @@ namespace RiseSim.ViewModels
             CludeTabVM.Value = new CludeTabViewModel();
             CharmTabVM.Value = new CharmTabViewModel();
             AugmentationTabVM.Value = new AugmentationTabViewModel();
+            IdealAugmentationTabVM.Value = new IdealAugmentationTabViewModel();
             MySetTabVM.Value = new MySetTabViewModel();
             LicenseTabVM.Value = new LicenseTabViewModel();
 
@@ -131,6 +119,9 @@ namespace RiseSim.ViewModels
 
             // 錬成画面用のVM設定
             AugmentationTabVM.Value.LoadAugmentations();
+
+            // 錬成画面用のVM設定
+            IdealAugmentationTabVM.Value.LoadIdealAugmentations();
 
             // 除外固定画面用のVMの設定
             CludeTabVM.Value.LoadEquipsForClude();

@@ -30,6 +30,10 @@
                 <subviews:AugmentationTabView x:Name="augmentation" DataContext="{Binding AugmentationTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
+            <TabItem Header="理想錬成設定">
+                <subviews:IdealAugmentationTabView x:Name="idealAugmentation" DataContext="{Binding IdealAugmentationTabVM.Value, Mode=OneWay}"/>
+            </TabItem>
+
             <TabItem Header="マイセット">
                 <subviews:MySetTabView x:Name="myset" DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>

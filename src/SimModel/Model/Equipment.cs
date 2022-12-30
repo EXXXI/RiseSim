@@ -1,20 +1,4 @@
-﻿/*    RiseSim : MHRise skill simurator for Windows
- *    Copyright (C) 2022  EXXXI
- *
- *    This program is free software: you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,6 +81,15 @@ namespace SimModel.Model
 
         // ベース防具(非錬成防具の場合null)
         public Equipment? BaseEquipment { get; set; } = null;
+
+        // 錬成テーブル
+        public int AugmentationTable { get; set; }
+
+        // 各コストごとの追加可能スキル数(理想錬成用)
+        public int[] GenericSkills { get; set; } = new int[5];
+
+        // 理想錬成データ
+        public IdealAugmentation Ideal { get; set; }
 
         // デフォルトコンストラクタ
         public Equipment()
@@ -226,6 +219,76 @@ namespace SimModel.Model
                     sb.Append('\n');
                     sb.Append(skill.Description);
                 }
+                if (GenericSkills[0] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c3スキル +" + GenericSkills[0]);
+                }
+                if (GenericSkills[1] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c6スキル +" + GenericSkills[1]);
+                }
+                if (GenericSkills[2] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c9スキル +" + GenericSkills[2]);
+                }
+                if (GenericSkills[3] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c12スキル +" + GenericSkills[3]);
+                }
+                if (GenericSkills[4] > 0)
+                {
+                    sb.Append('\n');
+                    sb.Append("c15スキル +" + GenericSkills[4]);
+                }
+
+                // 理想錬成情報
+                if (Ideal != null)
+                {
+                    sb.Append('\n');
+                    sb.Append("-----------");
+                    sb.Append('\n');
+                    sb.Append("(理想錬成の内容)");
+                    sb.Append('\n');
+                    sb.Append("スロット追加：");
+                    sb.Append(Ideal.SlotIncrement);
+                    foreach (var skill in Skills)
+                    {
+                        if (skill.IsAdditional)
+                        {
+                            sb.Append('\n');
+                            sb.Append(skill.Description);
+                        }
+                    }
+                    if (GenericSkills[0] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c3スキル +" + GenericSkills[0]);
+                    }
+                    if (GenericSkills[1] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c6スキル +" + GenericSkills[1]);
+                    }
+                    if (GenericSkills[2] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c9スキル +" + GenericSkills[2]);
+                    }
+                    if (GenericSkills[3] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c12スキル +" + GenericSkills[3]);
+                    }
+                    if (GenericSkills[4] > 0)
+                    {
+                        sb.Append('\n');
+                        sb.Append("c15スキル +" + GenericSkills[4]);
+                    }
+                }
 
                 // ベース防具情報
                 if (BaseEquipment != null)
@@ -260,6 +323,14 @@ namespace SimModel.Model
                         sb.Append(Slot2);
                         sb.Append('-');
                         sb.Append(Slot3);
+                    }
+                    for (int i = 0; i < 5; i++)
+                    {
+                        for (int j = 0; j < GenericSkills[i]; j++)
+                        {
+                            sb.Append(',');
+                            sb.Append("c" + ((i * 3) + 3));
+                        }
                     }
                 }
 
