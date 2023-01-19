@@ -90,6 +90,7 @@
                 <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                 <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
                 <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
+                <Button Content="中断" Command="{Binding CancelCommand}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="50" Text="頑張り度"/>
                     <TextBox x:Name="limitBox" Width="115" Text="{Binding Limit.Value}"/>
