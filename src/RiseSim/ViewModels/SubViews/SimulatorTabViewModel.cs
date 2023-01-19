@@ -110,6 +110,9 @@ namespace RiseSim.ViewModels.SubViews
         // 追加スキル検索コマンド
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
 
+        // 検索キャンセルコマンド
+        public ReactiveCommand CancelCommand { get; private set; }
+
         // マイセット追加コマンド
         public ReactiveCommand AddMySetCommand { get; private set; }
 
@@ -138,6 +141,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search());
             SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
+            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
             AddMySetCommand = CanAddMySet.ToReactiveCommand().WithSubscribe(() => AddMySet());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
@@ -329,6 +333,15 @@ namespace RiseSim.ViewModels.SubViews
             LoadRecentSkills();
 
             // 完了ログ表示
+            if (Simulator.IsCanceling)
+            {
+                LogSb.Clear();
+                LogSb.Append("※中断しました\n");
+                LogSb.Append("※結果は途中経過までを表示しています\n");
+                LogBoxText.Value = LogSb.ToString();
+                StatusBarText.Value = "中断";
+                return;
+            }
             LogSb.Append("■検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
@@ -377,6 +390,15 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = false;
 
             // 完了ログ表示
+            if (Simulator.IsCanceling)
+            {
+                LogSb.Clear();
+                LogSb.Append("※中断しました\n");
+                LogSb.Append("※結果は途中経過までを表示しています\n");
+                LogBoxText.Value = LogSb.ToString();
+                StatusBarText.Value = "中断";
+                return;
+            }
             LogSb.Append("■もっと検索完了：");
             LogSb.Append(SearchResult.Value.Count);
             LogSb.Append("件\n");
@@ -413,7 +435,12 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = false;
 
             // ログ表示
-            LogSb.Append("■追加スキル検索完了\n");
+            if (Simulator.IsCanceling)
+            {
+                LogSb.Append("※中断しました\n");
+                LogSb.Append("※結果は途中経過までを表示しています\n");
+            }
+            LogSb.Append("■追加スキル検索結果\n");
             foreach (Skill skill in result)
             {
                 LogSb.Append(skill.Description);
@@ -482,6 +509,11 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             StatusBarText.Value = "検索条件反映：" + sb.ToString();
+        }
+
+        internal void Cancel()
+        {
+            Simulator.Cancel();
         }
 
         // 最近使ったスキル読み込み

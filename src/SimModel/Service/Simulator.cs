@@ -13,10 +13,13 @@ namespace SimModel.Service
     public class Simulator
     {
         // 検索インスタンス
-        private ISearcher Searcher { get; set; }
+        private Searcher Searcher { get; set; }
 
         // 全件検索完了フラグ
         public bool IsSearchedAll { get; set; }
+
+        // 中断フラグ
+        public bool IsCanceling { get; private set; } = false;
 
         // データ読み込み
         public void LoadData()
@@ -46,6 +49,8 @@ namespace SimModel.Service
         public List<EquipSet> Search(
             List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit, Sex sex, int? def, int? fire, int? water, int? thunder, int? ice, int? dragon, bool isIncludeIdeal)
         {
+            ResetIsCanceling();
+
             // 検索条件を整理
             SearchCondition condition = new();
             condition.Skills = new List<Skill>();
@@ -78,8 +83,10 @@ namespace SimModel.Service
         // 条件そのまま追加検索
         public List<EquipSet> SearchMore(int limit)
         {
+            ResetIsCanceling();
+
             // まだ検索がされていない場合、0件で返す
-            if(Searcher == null)
+            if (Searcher == null)
             {
                 return new List<EquipSet>();
             }
@@ -92,6 +99,8 @@ namespace SimModel.Service
         // 追加スキル検索
         public List<Skill> SearchExtraSkill()
         {
+            ResetIsCanceling();
+
             // まだ検索がされていない場合、0件で返す
             if (Searcher == null)
             {
@@ -100,12 +109,22 @@ namespace SimModel.Service
 
             List<Skill> exSkills = new();
 
+
             // 全スキル全レベルを走査
             Parallel.ForEach(Masters.Skills,
-                new ParallelOptions { MaxDegreeOfParallelism = LogicConfig.Instance.MaxDegreeOfParallelism },
+                new ParallelOptions { 
+                    MaxDegreeOfParallelism = LogicConfig.Instance.MaxDegreeOfParallelism 
+                },
                 () => new List<Skill>(),
                 (skill, loop, subResult) =>
                 {
+                    // 中断チェック
+                    // TODO: もし時間がかかるようならCancelToken等でちゃんとループを終了させること
+                    if (IsCanceling)
+                    {
+                        return subResult;
+                    }
+
                     for (int i = 1; i <= skill.Level; i++)
                     {
                         // 現在の検索条件をコピー
@@ -119,7 +138,7 @@ namespace SimModel.Service
                         if (isNewSkill)
                         {
                             // 頑張り度1で検索
-                            ISearcher exSearcher;
+                            Searcher exSearcher;
                             exSearcher = new Searcher(condition);
                             exSearcher.ExecSearch(1);
 
@@ -270,5 +289,26 @@ namespace SimModel.Service
         {
             Masters.RefreshEquipmentMasters();
         }
+
+        // 中断フラグをオン
+        public void Cancel()
+        {
+            IsCanceling = true;
+            if (Searcher != null)
+            {
+                Searcher.IsCanceling = true;
+            }
+        }
+
+        // 中断フラグをリセット
+        public void ResetIsCanceling()
+        {
+            IsCanceling = false;
+            if (Searcher != null)
+            {
+                Searcher.IsCanceling = false;
+            }
+        }
+
     }
 }

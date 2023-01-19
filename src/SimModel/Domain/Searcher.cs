@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.OrTools.LinearSolver;
+using System.Threading;
 
 namespace SimModel.Domain
 {
-    internal class Searcher : ISearcher
+    internal class Searcher
     {
         // 定数：各制約式のIndex
         const int HeadRowIndex = 0;
@@ -40,6 +41,9 @@ namespace SimModel.Domain
 
         // 検索結果
         public List<EquipSet> ResultSets { get; set; }
+
+        // 中断フラグ
+        public bool IsCanceling { get; set; } = false;
 
         // 検索対象の頭一覧
         private List<Equipment> Heads { get; set; }
@@ -135,6 +139,12 @@ namespace SimModel.Domain
                     // TODO: 計算結果の空データ、何故発生する？
                     // 空データが出現したら終了
                     return true;
+                }
+
+                // 中断確認
+                if (IsCanceling)
+                {
+                    return false;
                 }
             }
             return false;
