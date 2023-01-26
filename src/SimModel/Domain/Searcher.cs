@@ -42,6 +42,9 @@ namespace SimModel.Domain
         // 検索結果
         public List<EquipSet> ResultSets { get; set; }
 
+        // 失敗結果
+        public List<EquipSet> FailureSets { get; set; }
+
         // 中断フラグ
         public bool IsCanceling { get; set; } = false;
 
@@ -83,6 +86,7 @@ namespace SimModel.Domain
         {
             Condition = condition;
             ResultSets = new List<EquipSet>();
+            FailureSets = new List<EquipSet>();
 
             if (condition.IncludeIdealAugmentation)
             {
@@ -166,7 +170,7 @@ namespace SimModel.Domain
             numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
             numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
             numConstraints += Masters.Ideals.Count; // 理想錬成：部位制限
-            numConstraints += ResultSets.Count; // 検索済み結果の除外
+            numConstraints += ResultSets.Count + FailureSets.Count; // 検索済み結果の除外
             numConstraints += Masters.Cludes.Count; // 除外固定装備設定
 
             Constraint[] y = new Constraint[numConstraints];
@@ -249,6 +253,11 @@ namespace SimModel.Domain
             // 検索済み結果の除外
             FirstResultExcludeRowIndex = index;
             foreach (var set in ResultSets)
+            {
+                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
+            }
+            foreach (var set in FailureSets)
             {
                 var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
                 y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
@@ -521,6 +530,16 @@ namespace SimModel.Domain
                 }
                 resultExcludeRowIndex++;
             }
+            foreach (var set in FailureSets)
+            {
+                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                foreach (var index in indexList)
+                {
+                    // 各装備に対応する係数を1とする
+                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
+                }
+                resultExcludeRowIndex++;
+            }
 
             // 除外固定データ
             int cludeRowIndex = FirstCludeRowIndex;
@@ -744,8 +763,20 @@ namespace SimModel.Domain
                 // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
                 RemoveDuplicateSet(equipSet);
 
-                // 検索結果に追加
-                ResultSets.Add(equipSet);
+                // 理想錬成のスキルが実現可能か確認
+                bool isValid = IsValidGenericSkill(equipSet);
+
+                if (isValid)
+                {
+                    // 検索結果に追加
+                    ResultSets.Add(equipSet);
+                }
+                else
+                {
+                    // 除外用結果に追加
+                    FailureSets.Add(equipSet);
+                }
+
 
                 // 成功
                 return true;
@@ -801,6 +832,178 @@ namespace SimModel.Domain
         {
             return string.IsNullOrWhiteSpace(newName) || newName.Equals(oldName);
         }
+
+        // 理想錬成のスキルが実現可能か確認
+        private bool IsValidGenericSkill(EquipSet equipSet)
+        {
+            // 組み合わせ一覧作成
+            List<List<int>> plans = MakeValidatePlans(equipSet.GenericSkills.Count);
+
+            foreach (var plan in plans)
+            {
+                // planの組み合わせで理想錬成のスキルが実現可能か確認
+                bool isValid = ValidateGenericSkill(equipSet, plan);
+                if (isValid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // planの組み合わせで理想錬成のスキルが実現可能か確認
+        private bool ValidateGenericSkill(EquipSet equipSet, List<int> plan)
+        {
+            List<Equipment> gSkillEquips = equipSet.GenericSkills;
+
+            // 頭
+            if (!ValidateEquipSkill(gSkillEquips, plan, 0, equipSet.Head))
+            {
+                return false;
+            }
+            // 胴
+            if (!ValidateEquipSkill(gSkillEquips, plan, 1, equipSet.Body))
+            {
+                return false;
+            }
+            // 腕
+            if (!ValidateEquipSkill(gSkillEquips, plan, 2, equipSet.Arm))
+            {
+                return false;
+            }
+            // 腰
+            if (!ValidateEquipSkill(gSkillEquips, plan, 3, equipSet.Waist))
+            {
+                return false;
+            }
+            // 足
+            if (!ValidateEquipSkill(gSkillEquips, plan, 4, equipSet.Leg))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidateEquipSkill(List<Equipment> gSkillEquips, List<int> plan, int kindIndex, Equipment equip)
+        {
+
+            // コスト条件
+            int[] reqGSkills = { 0, 0, 0, 0, 0 }; // 要求
+            int[] hasGSkills = { 0, 0, 0, 0, 0 }; // 所持
+            int[] restGSkills = { 0, 0, 0, 0, 0 }; // 空き
+            for (int i = 0; i < plan.Count; i++)
+            {
+                if (plan[i] == kindIndex)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+                        reqGSkills[j] += gSkillEquips[i].GenericSkills[j];
+                    }
+                }
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += equip.GenericSkills[i];
+            }
+
+            // 空き算出
+            for (int i = 0; i < 5; i++)
+            {
+                restGSkills[i] = hasGSkills[i] - reqGSkills[i];
+            }
+
+            // 足りない分は1Lv上を消費する
+            for (int i = 0; i < 4; i++)
+            {
+                if (restGSkills[i] < 0)
+                {
+                    restGSkills[i + 1] += restGSkills[i];
+                    restGSkills[i] = 0;
+                }
+            }
+
+            if (restGSkills[4] < 0)
+            {
+                // スロット不足
+                return false;
+            }
+
+            // スキル数
+            // スキル数が6以上の場合、そのパターンは却下
+            List<string> skillList = new();
+            // ベース防具スキルは全てカウント
+            foreach (var skill in equip.Skills)
+            {
+                if (skill.Level > 0 && !skillList.Contains(skill.Name))
+                {
+                    skillList.Add(skill.Name);
+                }
+            }
+            // 適用後のスキルをカウント
+            for (int i = 0; i < plan.Count; i++)
+            {
+                if (plan[i] == kindIndex)
+                {
+                    foreach (var skill in gSkillEquips[i].Skills)
+                    {
+                        if (skill.Level > 0 && !skillList.Contains(skill.Name))
+                        {
+                            skillList.Add(skill.Name);
+                        }
+                    }
+                }
+            }
+            if (skillList.Count > 5)
+            {
+                // スキルオーバー
+                return false;
+            }
+
+            return true;
+        }
+
+        // 組み合わせ一覧作成
+        private List<List<int>> MakeValidatePlans(int count)
+        {
+            if (count < 1)
+            {
+                return new();
+            }
+
+            if (count == 1)
+            {
+                List<List<int>> firstList = new();
+                for (int i = 0; i < 5; i++)
+                {
+                    List<int> item = new();
+                    item.Add(i);
+                    firstList.Add(item);
+                }
+                return firstList;
+            }
+
+            List<List<int>> oldList = MakeValidatePlans(count - 1);
+            List<List<int>> newList = new();
+
+            foreach (var oldItem in oldList)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    List<int> newItem = new(oldItem);
+                    newItem.Add(i);
+                    newList.Add(newItem);
+                }
+            }
+
+            return newList;
+
+        }
+
+
+
 
         // スロットの計算
         // 例：3-1-1→1スロ以下2個2スロ以下2個3スロ以下3個
