@@ -174,6 +174,29 @@ namespace SimModel.Model
                                 continue;
                             }
 
+                            // スキル数が6以上の場合、そのパターンは却下
+                            List<string> skillList = new();
+                            // ベース防具スキルは全てカウント
+                            foreach (var skill in equip.Skills)
+                            {
+                                if (skill.Level > 0 && !skillList.Contains(skill.Name))
+                                {
+                                    skillList.Add(skill.Name);
+                                }
+                            }
+                            // 適用後のスキルをカウント
+                            foreach (var skill in margedSkills)
+                            {
+                                if (skill.Level > 0 && !skillList.Contains(skill.Name))
+                                {
+                                    skillList.Add(skill.Name);
+                                }
+                            }
+                            if (skillList.Count > 5)
+                            {
+                                continue;
+                            }
+
                             idealEquips.Add(newEquip);
                         }
                     }
