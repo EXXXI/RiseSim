@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="RiseSim.Views.SubViews.MyConditionTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views.SubViews" xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:MyConditionTabViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <!-- グリッド設定 -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="165" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="220" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 左ペイン -->
+
+        <!-- 条件入力 -->
+        <StackPanel Grid.Row="0">
+            <StackPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="検索条件を全てクリアする" Command="{Binding ClearAllCommand}"/>
+                </ContextMenu>
+            </StackPanel.ContextMenu>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="50" Text="名前"/>
+                <TextBox Width="115" Text="{Binding DispName.Value}"/>
+            </StackPanel>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ctrl:SkillSelector/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="50" Text="武器スロ"/>
+                <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}" SelectedItem="{Binding WeaponSlots.Value}" Width="115" SelectedIndex="0">
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="40" Text="防御力"/>
+                <TextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></TextBox>
+                <TextBlock Width="30" Text="性別"/>
+                <ComboBox ItemsSource="{Binding SexMaster.Value, Mode=OneWay}" SelectedItem="{Binding SelectedSex.Value}" Width="53" SelectedIndex="0">
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="12" Text="火"/>
+                <TextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></TextBox>
+                <TextBlock Width="12" Text="水"/>
+                <TextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></TextBox>
+                <TextBlock Width="12" Text="雷"/>
+                <TextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></TextBox>
+                <TextBlock Width="12" Text="氷"/>
+                <TextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></TextBox>
+                <TextBlock Width="12" Text="龍"/>
+                <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
+            </StackPanel>
+            <Button Content="新規追加する" Command="{Binding AddCommand}" />
+            <Button Content="選択中の条件に上書きする" Command="{Binding UpdateCommand}" xml:space="preserve"/>
+            <Button Content="選択中の条件を入力欄に反映" Command="{Binding InputCommand}" Margin="0,15,0,0"/>
+            <Button Content="選択中の条件をシミュ画面に反映" Command="{Binding InputToSimCommand}" xml:space="preserve" Margin="0,15,0,0"/>
+        </StackPanel>
+
+        <!-- 中央ペイン：結果出力 -->
+        <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Conditions.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedCondition.Value}">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="シミュレータ画面に反映" Command="{Binding InputToSimCommand}"/>
+                    <MenuItem Header="左の入力欄に反映" Command="{Binding InputCommand}"/>
+                    <MenuItem Header="削除" Command="{Binding DeleteCommand}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="名前" Binding="{Binding DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlot, Mode=OneWay}" />
+                <DataGridTextColumn Header="スキル" Binding="{Binding SkillCSV, Mode=OneWay}" />
+                <DataGridTextColumn Header="性別" Binding="{Binding SexCond, Mode=OneWay}" />
+                <DataGridTextColumn Header="防御" Binding="{Binding Def, Mode=OneWay}"/>
+                <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
+                <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
+                <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
+                <DataGridTextColumn Header="氷" Binding="{Binding Ice, Mode=OneWay}" />
+                <DataGridTextColumn Header="龍" Binding="{Binding Dragon, Mode=OneWay}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- 右ペイン -->
+        <TextBox TextWrapping="Wrap" Grid.Row="0" Grid.Column="2" Text="{Binding HowToUse.Value, Mode=OneWay}" IsReadOnly="True">
+        </TextBox>
+
+    </Grid>
+</UserControl>

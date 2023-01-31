@@ -38,6 +38,10 @@
                 <subviews:MySetTabView x:Name="myset" DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
+            <TabItem Header="マイ検索条件">
+                <subviews:MyConditionTabView DataContext="{Binding MyConditionTabVM.Value, Mode=OneWay}"/>
+            </TabItem>
+
             <TabItem Header="ライセンス・謝辞">
                 <subviews:LicenseTabView DataContext="{Binding LicenseTabVM.Value, Mode=OneWay}"/>
             </TabItem>

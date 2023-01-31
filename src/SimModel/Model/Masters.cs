@@ -81,6 +81,9 @@ namespace SimModel.Model
         // 最近使ったスキルマスタ
         public static List<string> RecentSkillNames { get; set; } = new();
 
+        // マイ検索条件マスタ
+        public static List<SearchCondition> MyConditions { get; set; } = new();
+
         // 錬成装備情報を各装備マスタに反映
         internal static void RefreshEquipmentMasters()
         {

@@ -99,6 +99,7 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<bool> IsIncludeIdeal { get; } = new(false);
 
         // マイセット追加可能フラグ
+        // TODO:没になったよね
         public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
 
         // 検索コマンド
@@ -115,6 +116,9 @@ namespace RiseSim.ViewModels.SubViews
 
         // マイセット追加コマンド
         public ReactiveCommand AddMySetCommand { get; private set; }
+
+        // マイ検索条件追加コマンド
+        public ReactiveCommand AddMyConditionCommand { get; } = new ReactiveCommand();
 
         // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
@@ -143,6 +147,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
             AddMySetCommand = CanAddMySet.ToReactiveCommand().WithSubscribe(() => AddMySet());
+            AddMyConditionCommand.Subscribe(() => AddMyCondition());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
@@ -511,6 +516,57 @@ namespace RiseSim.ViewModels.SubViews
             StatusBarText.Value = "検索条件反映：" + sb.ToString();
         }
 
+        // マイ検索条件をシミュ画面の検索条件に反映
+        internal void InputMyCondition(SearchCondition condition)
+        {
+            if (condition == null)
+            {
+                // 空の場合何もせず終了
+                return;
+            }
+
+            // ログ表示用
+            StringBuilder sb = new StringBuilder();
+
+            // マイ検索条件の内容を反映したスキル入力部品を用意
+            var vms = new List<SkillSelectorViewModel>();
+            for (int i = 0; i < condition.Skills.Count; i++)
+            {
+                if (condition.Skills[i].Level <= 0)
+                {
+                    continue;
+                }
+                // スキル情報反映
+                vms.Add(new SkillSelectorViewModel(condition.Skills[i]));
+
+                // ログ表示用
+                sb.Append(condition.Skills[i].Description);
+                sb.Append(',');
+            }
+            for (var i = vms.Count; i < SkillSelectorCount; i++)
+            {
+                vms.Add(new SkillSelectorViewModel());
+            }
+            SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
+
+            // スロット情報反映
+            WeaponSlots.Value = condition.WeaponSlot1 + "-" + condition.WeaponSlot2 + "-" + condition.WeaponSlot3;
+
+            // 性別反映
+            SelectedSex.Value = condition.Sex.Str();
+
+            // 防御力・耐性を反映
+            Def.Value = condition.Def?.ToString() ?? string.Empty;
+            Fire.Value = condition.Fire?.ToString() ?? string.Empty;
+            Water.Value = condition.Water?.ToString() ?? string.Empty;
+            Thunder.Value = condition.Thunder?.ToString() ?? string.Empty;
+            Ice.Value = condition.Ice?.ToString() ?? string.Empty;
+            Dragon.Value = condition.Dragon?.ToString() ?? string.Empty;
+
+            // ログ表示
+            StatusBarText.Value = "検索条件反映：" + sb.ToString();
+        }
+
         internal void Cancel()
         {
             Simulator.Cancel();
@@ -538,6 +594,56 @@ namespace RiseSim.ViewModels.SubViews
             Thunder.Value = string.Empty;
             Ice.Value = string.Empty;
             Dragon.Value = string.Empty;
+        }
+
+        // マイ検索条件を追加
+        private void AddMyCondition()
+        {
+            MainViewModel.Instance.AddMyCondition(MakeCondition());
+        }
+
+        // 検索条件インスタンスを作成
+        private SearchCondition MakeCondition()
+        {
+            SearchCondition condition = new();
+
+            // スキル条件を整理
+            List<Skill> skills = new();
+            foreach (var selectorVM in SkillSelectorVMs.Value)
+            {
+                if (selectorVM.SkillName.Value != NoSkillName)
+                {
+                    skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
+                }
+            }
+            condition.Skills = skills;
+
+            // 武器スロ条件を整理
+            string[] splited = WeaponSlots.Value.Split('-');
+            condition.WeaponSlot1 = int.Parse(splited[0]);
+            condition.WeaponSlot2 = int.Parse(splited[1]);
+            condition.WeaponSlot3 = int.Parse(splited[2]);
+
+            // 性別を整理
+            condition.Sex = Sex.male;
+            if (SelectedSex.Value.Equals(Sex.female.Str()))
+            {
+                condition.Sex = Sex.female;
+            }
+
+            // 防御力・耐性を整理
+            condition.Def = ParseOrNull(Def.Value);
+            condition.Fire = ParseOrNull(Fire.Value);
+            condition.Water = ParseOrNull(Water.Value);
+            condition.Thunder = ParseOrNull(Thunder.Value);
+            condition.Ice = ParseOrNull(Ice.Value);
+            condition.Dragon = ParseOrNull(Dragon.Value);
+
+            // 名前・ID
+            condition.ID = Guid.NewGuid().ToString();
+            condition.DispName = "検索条件";
+
+            return condition;
         }
 
         // スキルを検索条件に追加

@@ -3,6 +3,7 @@ using Reactive.Bindings;
 using RiseSim.ViewModels.SubViews;
 using SimModel.Model;
 using SimModel.Service;
+using System;
 using System.Reactive.Linq;
 
 namespace RiseSim.ViewModels
@@ -35,6 +36,9 @@ namespace RiseSim.ViewModels
 
         // ライセンス画面のVM
         public ReactivePropertySlim<LicenseTabViewModel> LicenseTabVM { get; } = new();
+ 
+        // マイ検索条件画面のVM
+        public ReactivePropertySlim<MyConditionTabViewModel> MyConditionTabVM { get; } = new();
 
         // ビジー判定
         public ReactivePropertySlim<bool> IsBusy { get; } = new(false);
@@ -65,6 +69,7 @@ namespace RiseSim.ViewModels
             IdealAugmentationTabVM.Value = new IdealAugmentationTabViewModel();
             MySetTabVM.Value = new MySetTabViewModel();
             LicenseTabVM.Value = new LicenseTabViewModel();
+            MyConditionTabVM.Value = new MyConditionTabViewModel();
 
             // マスタファイル読み込み
             LoadMasters();
@@ -101,6 +106,19 @@ namespace RiseSim.ViewModels
         internal void InputMySetCondition(EquipSet? set)
         {
             SimulatorTabVM.Value.InputMySetCondition(set);
+        }
+
+        // マイ検索条件をシミュ画面の検索条件に反映　処理本体はシミュ画面VM
+        internal void InputMyCondition(SearchCondition condition)
+        {
+            SimulatorTabVM.Value.InputMyCondition(condition);
+        }
+
+        // シミュ画面の検索条件をマイ検索条件に反映　処理本体はマイ検索条件画面VM
+
+        internal void AddMyCondition(SearchCondition searchCondition)
+        {
+            MyConditionTabVM.Value.AddSearchCondition(searchCondition);
         }
 
         // マスタ情報を全てVMにロード

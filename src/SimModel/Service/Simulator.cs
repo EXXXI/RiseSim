@@ -39,6 +39,7 @@ namespace SimModel.Service
             CsvOperation.LoadAugmentationCSV();
             CsvOperation.LoadIdealCSV();
             CsvOperation.LoadRecentSkillCSV();
+            CsvOperation.LoadMyConditionCSV();
 
             // 錬成装備込みのマスタデータ作成&マイセット読み込み
             Masters.RefreshEquipmentMasters();
@@ -310,5 +311,22 @@ namespace SimModel.Service
             }
         }
 
+        // マイ検索条件登録
+        public void AddMyCondition(SearchCondition condition)
+        {
+            DataManagement.AddMyCondition(condition);
+        }
+
+        // マイ検索条件削除
+        public void DeleteMyCondition(SearchCondition condition)
+        {
+            DataManagement.DeleteMyCondition(condition);
+        }
+
+        // マイ検索条件更新
+        public void UpdateMyCondition(SearchCondition condition)
+        {
+            DataManagement.UpdateMyCondition(condition);
+        }
     }
 }

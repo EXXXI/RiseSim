@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimModel.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 namespace SimModel.Model
 {
     // 検索条件
-    internal class SearchCondition
+    public class SearchCondition
     {
         // スキルリスト
         public List<Skill> Skills { get; set; } = new();
@@ -44,6 +45,48 @@ namespace SimModel.Model
 
         // 理想錬成を利用するか否か
         public bool IncludeIdealAugmentation { get; set; }
+
+        // マイ検索条件保存用ID
+        public string ID { get; set; }
+
+        // マイ検索条件保存用名前
+        public string DispName { get; set; }
+
+        // CSV用スキル形式
+        public string SkillCSV
+        {
+            get
+            {
+                StringBuilder sb = new();
+                bool isFirst = true;
+                foreach (var skill in Skills)
+                {
+                    if (!isFirst)
+                    {
+                        sb.Append(',');
+                    }
+                    sb.Append(skill.Name);
+                    sb.Append(',');
+                    sb.Append(skill.Level);
+                    isFirst = false;
+                }
+                return sb.ToString();
+            }
+            set
+            {
+                Skills = new List<Skill>();
+                string[] splitted = value.Split(',');
+                for (int i = 0; i < splitted.Length; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(splitted[i]))
+                    {
+                        return;
+                    }
+                    Skill skill = new(splitted[i], ParseUtil.Parse(splitted[++i]));
+                    Skills.Add(skill);
+                }
+            }
+        }
 
         // デフォルトコンストラクタ
         public SearchCondition()
