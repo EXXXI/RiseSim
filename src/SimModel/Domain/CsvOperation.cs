@@ -27,6 +27,7 @@ namespace SimModel.Domain
         private const string RecentSkillCsv = "save/recentSkill.csv";
         private const string AugmentationCsv = "save/augmentation.csv";
         private const string IdealCsv = "save/ideal.csv";
+        private const string ConditionCsv = "save/condition.csv";
 
         private const string SkillMasterHeaderName = @"スキル系統";
         private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
@@ -759,6 +760,63 @@ namespace SimModel.Domain
             string[] header = header1.Concat(header2).ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(IdealCsv, export);
+        }
+
+        // マイ検索条件書き込み
+        internal static void SaveMyConditionCSV()
+        {
+            List<string[]> body = new();
+            foreach (var condition in Masters.MyConditions)
+            {
+                List<string> bodyStrings = new();
+                bodyStrings.Add(condition.ID);
+                bodyStrings.Add(condition.DispName);
+                bodyStrings.Add(condition.WeaponSlot1.ToString());
+                bodyStrings.Add(condition.WeaponSlot2.ToString());
+                bodyStrings.Add(condition.WeaponSlot3.ToString());
+                bodyStrings.Add(condition.Sex.ToString());
+                bodyStrings.Add(condition.Def?.ToString() ?? "null");
+                bodyStrings.Add(condition.Fire?.ToString() ?? "null");
+                bodyStrings.Add(condition.Water?.ToString() ?? "null");
+                bodyStrings.Add(condition.Thunder?.ToString() ?? "null");
+                bodyStrings.Add(condition.Ice?.ToString() ?? "null");
+                bodyStrings.Add(condition.Dragon?.ToString() ?? "null");
+                bodyStrings.Add(condition.SkillCSV);
+                body.Add(bodyStrings.ToArray());
+            }
+
+            string[] header = new string[] { "ID", "名前", "武器スロ1", "武器スロ2", "武器スロ3", "性別", "防御力", "火耐性", "水耐性", "雷耐性", "氷耐性", "龍耐性", "スキル"};
+            string export = CsvWriter.WriteToText(header, body);
+            File.WriteAllText(ConditionCsv, export);
+        }
+
+        // マイ検索条件読み込み
+        internal static void LoadMyConditionCSV()
+        {
+            Masters.MyConditions = new();
+
+            string csv = ReadAllText(ConditionCsv);
+
+            foreach (ICsvLine line in CsvReader.ReadFromText(csv))
+            {
+                SearchCondition condition = new();
+
+                condition.ID = line[@"ID"];
+                condition.DispName = line[@"名前"];
+                condition.WeaponSlot1 = ParseUtil.Parse(line[@"武器スロ1"]);
+                condition.WeaponSlot2 = ParseUtil.Parse(line[@"武器スロ2"]);
+                condition.WeaponSlot3 = ParseUtil.Parse(line[@"武器スロ3"]);
+                condition.Sex = line[@"性別"] == "male" ? Sex.male : Sex.female;
+                condition.Def = line[@"防御力"] == "null" ? null : ParseUtil.Parse(line[@"防御力"]);
+                condition.Fire = line[@"火耐性"] == "null" ? null : ParseUtil.Parse(line[@"火耐性"]);
+                condition.Water = line[@"水耐性"] == "null" ? null : ParseUtil.Parse(line[@"水耐性"]);
+                condition.Thunder = line[@"雷耐性"] == "null" ? null : ParseUtil.Parse(line[@"雷耐性"]);
+                condition.Ice = line[@"氷耐性"] == "null" ? null : ParseUtil.Parse(line[@"氷耐性"]);
+                condition.Dragon = line[@"龍耐性"] == "null" ? null : ParseUtil.Parse(line[@"龍耐性"]);
+                condition.SkillCSV = line[@"スキル"];
+
+                Masters.MyConditions.Add(condition);
+            }
         }
 
         // ファイル読み込み

@@ -46,6 +46,7 @@
                                 </Style>
                             </MenuItem.ItemContainerStyle>
                         </MenuItem>
+                        <MenuItem Header="検索条件をマイ検索条件に追加する" Command="{Binding AddMyConditionCommand}"/>
                     </ContextMenu>
                 </StackPanel.ContextMenu>
                 <StackPanel>

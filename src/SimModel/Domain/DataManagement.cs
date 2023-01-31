@@ -364,5 +364,55 @@ namespace SimModel.Domain
             // 万一更新先が見つからなかった場合は新規登録
             AddIdealAugmentation(newIdeal);
         }
+
+        // マイ検索条件の追加
+        internal static void AddMyCondition(SearchCondition condition)
+        {
+            // 追加
+            Masters.MyConditions.Add(condition);
+
+            // マスタへ反映
+            CsvOperation.SaveMyConditionCSV();
+        }
+
+        // マイ検索条件の削除
+        internal static void DeleteMyCondition(SearchCondition condition)
+        {
+            // 削除
+            Masters.MyConditions.Remove(condition);
+
+            // マスタへ反映
+            CsvOperation.SaveMyConditionCSV();
+        }
+
+        internal static void UpdateMyCondition(SearchCondition newCondition)
+        {
+            foreach (var condition in Masters.MyConditions)
+            {
+                if (condition.ID == newCondition.ID)
+                {
+                    condition.DispName = newCondition.DispName;
+                    condition.WeaponSlot1 = newCondition.WeaponSlot1;
+                    condition.WeaponSlot2 = newCondition.WeaponSlot2;
+                    condition.WeaponSlot3 = newCondition.WeaponSlot3;
+                    condition.Def = newCondition.Def;
+                    condition.Fire = newCondition.Fire;
+                    condition.Water = newCondition.Water;
+                    condition.Thunder = newCondition.Thunder;
+                    condition.Ice = newCondition.Ice;
+                    condition.Dragon = newCondition.Dragon;
+                    condition.Sex = newCondition.Sex;
+                    condition.Skills = newCondition.Skills;
+
+                    // マスタへ反映
+                    CsvOperation.SaveIdealCSV();
+
+                    return;
+                }
+            }
+
+            // 万一更新先が見つからなかった場合は新規登録
+            AddMyCondition(newCondition);
+        }
     }
 }
