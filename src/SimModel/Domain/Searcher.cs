@@ -839,6 +839,11 @@ namespace SimModel.Domain
             // 組み合わせ一覧作成
             List<List<int>> plans = MakeValidatePlans(equipSet.GenericSkills.Count);
 
+            if (plans.Count < 1)
+            {
+                return true;
+            }
+
             foreach (var plan in plans)
             {
                 // planの組み合わせで理想錬成のスキルが実現可能か確認
