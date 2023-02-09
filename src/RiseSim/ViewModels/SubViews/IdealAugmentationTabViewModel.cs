@@ -36,6 +36,12 @@ namespace RiseSim.ViewModels.SubViews
         // 選択されたテーブル
         public ReactivePropertySlim<int> Table { get; } = new();
 
+        // 下位テーブルを含むか否か
+        public ReactivePropertySlim<bool> IsIncludeLower { get; } = new(false);
+
+        // 下位テーブルを含むか否か(ラジオボタン表示用の反転したプロパティ)
+        public ReadOnlyReactivePropertySlim<bool> IsNotIncludeLower { get; set; }
+
         // 表示名
         public ReactivePropertySlim<string> DispName { get; } = new();
 
@@ -98,6 +104,7 @@ namespace RiseSim.ViewModels.SubViews
         // コマンドを設定
         private void SetCommand()
         {
+            IsNotIncludeLower = IsIncludeLower.Select(x => !x).ToReadOnlyReactivePropertySlim();
             IsNotOne = IsOne.Select(x => !x).ToReadOnlyReactivePropertySlim();
             InputCommand.Subscribe(_ => InputIdeal());
             AddCommand.Subscribe(_ => AddIdeal());
@@ -173,6 +180,7 @@ namespace RiseSim.ViewModels.SubViews
             IdealAugmentation ideal = new();
             ideal.Name = Guid.NewGuid().ToString();
             ideal.Table = Table.Value;
+            ideal.IsIncludeLower = IsIncludeLower.Value;
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
@@ -260,6 +268,7 @@ namespace RiseSim.ViewModels.SubViews
             }
             IdealAugmentation ideal = SelectedIdeal.Value.Original;
             Table.Value = ideal.Table;
+            IsIncludeLower.Value = ideal.IsIncludeLower;
             DispName.Value = ideal.DispName;
             Slot.Value = ideal.SlotIncrement;
             C3.Value = ideal.GenericSkills[0].ToString();
@@ -307,6 +316,7 @@ namespace RiseSim.ViewModels.SubViews
             IdealAugmentation ideal = new();
             ideal.Name = SelectedIdeal.Value.Name;
             ideal.Table = Table.Value;
+            ideal.IsIncludeLower = IsIncludeLower.Value;
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {

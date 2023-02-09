@@ -22,6 +22,12 @@ namespace RiseSim.ViewModels.BindableWrapper
         // テーブル
         public int Table { get; set; }
 
+        // 下位テーブル含フラグ
+        public bool IsIncludeLower { get; set; }
+
+        // 表示用テーブル
+        public string TableDisp { get; set; }
+
         // スロット追加数
         public int SlotIncrement { get; set; }
 
@@ -51,6 +57,8 @@ namespace RiseSim.ViewModels.BindableWrapper
             SlotIncrement = ideal.SlotIncrement;
             IsOne = ideal.IsOne;
             IsOneDisp = IsOne ? "一部位のみ" : "全部位可";
+            IsIncludeLower = ideal.IsIncludeLower;
+            TableDisp = ideal.Table + (IsIncludeLower ? "以下" : "のみ"); 
             SimpleSkillDiscription = ideal.SimpleSkillDiscription;
             SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
             Original = ideal;

@@ -262,7 +262,7 @@ namespace RiseSim.ViewModels.SubViews
             List<Skill> skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if (selectorVM.SkillName.Value != NoSkillName)
+                if (selectorVM.SkillName.Value != NoSkillName && selectorVM.SkillLevel.Value != 0)
                 {
                     skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
                 }

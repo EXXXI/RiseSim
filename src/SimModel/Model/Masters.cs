@@ -114,8 +114,9 @@ namespace SimModel.Model
                 }
                 foreach (IdealAugmentation ideal in Ideals)
                 {
-                    // テーブルが一致した場合に理想錬成の内容を反映した防具を登録する
-                    if (ideal.Table == equip.AugmentationTable)
+                    // テーブルが条件に合致した場合に理想錬成の内容を反映した防具を登録する
+                    if (ideal.Table == equip.AugmentationTable ||
+                        (ideal.IsIncludeLower && equip.AugmentationTable < ideal.Table))
                     {
                         // スキルマイナスのパターン生成
                         int baseSkillCount = equip.Skills.Count;
