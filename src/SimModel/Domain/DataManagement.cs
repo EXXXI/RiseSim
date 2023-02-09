@@ -343,6 +343,7 @@ namespace SimModel.Domain
                 if (ideal.Name == newIdeal.Name)
                 {
                     ideal.Table = newIdeal.Table;
+                    ideal.IsIncludeLower = newIdeal.IsIncludeLower;
                     ideal.DispName = newIdeal.DispName;
                     ideal.SlotIncrement = newIdeal.SlotIncrement;
                     ideal.GenericSkills[0] = newIdeal.GenericSkills[0];

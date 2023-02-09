@@ -132,7 +132,7 @@ namespace RiseSim.ViewModels.Controls
             else
             {
                 // 通常の場合
-                for (int i = maxLevel; i > 0; i--)
+                for (int i = maxLevel; i >= 0; i--)
                 {
                     list.Add(i);
                 }

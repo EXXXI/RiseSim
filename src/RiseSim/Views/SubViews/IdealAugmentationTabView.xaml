@@ -30,6 +30,11 @@
                 </ComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Width="85" Text="下位テーブルを"/>
+                <RadioButton Content="含む　　　" IsChecked="{Binding IsIncludeLower.Value}"/>
+                <RadioButton Content="含まない" IsChecked="{Binding IsNotIncludeLower.Value, Mode=OneWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="名前"/>
                 <TextBox Width="165" Text="{Binding DispName.Value}"></TextBox>
             </StackPanel>
@@ -103,7 +108,7 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="テーブル" Binding="{Binding Table, Mode=OneWay}" />
+                <DataGridTextColumn Header="テーブル" Binding="{Binding TableDisp, Mode=OneWay}" />
                 <DataGridTextColumn Header="名前" Binding="{Binding DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="スロット" Binding="{Binding SlotIncrement, Mode=OneWay}" />
                 <DataGridTextColumn Header="部位制限" Binding="{Binding IsOneDisp, Mode=OneWay}" />

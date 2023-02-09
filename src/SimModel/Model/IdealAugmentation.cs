@@ -18,6 +18,9 @@ namespace SimModel.Model
         // テーブル
         public int Table { get; set; }
 
+        // 下位テーブル含フラグ
+        public bool IsIncludeLower { get; set; }
+
         // スロット追加数
         public int SlotIncrement { get; set; }
 

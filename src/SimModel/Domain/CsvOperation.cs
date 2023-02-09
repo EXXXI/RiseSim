@@ -626,6 +626,11 @@ namespace SimModel.Domain
 
                 IdealAugmentation ideal = new IdealAugmentation();
                 ideal.Table = ParseUtil.Parse(line[@"テーブル"]);
+                ideal.IsIncludeLower = false;
+                if (line.Headers.Contains(@"下位テーブル含フラグ"))
+                {
+                    ideal.IsIncludeLower = line[@"下位テーブル含フラグ"].Equals("1");
+                }
                 ideal.IsOne = line[@"部位制限フラグ"].Equals("1");
                 ideal.SlotIncrement = ParseUtil.Parse(line[@"スロット"]);
                 ideal.DispName = line[@"名前"];
@@ -723,6 +728,7 @@ namespace SimModel.Domain
             {
                 List<string> bodyStrings = new List<string>();
                 bodyStrings.Add(ideal.Table.ToString());
+                bodyStrings.Add(ideal.IsIncludeLower ? "1" : "0");
                 /*
                 bodyStrings.Add(ideal.Def.ToString());
                 bodyStrings.Add(ideal.Fire.ToString());
@@ -749,7 +755,7 @@ namespace SimModel.Domain
                 body.Add(bodyStrings.ToArray());
             }
 
-            string[] header1 = new string[] { "テーブル", "部位制限フラグ", "スロット", "名前", "管理用ID", "c3スキル数", "c6スキル数", "c9スキル数", "c12スキル数", "c15スキル数", "スキルマイナス位置" };
+            string[] header1 = new string[] { "テーブル", "下位テーブル含フラグ", "部位制限フラグ", "スロット", "名前", "管理用ID", "c3スキル数", "c6スキル数", "c9スキル数", "c12スキル数", "c15スキル数", "スキルマイナス位置" };
             List<string> header2List = new();
             for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
             {
