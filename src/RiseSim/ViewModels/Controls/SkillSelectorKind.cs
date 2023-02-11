@@ -10,6 +10,7 @@ namespace RiseSim.ViewModels.Controls
     {
         Normal,
         Augmentation,
-        IdealAugmentation
+        IdealAugmentation,
+        WithFixs
     }
 }

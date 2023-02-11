@@ -215,8 +215,14 @@ namespace SimModel.Domain
             FirstSkillRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-
-                y[index++] = solver.MakeConstraint(skill.Level, double.PositiveInfinity, skill.Name);
+                if (skill.IsFixed)
+                {
+                    y[index++] = solver.MakeConstraint(skill.Level, skill.Level, skill.Name);
+                }
+                else
+                {
+                    y[index++] = solver.MakeConstraint(skill.Level, double.PositiveInfinity, skill.Name);
+                }
             }
 
             // 風雷合一：防具スキル存在条件

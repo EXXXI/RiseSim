@@ -15,17 +15,21 @@ namespace SimModel.Model
         // 追加スキルフラグ
         public bool IsAdditional { get; init; } = false;
 
+        // 固定検索フラグ
+        public bool IsFixed { get; set; } = false;
+
         // スキルのカテゴリ
         public string Category { get; init; }
 
         // コンストラクタ
-        public Skill(string name, int level, bool isAdditional = false) : this(name, level, "", isAdditional) { }
+        public Skill(string name, int level, bool isAdditional = false, bool isFixed = false) : this(name, level, "", isAdditional, isFixed) { }
 
-        public Skill(string name, int level, string category, bool isAdditional = false)
+        public Skill(string name, int level, string category, bool isAdditional = false, bool isFixed = false)
         {
             Name = name;
             Level = level;
             IsAdditional = isAdditional;
+            IsFixed = isFixed;
             Category = string.IsNullOrEmpty(category) ? @"未分類" : category;
         }
 

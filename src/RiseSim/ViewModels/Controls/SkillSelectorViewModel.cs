@@ -11,6 +11,9 @@ namespace RiseSim.ViewModels.Controls
 {
     class SkillSelectorViewModel : BindableBase
     {
+        const string FixStr = "固定";
+        const string NotFixStr = "以上";
+
         // スキル未選択時の表示
         private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
 
@@ -29,6 +32,18 @@ namespace RiseSim.ViewModels.Controls
         // 画面の種類
         public SkillSelectorKind Kind { get; set; } = SkillSelectorKind.Normal;
 
+        // スキル値固定の表示有無
+        public ReactivePropertySlim<bool> IsWithFix { get; } = new(false);
+
+        // スキル値固定の表示候補
+        public ReactivePropertySlim<ObservableCollection<string>> IsFixDisps { get; } = new();
+
+        // スキル値固定の表示内容
+        public ReactivePropertySlim<string> IsFixDisp { get; } = new();
+
+        // スキル値固定の表示内容
+        public bool IsFix { get; set; } = false;
+
 
         // クリアコマンド
         public ReactiveCommand ClearCommand { get; } = new ReactiveCommand();
@@ -37,13 +52,22 @@ namespace RiseSim.ViewModels.Controls
         private void SetCommand()
         {
             ClearCommand.Subscribe(_ => SetDefault());
+            IsFixDisp.Subscribe(_ => { IsFix = IsFixDisp.Value == FixStr; });
         }
 
 
         // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
-        public SkillSelectorViewModel(SkillSelectorKind kind)
+        public SkillSelectorViewModel(SkillSelectorKind kind = SkillSelectorKind.Normal)
         {
             Kind = kind;
+            IsWithFix.Value = Kind == SkillSelectorKind.WithFixs;
+
+            // スキル値固定関連準備
+            IsFixDisps.Value = new();
+            IsFixDisps.Value.Add(NotFixStr);
+            IsFixDisps.Value.Add(FixStr);
+            IsFixDisp.Value = NotFixStr;
+
 
             ObservableCollection<string> skillList = new();
             skillList.Add(NoSkillName);
@@ -61,15 +85,11 @@ namespace RiseSim.ViewModels.Controls
             SetCommand();
         }
 
-        public SkillSelectorViewModel() : this(SkillSelectorKind.Normal)
-        {
-        }
-
         /// <summary>
         /// 特定のスキルを選択した状態のSkillSelectorViewModelを作って返す
         /// </summary>
         /// <param name="skill"></param>
-        public SkillSelectorViewModel(Skill skill) : this(SkillSelectorKind.Normal)
+        public SkillSelectorViewModel(Skill skill, SkillSelectorKind kind = SkillSelectorKind.Normal) : this(kind)
         {
             SkillName.Value = skill.Name;
             SkillLevel.Value = skill.Level;
@@ -140,7 +160,7 @@ namespace RiseSim.ViewModels.Controls
             SkillLevels.Value = list;
 
             // 初期値は通常は最大レベル、傀異錬成・理想錬成時は1とする
-            if (maxLevel != 0 && Kind != SkillSelectorKind.Normal)
+            if (maxLevel != 0 && Kind != SkillSelectorKind.Normal && Kind != SkillSelectorKind.WithFixs)
             {
                 SkillLevel.Value = 1;
             }
@@ -154,6 +174,7 @@ namespace RiseSim.ViewModels.Controls
         internal void SetDefault()
         {
             SkillName.Value = NoSkillName;
+            IsFixDisp.Value = NotFixStr;
         }
     }
 }
