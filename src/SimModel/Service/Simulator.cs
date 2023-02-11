@@ -47,29 +47,9 @@ namespace SimModel.Service
         }
 
         // 新規検索
-        public List<EquipSet> Search(
-            List<Skill> skillList, int weaponSlot1, int weaponSlot2, int weaponSlot3, int limit, Sex sex, int? def, int? fire, int? water, int? thunder, int? ice, int? dragon, bool isIncludeIdeal)
+        public List<EquipSet> Search(SearchCondition condition, int limit)
         {
             ResetIsCanceling();
-
-            // 検索条件を整理
-            SearchCondition condition = new();
-            condition.Skills = new List<Skill>();
-            foreach (var skill in skillList)
-            {
-                condition.AddSkill(skill);
-            }
-            condition.WeaponSlot1 = weaponSlot1;
-            condition.WeaponSlot2 = weaponSlot2;
-            condition.WeaponSlot3 = weaponSlot3;
-            condition.Sex = sex;
-            condition.Fire = fire;
-            condition.Water = water;
-            condition.Thunder = thunder;
-            condition.Ice = ice;
-            condition.Dragon = dragon;
-            condition.Def = def;
-            condition.IncludeIdealAugmentation = isIncludeIdeal;
 
             // 検索
             Searcher = new Searcher(condition);

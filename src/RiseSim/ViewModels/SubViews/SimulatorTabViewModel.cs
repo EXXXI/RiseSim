@@ -168,7 +168,7 @@ namespace RiseSim.ViewModels.SubViews
                     var vms = new List<SkillSelectorViewModel>(skills.Select(s => new SkillSelectorViewModel(s)));
                     for (var i = vms.Count; i < SkillSelectorCount; i++)
                     { 
-                        vms.Add(new SkillSelectorViewModel());
+                        vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
                     }
                     SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
 
@@ -212,7 +212,7 @@ namespace RiseSim.ViewModels.SubViews
             ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
             for (int i = 0; i < SkillSelectorCount; i++)
             {
-                selectorVMs.Add(new SkillSelectorViewModel());
+                selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
             }
             SkillSelectorVMs.Value = selectorVMs;
 
@@ -258,22 +258,6 @@ namespace RiseSim.ViewModels.SubViews
         // 検索
         async internal Task Search()
         {
-            // スキル条件を整理
-            List<Skill> skills = new();
-            foreach (var selectorVM in SkillSelectorVMs.Value)
-            {
-                if (selectorVM.SkillName.Value != NoSkillName && selectorVM.SkillLevel.Value != 0)
-                {
-                    skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
-                }
-            }
-
-            // 武器スロ条件を整理
-            string[] splited = WeaponSlots.Value.Split('-');
-            int weaponSlot1 = int.Parse(splited[0]);
-            int weaponSlot2 = int.Parse(splited[1]);
-            int weaponSlot3 = int.Parse(splited[2]);
-
             // 頑張り度を整理
             int searchLimit;
             try
@@ -286,36 +270,20 @@ namespace RiseSim.ViewModels.SubViews
                 searchLimit = int.Parse(DefaultLimit);
             }
 
-            // 性別を整理
-            Sex sex = Sex.male;
-            if (SelectedSex.Value.Equals(Sex.female.Str()))
-            {
-                sex = Sex.female;
-            }
-
-            // 防御力・耐性を整理
-            int? def = ParseOrNull(Def.Value);
-            int? fire = ParseOrNull(Fire.Value);
-            int? water = ParseOrNull(Water.Value);
-            int? thunder = ParseOrNull(Thunder.Value);
-            int? ice = ParseOrNull(Ice.Value);
-            int? dragon = ParseOrNull(Dragon.Value);
-
-            // 理想錬成の有無
-            bool isIncludeIdeal = IsIncludeIdeal.Value;
-
+            // 検索条件を整理
+            SearchCondition condition = MakeCondition();
 
             // 開始ログ表示
             LogSb.Clear();
             LogSb.Append("■検索開始：\n");
             LogSb.Append("武器スロ");
-            LogSb.Append(weaponSlot1);
+            LogSb.Append(condition.WeaponSlot1);
             LogSb.Append('-');
-            LogSb.Append(weaponSlot2);
+            LogSb.Append(condition.WeaponSlot2);
             LogSb.Append('-');
-            LogSb.Append(weaponSlot3);
+            LogSb.Append(condition.WeaponSlot3);
             LogSb.Append('\n');
-            foreach (Skill skill in skills)
+            foreach (Skill skill in condition.Skills)
             {
                 LogSb.Append(skill.Description);
                 LogSb.Append('\n');
@@ -325,10 +293,9 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ
             IsBusy.Value = true;
-
+            
             // 検索
-            List<EquipSet> result = await Task.Run(() => Simulator.Search(
-                skills, weaponSlot1, weaponSlot2, weaponSlot3, searchLimit, sex, def, fire, water, thunder, ice, dragon, isIncludeIdeal));
+            List<EquipSet> result = await Task.Run(() => Simulator.Search(condition, searchLimit));
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
             // ビジーフラグ解除
@@ -497,7 +464,7 @@ namespace RiseSim.ViewModels.SubViews
                 }
 
                 // スキル情報反映
-                vms.Add(new SkillSelectorViewModel(mySet.Skills[i]));
+                vms.Add(new SkillSelectorViewModel(mySet.Skills[i], SkillSelectorKind.WithFixs));
 
                 // ログ表示用
                 sb.Append(mySet.Skills[i].Description);
@@ -505,7 +472,7 @@ namespace RiseSim.ViewModels.SubViews
             }
             for (var i = vms.Count; i < SkillSelectorCount; i++)
             {
-                vms.Add(new SkillSelectorViewModel());
+                vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
             }
             SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
 
@@ -537,7 +504,7 @@ namespace RiseSim.ViewModels.SubViews
                     continue;
                 }
                 // スキル情報反映
-                vms.Add(new SkillSelectorViewModel(condition.Skills[i]));
+                vms.Add(new SkillSelectorViewModel(condition.Skills[i], SkillSelectorKind.WithFixs));
 
                 // ログ表示用
                 sb.Append(condition.Skills[i].Description);
@@ -545,7 +512,7 @@ namespace RiseSim.ViewModels.SubViews
             }
             for (var i = vms.Count; i < SkillSelectorCount; i++)
             {
-                vms.Add(new SkillSelectorViewModel());
+                vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
             }
             SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
 
@@ -584,7 +551,7 @@ namespace RiseSim.ViewModels.SubViews
             var vms = new List<SkillSelectorViewModel>();
             for (var i = 0; i < SkillSelectorCount; i++)
             {
-                vms.Add(new SkillSelectorViewModel());
+                vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
             }
             SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
             WeaponSlots.Value = "0-0-0";
@@ -608,15 +575,15 @@ namespace RiseSim.ViewModels.SubViews
             SearchCondition condition = new();
 
             // スキル条件を整理
-            List<Skill> skills = new();
+            condition.Skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if (selectorVM.SkillName.Value != NoSkillName)
+                if (selectorVM.SkillName.Value != NoSkillName &&
+                    (selectorVM.SkillLevel.Value != 0 || selectorVM.IsFix))
                 {
-                    skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
+                    condition.AddSkill(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value, false, selectorVM.IsFix));
                 }
             }
-            condition.Skills = skills;
 
             // 武器スロ条件を整理
             string[] splited = WeaponSlots.Value.Split('-');
@@ -638,6 +605,9 @@ namespace RiseSim.ViewModels.SubViews
             condition.Thunder = ParseOrNull(Thunder.Value);
             condition.Ice = ParseOrNull(Ice.Value);
             condition.Dragon = ParseOrNull(Dragon.Value);
+
+            // 理想錬成の有無
+            condition.IncludeIdealAugmentation = IsIncludeIdeal.Value;
 
             // 名前・ID
             condition.ID = Guid.NewGuid().ToString();

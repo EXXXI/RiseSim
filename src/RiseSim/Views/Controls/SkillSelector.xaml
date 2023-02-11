@@ -5,11 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RiseSim.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="22" d:DesignWidth="165">
+             d:DesignHeight="22" d:DesignWidth="215">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
+    </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
         <ComboBox Name="nameBox" Width="95" ItemsSource="{Binding Skills.Value, Mode=OneWay}" SelectedIndex="0" SelectedItem="{Binding SkillName.Value}">
         </ComboBox>
         <ComboBox Name="levelBox" Width="40" ItemsSource="{Binding SkillLevels.Value, Mode=OneWay}" SelectedItem="{Binding SkillLevel.Value}" />
+        <ComboBox Width="50" ItemsSource="{Binding IsFixDisps.Value, Mode=OneWay}" SelectedItem="{Binding IsFixDisp.Value}"  Visibility="{Binding IsWithFix.Value, Converter={StaticResource BoolVisibilityConverter}}"/>
         <Button Content="クリア" Width="30" Command="{Binding ClearCommand}"></Button>
     </StackPanel>
 </UserControl>

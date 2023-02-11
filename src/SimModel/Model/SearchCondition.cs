@@ -99,7 +99,7 @@ namespace SimModel.Model
             Skills = new List<Skill>();
             foreach (var skill in condition.Skills)
             {
-                Skill newSkill = new Skill(skill.Name, skill.Level);
+                Skill newSkill = new Skill(skill.Name, skill.Level, skill.IsAdditional, skill.IsFixed);
                 Skills.Add(newSkill);
             }
             WeaponSlot1 = condition.WeaponSlot1;
@@ -115,7 +115,7 @@ namespace SimModel.Model
             IncludeIdealAugmentation = condition.IncludeIdealAugmentation;
         }
 
-        // スキル追加(同名スキルはレベルが高い方のみを採用)
+        // スキル追加(同名スキルはレベルが高い方のみを採用、固定がある場合は固定が優先)
         // 追加したスキルが有効かどうかを返す
         public bool AddSkill(Skill additionalSkill)
         {
@@ -123,7 +123,20 @@ namespace SimModel.Model
             {
                 if(skill.Name == additionalSkill.Name)
                 {
-                    if(skill.Level < additionalSkill.Level)
+                    // 固定フラグに差がある場合それを優先
+                    if (!skill.IsFixed && additionalSkill.IsFixed)
+                    {
+                        skill.Level = additionalSkill.Level;
+                        skill.IsFixed = additionalSkill.IsFixed; // true
+                        return true;
+                    }
+                    if (skill.IsFixed && !additionalSkill.IsFixed)
+                    {
+                        return false;
+                    }
+
+                    // 固定フラグに差がない場合は高いほうを優先
+                    if (skill.Level < additionalSkill.Level)
                     {
                         skill.Level = additionalSkill.Level;
                         return true;
