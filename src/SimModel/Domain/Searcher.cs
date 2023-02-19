@@ -243,6 +243,11 @@ namespace SimModel.Domain
             // 理想錬成：部位制限や有効無効制限
             foreach (var ideal in Masters.Ideals)
             {
+                double min = 0.0;
+                if (ideal.IsRequired)
+                {
+                    min = 1.0;
+                }
                 double max = 5.0;
                 if (ideal.IsOne)
                 {
@@ -253,7 +258,7 @@ namespace SimModel.Domain
                     max = 0.0;
                 }
                 LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
-                y[index++] = solver.MakeConstraint(0.0, max, ideal.Name);
+                y[index++] = solver.MakeConstraint(min, max, ideal.Name);
             }
 
             // 検索済み結果の除外

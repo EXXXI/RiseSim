@@ -63,6 +63,9 @@ namespace SimModel.Model
         // 検索時に有効か無効か
         public bool IsEnabled { get; set; } = true;
 
+        // 検索時に必須か
+        public bool IsRequired { get; set; } = false;
+
         // 表示用スキル一覧
         public string SimpleSkillDiscription
         {
