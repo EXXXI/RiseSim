@@ -46,6 +46,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 有効無効
         public ReactivePropertySlim<bool> IsEnabled { get; set; } = new(true);
 
+        // 必須
+        public ReactivePropertySlim<bool> IsRequired { get; set; } = new(false);
+
         public IdealAugmentation Original { get; set; }
 
         // コンストラクタ
@@ -63,11 +66,17 @@ namespace RiseSim.ViewModels.BindableWrapper
             SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
             Original = ideal;
             IsEnabled.Subscribe(x => ChangeIsEnabled(x));
+            IsRequired.Subscribe(x => ChangeIsRequired(x));
         }
 
         private void ChangeIsEnabled(bool x)
         {
             Original.IsEnabled = x;
+        }
+
+        private void ChangeIsRequired(bool x)
+        {
+            Original.IsRequired = x;
         }
 
         // リストをまとめてバインド用クラスに変換
