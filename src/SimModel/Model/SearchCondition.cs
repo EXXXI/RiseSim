@@ -46,6 +46,9 @@ namespace SimModel.Model
         // 理想錬成を利用するか否か
         public bool IncludeIdealAugmentation { get; set; }
 
+        // 通常装備を優先するか否か
+        public bool PrioritizeNoIdeal { get; set; }
+
         // マイ検索条件保存用ID
         public string ID { get; set; }
 
@@ -113,6 +116,7 @@ namespace SimModel.Model
             Dragon = condition.Dragon;
             Sex = condition.Sex;
             IncludeIdealAugmentation = condition.IncludeIdealAugmentation;
+            PrioritizeNoIdeal = condition.PrioritizeNoIdeal;
         }
 
         // スキル追加(同名スキルはレベルが高い方のみを採用、固定がある場合は固定が優先)

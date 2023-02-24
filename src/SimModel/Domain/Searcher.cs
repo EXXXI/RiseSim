@@ -402,7 +402,7 @@ namespace SimModel.Domain
             objective.SetMaximization();
         }
 
-        private static int Score(Equipment equip)
+        private int Score(Equipment equip)
         {
             int slot1 = 0;
             int slot2 = 0;
@@ -421,6 +421,12 @@ namespace SimModel.Domain
 
 
             int score = 0;
+
+            // 理想錬成以外を優先
+            if (Condition.PrioritizeNoIdeal && equip.Ideal != null)
+            {
+                score -= 200;
+            }
 
             // 防御力
             score += equip.Maxdef;

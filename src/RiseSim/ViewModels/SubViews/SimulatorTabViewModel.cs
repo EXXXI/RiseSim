@@ -98,6 +98,9 @@ namespace RiseSim.ViewModels.SubViews
         // 理想錬成利用フラグ
         public ReactivePropertySlim<bool> IsIncludeIdeal { get; } = new(false);
 
+        // 通常装備優先フラグ
+        public ReactivePropertySlim<bool> IsPrioritizeNoIdeal { get; } = new(false);
+
         // マイセット追加可能フラグ
         // TODO:没になったよね
         public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
@@ -608,6 +611,9 @@ namespace RiseSim.ViewModels.SubViews
 
             // 理想錬成の有無
             condition.IncludeIdealAugmentation = IsIncludeIdeal.Value;
+
+            // 通常装備優先の有無
+            condition.PrioritizeNoIdeal = IsPrioritizeNoIdeal.Value;
 
             // 名前・ID
             condition.ID = Guid.NewGuid().ToString();
