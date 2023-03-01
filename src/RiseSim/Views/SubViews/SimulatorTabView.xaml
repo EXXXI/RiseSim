@@ -88,7 +88,8 @@
                     <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
                 </StackPanel>
                 <CheckBox IsChecked="{Binding IsIncludeIdeal.Value}">理想錬成を使う</CheckBox>
-                <CheckBox IsChecked="{Binding IsPrioritizeNoIdeal.Value}" IsEnabled="{Binding IsIncludeIdeal.Value}" Margin="15,0,0,0">既存装備を優先する</CheckBox>
+                <CheckBox IsChecked="{Binding IsPrioritizeNoIdeal.Value}" IsEnabled="{Binding IsIncludeIdeal.Value}" Margin="7.5,0,0,0">既存装備を優先する</CheckBox>
+                <CheckBox IsChecked="{Binding IsExcludeAbstract.Value}" IsEnabled="{Binding IsPrioritizeNoIdeal.Value}" Margin="15,0,0,0">同等の既存装備で組める場合を除外</CheckBox>
                 <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                 <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
                 <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />

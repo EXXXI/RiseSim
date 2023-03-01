@@ -101,6 +101,9 @@ namespace RiseSim.ViewModels.SubViews
         // 通常装備優先フラグ
         public ReactivePropertySlim<bool> IsPrioritizeNoIdeal { get; } = new(false);
 
+        // 通常装備優先フラグ
+        public ReactivePropertySlim<bool> IsExcludeAbstract { get; } = new(false);
+
         // マイセット追加可能フラグ
         // TODO:没になったよね
         public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
@@ -156,6 +159,20 @@ namespace RiseSim.ViewModels.SubViews
             AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
             ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
+            IsIncludeIdeal.Subscribe(x =>
+            {
+                if (x == false)
+                {
+                    IsPrioritizeNoIdeal.Value = false;
+                }
+            });
+            IsPrioritizeNoIdeal.Subscribe(x =>
+            {
+                if (x == false)
+                {
+                    IsExcludeAbstract.Value = false;
+                }
+            });
             LaunchSkillPickerCommand.Subscribe(_ =>
             {
                 var picker = new SkillPickerWindowView();
@@ -614,6 +631,9 @@ namespace RiseSim.ViewModels.SubViews
 
             // 通常装備優先の有無
             condition.PrioritizeNoIdeal = IsPrioritizeNoIdeal.Value;
+
+            // 通常装備で組める場合の除外有無
+            condition.ExcludeAbstract = IsExcludeAbstract.Value;
 
             // 名前・ID
             condition.ID = Guid.NewGuid().ToString();
