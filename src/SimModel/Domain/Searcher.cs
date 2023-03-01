@@ -777,14 +777,22 @@ namespace SimModel.Domain
                 equipSet.WeaponSlot2 = Condition.WeaponSlot2;
                 equipSet.WeaponSlot3 = Condition.WeaponSlot3;
 
-                // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
-                RemoveDuplicateSet(equipSet);
+                bool isValid = true;
 
                 // 理想錬成のスキルが実現可能か確認
-                bool isValid = IsValidGenericSkill(equipSet);
+                isValid = isValid && IsValidGenericSkill(equipSet);
+
+                // 既存防具での具体的な検索結果が既にあるかどうか確認
+                if (Condition.ExcludeAbstract)
+                {
+                    isValid = isValid && !IsAbstractSet(equipSet);
+                }
 
                 if (isValid)
                 {
+                    // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
+                    RemoveDuplicateSet(equipSet);
+
                     // 検索結果に追加
                     ResultSets.Add(equipSet);
                 }
@@ -793,7 +801,6 @@ namespace SimModel.Domain
                     // 除外用結果に追加
                     FailureSets.Add(equipSet);
                 }
-
 
                 // 成功
                 return true;
@@ -849,6 +856,163 @@ namespace SimModel.Domain
         {
             return string.IsNullOrWhiteSpace(newName) || newName.Equals(oldName);
         }
+
+
+        // 理想錬成を含む装備セットについて、同ベース装備の既存の錬成で作成できた場合、理想錬成での結果を除外
+        private bool IsAbstractSet(EquipSet newSet)
+        {
+            foreach (var set in ResultSets)
+            {
+                if (!IsAbstractEquip(newSet.Head, set.Head))
+                {
+                    continue;
+                }
+                if (!IsAbstractEquip(newSet.Body, set.Body))
+                {
+                    continue;
+                }
+                if (!IsAbstractEquip(newSet.Arm, set.Arm))
+                {
+                    continue;
+                }
+                if (!IsAbstractEquip(newSet.Waist, set.Waist))
+                {
+                    continue;
+                }
+                if (!IsAbstractEquip(newSet.Leg, set.Leg))
+                {
+                    continue;
+                }
+                if (!IsAbstractEquip(newSet.Charm, set.Charm))
+                {
+                    continue;
+                }
+
+                // 全ての部位で抽象判定を満たした
+                return true;
+            }
+            return false;
+        }
+
+        // 抽象判定
+        private bool IsAbstractEquip(Equipment newEquip, Equipment oldEquip)
+        {
+            // 同じ防具
+            if (newEquip.Name == oldEquip.Name)
+            {
+                return true;
+            }
+
+            // 理想vs理想以外の時のみ判定する
+            if (newEquip.Ideal == null || oldEquip.Ideal != null)
+            {
+                return false;
+            }
+
+            // ベース防具が同じ時のみ判定する
+            string newBaseName = newEquip.BaseEquipment?.Name ?? string.Empty;
+            string oldBaseName = oldEquip.BaseEquipment?.Name ?? oldEquip.Name;
+            if (newBaseName != oldBaseName)
+            {
+                return false;
+            }
+
+            // スロット確認
+            if (newEquip.Slot1 != oldEquip.Slot1 ||
+                newEquip.Slot2 != oldEquip.Slot2 ||
+                newEquip.Slot3 != oldEquip.Slot3)
+            {
+                return false;
+            }
+
+            // スキル差分計算
+            List<Skill> skillDiff = new List<Skill>();
+            foreach (var oldSkill in oldEquip.Skills)
+            {
+                bool isExist = false;
+                foreach (var skill in skillDiff)
+                {
+                    if (skill.Name == oldSkill.Name)
+                    {
+                        isExist = true;
+                        skill.Level += oldSkill.Level;
+                        break;
+                    }
+                }
+                if (!isExist)
+                {
+                    skillDiff.Add(new Skill(oldSkill.Name, oldSkill.Level));
+                }
+            }
+            foreach (var newSkill in newEquip.Skills)
+            {
+                bool isExist = false;
+                foreach (var skill in skillDiff)
+                {
+                    if (skill.Name == newSkill.Name)
+                    {
+                        isExist = true;
+                        skill.Level -= newSkill.Level;
+                        break;
+                    }
+                }
+                if (!isExist)
+                {
+                    skillDiff.Add(new Skill(newSkill.Name, -newSkill.Level));
+                }
+            }
+
+            // 差分を実現可能か確認
+            int[] reqGSkills = { 0, 0, 0, 0, 0 }; // 要求
+            int[] hasGSkills = { 0, 0, 0, 0, 0 }; // 所持
+            int[] restGSkills = { 0, 0, 0, 0, 0 }; // 空き
+            foreach (var skill in skillDiff)
+            {
+                if (skill.Level <= 0)
+                {
+                    continue;
+                }
+                int[]? gSkills = Masters.SkillCost(skill.Name);
+                if (gSkills == null)
+                {
+                    // 錬成対象外のスキルを要求された
+                    return false; 
+                }
+                for (int i = 0; i < gSkills.Length; i++)
+                {
+                    reqGSkills[i] += gSkills[i] * skill.Level;
+                }
+            }
+            for (int i = 0; i < newEquip.GenericSkills.Length; i++)
+            {
+                hasGSkills[i] += newEquip.GenericSkills[i];
+            }
+
+            // 空き算出
+            for (int i = 0; i < 5; i++)
+            {
+                restGSkills[i] = hasGSkills[i] - reqGSkills[i];
+            }
+
+            // 足りない分は1Lv上を消費する
+            for (int i = 0; i < 4; i++)
+            {
+                if (restGSkills[i] < 0)
+                {
+                    restGSkills[i + 1] += restGSkills[i];
+                    restGSkills[i] = 0;
+                }
+            }
+
+            if (restGSkills[4] < 0)
+            {
+                // 不足
+                return false;
+            }
+
+            return true;
+        }
+
 
         // 理想錬成のスキルが実現可能か確認
         private bool IsValidGenericSkill(EquipSet equipSet)

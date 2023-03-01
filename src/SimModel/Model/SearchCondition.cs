@@ -49,6 +49,9 @@ namespace SimModel.Model
         // 通常装備を優先するか否か
         public bool PrioritizeNoIdeal { get; set; }
 
+        // 既存装備で組める場合を除外するか否か
+        public bool ExcludeAbstract { get; set; }
+
         // マイ検索条件保存用ID
         public string ID { get; set; }
 
@@ -117,6 +120,7 @@ namespace SimModel.Model
             Sex = condition.Sex;
             IncludeIdealAugmentation = condition.IncludeIdealAugmentation;
             PrioritizeNoIdeal = condition.PrioritizeNoIdeal;
+            ExcludeAbstract = condition.ExcludeAbstract;
         }
 
         // スキル追加(同名スキルはレベルが高い方のみを採用、固定がある場合は固定が優先)
