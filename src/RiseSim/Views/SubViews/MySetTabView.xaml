@@ -82,7 +82,7 @@
                 <Button x:Name="mySetToConditionButton" Content="この装備のスキルを検索条件に入力する" Command="{Binding InputMySetConditionCommand}"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="60" Text="名前：" TextAlignment="Right"/>
-                    <TextBox Width="100" Text="{Binding MyDetailName.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ctrl:FocusTextBox Width="100" Text="{Binding MyDetailName.Value, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Width="60" Command="{Binding ChangeNameCommand}">名前変更</Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">

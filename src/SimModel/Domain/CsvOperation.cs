@@ -631,6 +631,16 @@ namespace SimModel.Domain
                 {
                     ideal.IsIncludeLower = line[@"下位テーブル含フラグ"].Equals("1");
                 }
+                ideal.IsEnabled = true;
+                if (line.Headers.Contains(@"有効無効フラグ"))
+                {
+                    ideal.IsEnabled = line[@"有効無効フラグ"].Equals("1");
+                }
+                ideal.IsRequired = false;
+                if (line.Headers.Contains(@"必須フラグ"))
+                {
+                    ideal.IsRequired = line[@"必須フラグ"].Equals("1");
+                }
                 ideal.IsOne = line[@"部位制限フラグ"].Equals("1");
                 ideal.SlotIncrement = ParseUtil.Parse(line[@"スロット"]);
                 ideal.DispName = line[@"名前"];
@@ -738,6 +748,8 @@ namespace SimModel.Domain
                 bodyStrings.Add(ideal.Dragon.ToString());
                 */
                 bodyStrings.Add(ideal.IsOne ? "1" : "0");
+                bodyStrings.Add(ideal.IsEnabled ? "1" : "0");
+                bodyStrings.Add(ideal.IsRequired ? "1" : "0");
                 bodyStrings.Add(ideal.SlotIncrement.ToString());
                 bodyStrings.Add(ideal.DispName ?? string.Empty);
                 bodyStrings.Add(ideal.Name);
@@ -755,7 +767,7 @@ namespace SimModel.Domain
                 body.Add(bodyStrings.ToArray());
             }
 
-            string[] header1 = new string[] { "テーブル", "下位テーブル含フラグ", "部位制限フラグ", "スロット", "名前", "管理用ID", "c3スキル数", "c6スキル数", "c9スキル数", "c12スキル数", "c15スキル数", "スキルマイナス位置" };
+            string[] header1 = new string[] { "テーブル", "下位テーブル含フラグ", "部位制限フラグ", "有効無効フラグ", "必須フラグ", "スロット", "名前", "管理用ID", "c3スキル数", "c6スキル数", "c9スキル数", "c12スキル数", "c15スキル数", "スキルマイナス位置" };
             List<string> header2List = new();
             for (int i = 1; i <= LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
             {

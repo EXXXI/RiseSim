@@ -118,12 +118,14 @@ namespace RiseSim.ViewModels.SubViews
         private void AllEnable()
         {
             SetAllIsEnabled(true);
+            SaveIdeal();
         }
 
         // 全無効化
         private void AllDisable()
         {
             SetAllIsEnabled(false);
+            SaveIdeal();
         }
 
         // 全ての理想錬成に有効無効を設定
@@ -306,7 +308,7 @@ namespace RiseSim.ViewModels.SubViews
 
 
         // 上書きコマンド
-        private void UpdateIdeal()
+        public void UpdateIdeal()
         {
             if (SelectedIdeal.Value == null)
             {
@@ -317,6 +319,8 @@ namespace RiseSim.ViewModels.SubViews
             ideal.Name = SelectedIdeal.Value.Name;
             ideal.Table = Table.Value;
             ideal.IsIncludeLower = IsIncludeLower.Value;
+            ideal.IsEnabled = SelectedIdeal.Value.IsEnabled.Value;
+            ideal.IsRequired = SelectedIdeal.Value.IsRequired.Value;
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
@@ -354,6 +358,13 @@ namespace RiseSim.ViewModels.SubViews
             // マイセット内容の更新
             Simulator.LoadMySet();
             MainViewModel.Instance.LoadMySets();
+        }
+
+
+
+        internal void SaveIdeal()
+        {
+            Simulator.SaveIdeal();
         }
 
         // 錬成装備のマスタ情報をVMにロード

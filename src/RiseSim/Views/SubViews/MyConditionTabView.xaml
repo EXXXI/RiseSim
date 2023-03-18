@@ -25,7 +25,7 @@
             </StackPanel.ContextMenu>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="50" Text="名前"/>
-                <TextBox Width="115" Text="{Binding DispName.Value}"/>
+                <ctrl:FocusTextBox Width="115" Text="{Binding DispName.Value}"/>
             </StackPanel>
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value, Mode=OneWay}">
@@ -43,22 +43,22 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="40" Text="防御力"/>
-                <TextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></TextBox>
+                <ctrl:FocusTextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></ctrl:FocusTextBox>
                 <TextBlock Width="30" Text="性別"/>
                 <ComboBox ItemsSource="{Binding SexMaster.Value, Mode=OneWay}" SelectedItem="{Binding SelectedSex.Value}" Width="53" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="12" Text="火"/>
-                <TextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="水"/>
-                <TextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="雷"/>
-                <TextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="氷"/>
-                <TextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="龍"/>
-                <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Dragon.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <Button Content="新規追加する" Command="{Binding AddCommand}" />
             <Button Content="選択中の条件に上書きする" Command="{Binding UpdateCommand}" xml:space="preserve"/>

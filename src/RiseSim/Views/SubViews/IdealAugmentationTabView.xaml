@@ -36,7 +36,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="名前"/>
-                <TextBox Width="165" Text="{Binding DispName.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="165" Text="{Binding DispName.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="スロット追加数"/>
@@ -49,15 +49,15 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text=" コスト別追加数"/>
                 <TextBlock Width="12" Text="c3"/>
-                <TextBox Width="17" Text="{Binding C3.Value}" Margin="0,0,2,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding C3.Value}" Margin="0,0,2,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="c6"/>
-                <TextBox Width="17" Text="{Binding C6.Value}" Margin="0,0,2,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding C6.Value}" Margin="0,0,2,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="c9"/>
-                <TextBox Width="17" Text="{Binding C9.Value}" Margin="0,0,2,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding C9.Value}" Margin="0,0,2,0"></ctrl:FocusTextBox>
                 <TextBlock Width="18" Text="c12"/>
-                <TextBox Width="17" Text="{Binding C12.Value}" Margin="0,0,2,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding C12.Value}" Margin="0,0,2,0"></ctrl:FocusTextBox>
                 <TextBlock Width="18" Text="c15"/>
-                <TextBox Width="17" Text="{Binding C15.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding C15.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text=" 具体的に指定"/>

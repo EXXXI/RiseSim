@@ -26,7 +26,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具絞込"/>
-                <TextBox Width="165" Text="{Binding FilterInput.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                <ctrl:FocusTextBox Width="165" Text="{Binding FilterInput.Value, UpdateSourceTrigger=PropertyChanged}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具"/>
@@ -40,11 +40,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="名前"/>
-                <TextBox Width="165" Text="{Binding DispName.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="165" Text="{Binding DispName.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="防御力増減"/>
-                <TextBox Width="165" Text="{Binding Def.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="165" Text="{Binding Def.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="スロット(変更後)"/>
@@ -54,15 +54,15 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="属性値増減"/>
                 <TextBlock Width="12" Text="火"/>
-                <TextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="水"/>
-                <TextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="雷"/>
-                <TextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="氷"/>
-                <TextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
                 <TextBlock Width="12" Text="龍"/>
-                <TextBox Width="17" Text="{Binding Dragon.Value}"></TextBox>
+                <ctrl:FocusTextBox Width="17" Text="{Binding Dragon.Value}"></ctrl:FocusTextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="追加スキル"/>
