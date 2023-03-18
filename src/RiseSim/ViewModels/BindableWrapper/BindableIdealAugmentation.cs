@@ -61,6 +61,8 @@ namespace RiseSim.ViewModels.BindableWrapper
             IsOne = ideal.IsOne;
             IsOneDisp = IsOne ? "一部位のみ" : "全部位可";
             IsIncludeLower = ideal.IsIncludeLower;
+            IsEnabled.Value = ideal.IsEnabled;
+            IsRequired.Value = ideal.IsRequired;
             TableDisp = ideal.Table + (IsIncludeLower ? "以下" : "のみ"); 
             SimpleSkillDiscription = ideal.SimpleSkillDiscription;
             SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
@@ -71,12 +73,20 @@ namespace RiseSim.ViewModels.BindableWrapper
 
         private void ChangeIsEnabled(bool x)
         {
-            Original.IsEnabled = x;
+            if (Original.IsEnabled != x)
+            {
+                Original.IsEnabled = x;
+                MainViewModel.Instance.SaveIdeal();
+            }
         }
 
         private void ChangeIsRequired(bool x)
         {
-            Original.IsRequired = x;
+            if (Original.IsRequired != x)
+            {
+                Original.IsRequired = x;
+                MainViewModel.Instance.SaveIdeal();
+            }
         }
 
         // リストをまとめてバインド用クラスに変換

@@ -344,6 +344,7 @@ namespace SimModel.Domain
                 {
                     ideal.Table = newIdeal.Table;
                     ideal.IsIncludeLower = newIdeal.IsIncludeLower;
+                    ideal.IsEnabled = newIdeal.IsEnabled;
                     ideal.DispName = newIdeal.DispName;
                     ideal.SlotIncrement = newIdeal.SlotIncrement;
                     ideal.GenericSkills[0] = newIdeal.GenericSkills[0];
@@ -364,6 +365,12 @@ namespace SimModel.Domain
 
             // 万一更新先が見つからなかった場合は新規登録
             AddIdealAugmentation(newIdeal);
+        }
+
+        // 理想錬成保存
+        internal static void SaveIdeal()
+        {
+            CsvOperation.SaveIdealCSV();
         }
 
         // マイ検索条件の追加

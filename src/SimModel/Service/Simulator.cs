@@ -308,5 +308,12 @@ namespace SimModel.Service
         {
             DataManagement.UpdateMyCondition(condition);
         }
+
+        // TODO:名前が良くない　というか設計が良くない
+        // 理想錬成更新
+        public void SaveIdeal()
+        {
+            DataManagement.SaveIdeal();
+        }
     }
 }

@@ -793,6 +793,10 @@ namespace SimModel.Domain
                     // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
                     RemoveDuplicateSet(equipSet);
 
+                    // 装飾品・理想錬成スキルをソート
+                    equipSet.SortDecos();
+                    equipSet.SortGSkills();
+
                     // 検索結果に追加
                     ResultSets.Add(equipSet);
                 }

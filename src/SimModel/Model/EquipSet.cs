@@ -351,6 +351,7 @@ namespace SimModel.Model
                         Decos.Add(deco);
                     }
                 }
+                SortDecos();
             }
         }
 
@@ -388,6 +389,7 @@ namespace SimModel.Model
                         GenericSkills.Add(gskill);
                     }
                 }
+                SortGSkills();
             }
         }
 
@@ -640,6 +642,41 @@ namespace SimModel.Model
                 return false;
             }
         }
+
+        // 装飾品のソート
+        public void SortDecos()
+        {
+            List<Equipment> newDecos = new List<Equipment>();
+            for (int i = 4; i > 0; i--)
+            {
+                foreach (var deco in Decos)
+                {
+                    if (deco.Slot1 == i)
+                    {
+                        newDecos.Add(deco);
+                    }
+                }
+            }
+            Decos = newDecos;
+        }
+
+        // 理想錬成スキルのソート
+        public void SortGSkills()
+        {
+            List<Equipment> newGSkills = new List<Equipment>();
+            for (int i = 4; i >= 0; i--)
+            {
+                foreach (var gskill in GenericSkills)
+                {
+                    if (gskill.GenericSkills[i] == 1)
+                    {
+                        newGSkills.Add(gskill);
+                    }
+                }
+            }
+            GenericSkills = newGSkills;
+        }
+
 
         // 防具のスロット数計算
         private static void CalcEquipHasSlot(int[] hasSlots, Equipment equip)

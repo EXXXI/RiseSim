@@ -78,6 +78,12 @@ namespace RiseSim.ViewModels
             StatusBarText.Value = "モンハンライズスキルシミュレータ for Windows";
         }
 
+        // 理想錬成更新 処理本体は理想錬成VM
+        internal void SaveIdeal()
+        {
+            IdealAugmentationTabVM.Value.SaveIdeal();
+        }
+
         // 除外装備設定　処理本体は除外・固定画面VM
         internal void AddExclude(string trueName, string dispName)
         {
