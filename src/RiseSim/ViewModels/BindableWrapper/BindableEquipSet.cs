@@ -77,11 +77,17 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 装飾品のCSV表記 Set可能
         public string DecoNameCSV { get; set; }
 
+        // 装飾品のCSV表記 3行
+        public string DecoNameCSVMultiLine { get; set; }
+
         // 武器スロの表示用形式(2-2-0など)
         public string WeaponSlotDisp { get; set; }
 
         // スキルのCSV形式
         public string SkillsDisp { get; set; }
+
+        // スキルのCSV形式 3行
+        public string SkillsDispMultiLine { get; set; }
 
         // オリジナル
         public EquipSet Original { get; set; }
@@ -119,8 +125,10 @@ namespace RiseSim.ViewModels.BindableWrapper
             Skills = BindableSkill.BeBindableList(set.Skills);
             SimpleSetName = set.SimpleSetName;
             DecoNameCSV = set.DecoNameCSV;
+            DecoNameCSVMultiLine = set.DecoNameCSVMultiLine;
             WeaponSlotDisp = set.WeaponSlotDisp;
             SkillsDisp = set.SkillsDisp;
+            SkillsDispMultiLine = set.SkillsDispMultiLine;
             Description = set.Description;
             EmptySlotNum = set.EmptySlotNum;
             GenericSkills = BindableEquipment.BeBindableList(set.GenericSkills);

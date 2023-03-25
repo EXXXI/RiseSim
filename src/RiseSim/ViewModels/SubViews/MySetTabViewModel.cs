@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -133,6 +134,16 @@ namespace RiseSim.ViewModels.SubViews
             if (set == null)
             {
                 // 詳細画面が空の状態で実行したなら何もせず終了
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"マイセット「{set.Name}」を削除します。\nよろしいですか？",
+                "マイセット削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+            {
                 return;
             }
 

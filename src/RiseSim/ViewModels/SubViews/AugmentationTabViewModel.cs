@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -285,6 +286,16 @@ namespace RiseSim.ViewModels.SubViews
             BindableAugmentation aug = SelectedAugmentation.Value;
 
             if (aug == null)
+            {
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"錬成防具「{aug.DispName}」を削除します。\nよろしいですか？",
+                "錬成防具削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
             {
                 return;
             }

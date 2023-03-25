@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -224,6 +225,16 @@ namespace RiseSim.ViewModels.SubViews
             BindableIdealAugmentation ideal = SelectedIdeal.Value;
 
             if (ideal == null)
+            {
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"理想錬成「{ideal.DispName}」を削除します。\nよろしいですか？",
+                "理想錬成削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
             {
                 return;
             }
