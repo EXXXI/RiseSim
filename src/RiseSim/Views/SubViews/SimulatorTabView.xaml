@@ -139,11 +139,11 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}"/>
                 <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="頭" Binding="{Binding Head.DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="胴" Binding="{Binding Body.DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="腕" Binding="{Binding Arm.DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="腰" Binding="{Binding Waist.DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="足" Binding="{Binding Leg.DispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="頭" Binding="{Binding Head.DetailDispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="胴" Binding="{Binding Body.DetailDispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腕" Binding="{Binding Arm.DetailDispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="腰" Binding="{Binding Waist.DetailDispName, Mode=OneWay}" />
+                <DataGridTextColumn Header="足" Binding="{Binding Leg.DetailDispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="護石" Binding="{Binding Charm.DispName, Mode=OneWay}" />
                 <DataGridTextColumn Header="空きスロ(目安)" Binding="{Binding EmptySlotNum, Mode=OneWay}" />
                 <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
@@ -151,8 +151,8 @@
                 <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
                 <DataGridTextColumn Header="氷" Binding="{Binding Ice, Mode=OneWay}" />
                 <DataGridTextColumn Header="龍" Binding="{Binding Dragon, Mode=OneWay}" />
-                <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV, Mode=OneWay}" />
-                <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp, Mode=OneWay}" />
+                <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSVMultiLine, Mode=OneWay}" />
+                <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDispMultiLine, Mode=OneWay}" />
             </DataGrid.Columns>
         </DataGrid>
 

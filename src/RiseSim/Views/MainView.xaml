@@ -6,6 +6,12 @@
         xmlns:viewmodels="clr-namespace:RiseSim.ViewModels" xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.Views.SubViews" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d"
         Title="MHRiseSkillSimurator" Height="800" Width="1000">
+    <Window.Resources>
+        <Style x:Key="tabHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </Window.Resources>
+    
     <Grid>
         <!-- グリッド設定 -->
         <Grid.RowDefinitions>
@@ -14,35 +20,59 @@
         </Grid.RowDefinitions>
         
         <TabControl>
-            <TabItem Header="シミュレータ">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="シミュレータ" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:SimulatorTabView x:Name="simulator" DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="除外・固定設定">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="除外・固定設定" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:CludeTabView DataContext="{Binding CludeTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="護石設定">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="護石設定" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:CharmTabView DataContext="{Binding CharmTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="傀異錬成設定">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="傀異錬成設定" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:AugmentationTabView x:Name="augmentation" DataContext="{Binding AugmentationTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="理想錬成設定">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="理想錬成設定" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:IdealAugmentationTabView x:Name="idealAugmentation" DataContext="{Binding IdealAugmentationTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="マイセット">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="マイセット" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:MySetTabView x:Name="myset" DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="マイ検索条件">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:MyConditionTabView DataContext="{Binding MyConditionTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
-            <TabItem Header="ライセンス・謝辞">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="ライセンス・謝辞" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
                 <subviews:LicenseTabView DataContext="{Binding LicenseTabVM.Value, Mode=OneWay}"/>
             </TabItem>
         </TabControl>

@@ -62,6 +62,10 @@ namespace RiseSim.ViewModels.BindableWrapper
         // 表示用装備名(護石のみ特殊処理)
         public string DispName { get; set; }
 
+        // TODO:仮実装
+        // 一覧での詳細表示用
+        public string DetailDispName { get; set; }
+
         // 装備の説明
         public string Description { get; set; }
 
@@ -90,6 +94,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Skills = BindableSkill.BeBindableList(equip.Skills);
             Kind = equip.Kind;
             DispName = equip.DispName;
+            DetailDispName = equip.DetailDispName;
             Description = equip.Description;
             SimpleDescription = equip.SimpleDescription;
             Original = equip;

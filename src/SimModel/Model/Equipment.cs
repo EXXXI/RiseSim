@@ -172,6 +172,63 @@ namespace SimModel.Model
             }
         }
 
+        // TODO:仮実装
+        // 一覧での詳細表示用
+        public string DetailDispName
+        {
+            get
+            {
+                if (BaseEquipment == null)
+                {
+                    return DispName;
+                }
+
+                StringBuilder sb = new();
+                sb.AppendLine(DispName);
+
+                // スロット計算
+                int addSlotSum = 0;
+                addSlotSum += Slot1 + Slot2 + Slot3;
+                addSlotSum -= BaseEquipment.Slot1 + BaseEquipment.Slot2 + BaseEquipment.Slot3;
+                sb.AppendLine("スロット追加：" + addSlotSum);
+
+                // スキル一覧
+                bool isFirst = true;
+                foreach (var skill in Skills)
+                {
+                    if (skill.IsAdditional)
+                    {
+                        if (isFirst)
+                        {
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            sb.Append(", ");
+                        }
+                        sb.Append($"{skill.Name}{skill.Level:+#;-#;}");
+                    }
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    int level = GenericSkills[i];
+                    if (level != 0)
+                    {
+                        if (isFirst)
+                        {
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            sb.Append(", ");
+                        }
+                        sb.Append($"c{i * 3 + 3}{level:+#;-#;}");
+                    }
+                }
+
+                return sb.ToString();
+            }
+        }
 
         // 装備の説明
         public string Description

@@ -355,6 +355,40 @@ namespace SimModel.Model
             }
         }
 
+        // 装飾品のCSV表記 3行
+        public string DecoNameCSVMultiLine
+        {
+            get
+            {
+                StringBuilder sb = new();
+                int secondLineIdx = Decos.Count / 3;
+                int thirdLineIdx = Decos.Count * 2 / 3;
+                for (int i = 0; i < Decos.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        // 処理なし
+                    }
+                    else if (i == secondLineIdx)
+                    {
+                        sb.Append(',');
+                        sb.Append('\n');
+                    }
+                    else if (i == thirdLineIdx)
+                    {
+                        sb.Append(',');
+                        sb.Append('\n');
+                    }
+                    else
+                    {
+                        sb.Append(',');
+                    }
+                    sb.Append(Decos[i].Name);
+                }
+                return sb.ToString();
+            }
+        }
+
         // 理想錬成の追加スキルのCSV表記
         public string GSkillNameCSV
         {
@@ -420,6 +454,41 @@ namespace SimModel.Model
                         sb.Append(skill.Description);
                         first = false;
                     }
+                }
+                return sb.ToString();
+            }
+        }
+
+
+        // 装飾品のCSV表記 3行
+        public string SkillsDispMultiLine
+        {
+            get
+            {
+                StringBuilder sb = new();
+                int secondLineIdx = Skills.Count / 3;
+                int thirdLineIdx = Skills.Count * 2 / 3;
+                for (int i = 0; i < Skills.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        // 処理なし
+                    }
+                    else if (i == secondLineIdx)
+                    {
+                        sb.Append(',');
+                        sb.Append('\n');
+                    }
+                    else if (i == thirdLineIdx)
+                    {
+                        sb.Append(',');
+                        sb.Append('\n');
+                    }
+                    else
+                    {
+                        sb.Append(',');
+                    }
+                    sb.Append(Skills[i].Description);
                 }
                 return sb.ToString();
             }

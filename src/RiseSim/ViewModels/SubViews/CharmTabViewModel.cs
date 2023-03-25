@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -121,6 +122,16 @@ namespace RiseSim.ViewModels.SubViews
             if (string.IsNullOrEmpty(trueName))
             {
                 // 装備無しなら何もせず終了
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"護石「{dispName}」を削除します。\nよろしいですか？",
+                "護石削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+            {
                 return;
             }
 

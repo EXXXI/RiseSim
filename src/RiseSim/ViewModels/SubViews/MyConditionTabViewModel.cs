@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -264,6 +265,16 @@ namespace RiseSim.ViewModels.SubViews
         // マイ検索条件削除
         private void DeleteSearchCondition()
         {
+            MessageBoxResult result = MessageBox.Show(
+                $"マイ検索条件「{SelectedCondition.Value.DispName}」を削除します。\nよろしいですか？",
+                "マイ検索条件削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
             Simulator.DeleteMyCondition(SelectedCondition.Value.Original);
             LoadMyConditions();
         }
