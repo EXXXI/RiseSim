@@ -558,6 +558,48 @@ namespace SimModel.Model
                 sb.Append(EmptySlotNum);
                 sb.Append('\n'); 
                 sb.Append("-----------");
+                if (HasAugmentation)
+                {
+                    sb.Append('\n');
+                    sb.Append("(錬成詳細)");
+                    if (Head.BaseEquipment != null)
+                    {
+                        sb.Append('\n');
+                        sb.Append("■" + Head.Kind.Str());
+                        sb.Append('\n');
+                        sb.Append(Head.DetailDispName);
+                    }
+                    if (Body.BaseEquipment != null)
+                    {
+                        sb.Append('\n');
+                        sb.Append("■" + Body.Kind.Str());
+                        sb.Append('\n');
+                        sb.Append(Body.DetailDispName);
+                    }
+                    if (Arm.BaseEquipment != null)
+                    {
+                        sb.Append('\n');
+                        sb.Append("■" + Arm.Kind.Str());
+                        sb.Append('\n');
+                        sb.Append(Arm.DetailDispName);
+                    }
+                    if (Waist.BaseEquipment != null)
+                    {
+                        sb.Append('\n');
+                        sb.Append("■" + Waist.Kind.Str());
+                        sb.Append('\n');
+                        sb.Append(Waist.DetailDispName);
+                    }
+                    if (Leg.BaseEquipment != null)
+                    {
+                        sb.Append('\n');
+                        sb.Append("■" + Leg.Kind.Str());
+                        sb.Append('\n');
+                        sb.Append(Leg.DetailDispName);
+                    }
+                    sb.Append('\n');
+                    sb.Append("-----------");
+                }
                 foreach (var skill in Skills)
                 {
                     if (skill.Level > 0)
@@ -693,6 +735,22 @@ namespace SimModel.Model
             get
             {
                 return EmptyGSkillNum != InvalidGSkill;
+            }
+        }
+
+        // 錬成を利用しているかどうかチェック(理想錬成も含む)
+        public bool HasAugmentation
+        {
+            get
+            {
+                foreach (var equip in Equipments)
+                {
+                    if (equip.BaseEquipment != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 
