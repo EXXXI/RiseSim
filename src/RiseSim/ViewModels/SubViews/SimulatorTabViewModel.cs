@@ -185,7 +185,7 @@ namespace RiseSim.ViewModels.SubViews
                 pickerViewModel.OnAccept += skills =>
                 {
                     // ピッカーで選んだスキルをSkillSelectorVMsに反映する
-                    var vms = new List<SkillSelectorViewModel>(skills.Select(s => new SkillSelectorViewModel(s)));
+                    var vms = new List<SkillSelectorViewModel>(skills.Select(s => new SkillSelectorViewModel(s, SkillSelectorKind.WithFixs)));
                     for (var i = vms.Count; i < SkillSelectorCount; i++)
                     { 
                         vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
