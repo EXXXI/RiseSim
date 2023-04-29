@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using RiseSim.Exceptions;
+using RiseSim.Views.Controls;
 
 namespace RiseSim.ViewModels.Controls
 {
@@ -14,8 +15,9 @@ namespace RiseSim.ViewModels.Controls
         const string FixStr = "固定";
         const string NotFixStr = "以上";
 
-        // スキル未選択時の表示
-        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
+        // TODO: あまりやりたくないのでいい方法を考えたい
+        // 画面インスタンス
+        public SkillSelector Instance { get; set; }
 
         // スキル名一覧
         public ReactivePropertySlim<ObservableCollection<string>> Skills { get; } = new();
@@ -29,6 +31,9 @@ namespace RiseSim.ViewModels.Controls
         // 選択中スキルレベル
         public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
+        // 選択中スキル番号
+        public ReactivePropertySlim<int> SkillIndex { get; } = new(-1);
+
         // 画面の種類
         public SkillSelectorKind Kind { get; set; } = SkillSelectorKind.Normal;
 
@@ -41,8 +46,14 @@ namespace RiseSim.ViewModels.Controls
         // スキル値固定の表示内容
         public ReactivePropertySlim<string> IsFixDisp { get; } = new();
 
-        // スキル値固定の表示内容
+        // スキル値固定状態
         public bool IsFix { get; set; } = false;
+
+        // プレースホルダーの表示フラグ
+        public ReactivePropertySlim<bool> ShowPlaceHolder { get; } = new();
+
+        // プレースホルダーの内容
+        public ReactivePropertySlim<string> PlaceHolderText { get; } = new(ViewConfig.Instance.NoSkillName);
 
 
         // クリアコマンド
@@ -56,7 +67,7 @@ namespace RiseSim.ViewModels.Controls
         }
 
 
-        // 空行(「スキル選択」の行)を追加してスキルマスタを読み込み
+        // スキルマスタを読み込み
         public SkillSelectorViewModel(SkillSelectorKind kind = SkillSelectorKind.Normal)
         {
             Kind = kind;
@@ -70,13 +81,11 @@ namespace RiseSim.ViewModels.Controls
 
 
             ObservableCollection<string> skillList = new();
-            skillList.Add(NoSkillName);
             foreach (var skill in Masters.Skills)
             {
                 skillList.Add(skill.Name);
             }
             Skills.Value = skillList;
-            SkillName.Value = NoSkillName;
 
             // スキル名変更時にレベル一覧を変更するように紐づけ
             SkillName.Subscribe(_ => SetLevels());
@@ -119,11 +128,20 @@ namespace RiseSim.ViewModels.Controls
             ObservableCollection<int> list = new();
 
             int maxLevel = 0;
+
             foreach (var skill in Masters.Skills)
             {
                 if (skill.Name.Equals(SkillName.Value))
                 {
                     maxLevel = skill.Level;
+                }
+            }
+
+            for (int i = 0; i < Skills.Value.Count; i++)
+            {
+                if (Skills.Value[i].Equals(SkillName.Value))
+                {
+                    SkillIndex.Value = i;
                 }
             }
 
@@ -173,7 +191,7 @@ namespace RiseSim.ViewModels.Controls
         // 選択状態をリセット
         internal void SetDefault()
         {
-            SkillName.Value = NoSkillName;
+            SkillName.Value = string.Empty;
             IsFixDisp.Value = NotFixStr;
         }
     }

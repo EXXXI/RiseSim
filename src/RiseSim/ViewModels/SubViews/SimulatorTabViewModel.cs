@@ -33,10 +33,6 @@ namespace RiseSim.ViewModels.SubViews
         // デフォルトの頑張り度
         private string DefaultLimit { get; } = ViewConfig.Instance.DefaultLimit;
 
-        // スキル未選択時の表示
-        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
-
-
         // ログ用StringBuilderインスタンス
         private StringBuilder LogSb { get; } = new StringBuilder();
 
@@ -179,7 +175,7 @@ namespace RiseSim.ViewModels.SubViews
                 using var pickerViewModel = new SkillPickerWindowViewModel(
                     // SkillSelectorVMsですでに選択しているスキルをスキルピッカーに反映
                     SkillSelectorVMs.Value
-                        .Where(vm => vm.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                        .Where(vm => Masters.IsSkillName(vm.SkillName.Value))
                         .Select(vm => vm.GetSelectedSkill())
                 );
                 pickerViewModel.OnAccept += skills =>
@@ -598,7 +594,7 @@ namespace RiseSim.ViewModels.SubViews
             condition.Skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if (selectorVM.SkillName.Value != NoSkillName &&
+                if (Masters.IsSkillName(selectorVM.SkillName.Value) &&
                     (selectorVM.SkillLevel.Value != 0 || selectorVM.IsFix))
                 {
                     condition.AddSkill(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value, false, selectorVM.IsFix));
@@ -663,7 +659,7 @@ namespace RiseSim.ViewModels.SubViews
             // 同名スキルがない場合、空欄にスキルを追加して終了
             foreach (var vm in SkillSelectorVMs.Value)
             {
-                if (NoSkillName.Equals(vm.SkillName.Value))
+                if (string.IsNullOrEmpty(vm.SkillName.Value))
                 {
                     vm.SkillName.Value = skill.Name;
                     vm.SkillLevel.Value = skill.Level;
@@ -695,7 +691,7 @@ namespace RiseSim.ViewModels.SubViews
             // 同名スキルがない場合、空欄にスキルを追加して終了
             foreach (var vm in SkillSelectorVMs.Value)
             {
-                if (NoSkillName.Equals(vm.SkillName.Value))
+                if (string.IsNullOrEmpty(vm.SkillName.Value))
                 {
                     vm.SkillName.Value = name;
                     return;

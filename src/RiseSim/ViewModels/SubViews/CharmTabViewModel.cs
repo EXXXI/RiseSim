@@ -28,10 +28,6 @@ namespace RiseSim.ViewModels.SubViews
         // スロットの最大の大きさ
         private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
 
-        // スキル未選択時の表示
-        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
-
-
         // 護石画面のスキル選択部品のVM
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> CharmSkillSelectorVMs { get; } = new();
 
@@ -94,7 +90,7 @@ namespace RiseSim.ViewModels.SubViews
             List<Skill> skills = new();
             foreach (var vm in CharmSkillSelectorVMs.Value)
             {
-                if (!vm.SkillName.Value.Equals(NoSkillName))
+                if (Masters.IsSkillName(vm.SkillName.Value))
                 {
                     skills.Add(new Skill(vm.SkillName.Value, vm.SkillLevel.Value));
                 }
