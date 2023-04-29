@@ -50,6 +50,7 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append('\n');
             sb.Append("・DotNetKit.Wpf.AutoCompleteComboBox\n");
             sb.Append("プロジェクト：https://github.com/vain0x/DotNetKit.Wpf.AutoCompleteComboBox/\n");
+            sb.Append("ライセンス：https://www.nuget.org/packages/DotNetKit.Wpf.AutoCompleteComboBox/1.6.0/license\n");
             sb.Append('\n');
             sb.Append("■スペシャルサンクス\n");
             sb.Append("・5chモンハン板シミュスレの方々\n");

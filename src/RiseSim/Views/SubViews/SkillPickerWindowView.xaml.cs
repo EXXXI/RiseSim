@@ -14,6 +14,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using RiseSim.Properties;
+using System.ComponentModel;
 using System.Windows;
 
 namespace RiseSim.Views.SubViews
@@ -26,6 +28,71 @@ namespace RiseSim.Views.SubViews
         public SkillPickerWindowView()
         {
             InitializeComponent();
-        }
+			InitializeComponent();
+
+			// ウィンドウサイズ復元
+			RecoverWindowBounds();
+		}
+
+		// 終了時
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			// ウィンドウサイズ保存
+			SaveWindowBounds();
+
+			base.OnClosing(e);
+		}
+
+		// ウィンドウサイズ保存
+		private void SaveWindowBounds()
+		{
+			var settings = Settings.Default;
+			if (WindowState == WindowState.Maximized)
+			{
+				settings.PickerMaximized = true;
+			}
+			else
+			{
+				settings.PickerMaximized = false;
+			}
+
+			// サイズを保存するため、一旦最大化を解除
+			WindowState = WindowState.Normal;
+			settings.PickerLeft = Left;
+			settings.PickerTop = Top;
+			settings.PickerWidth = Width;
+			settings.PickerHeight = Height;
+
+			// 保存
+			settings.Save();
+		}
+
+		// ウィンドウサイズ復元
+		private void RecoverWindowBounds()
+		{
+			var settings = Settings.Default;
+			// 左
+			if (settings.PickerLeft >= 0 &&
+				(settings.PickerLeft + settings.PickerWidth) < SystemParameters.VirtualScreenWidth)
+			{ Left = settings.PickerLeft; }
+			// 上
+			if (settings.PickerTop >= 0 &&
+				(settings.PickerTop + settings.PickerHeight) < SystemParameters.VirtualScreenHeight)
+			{ Top = settings.PickerTop; }
+			// 幅
+			if (settings.PickerWidth > 0 &&
+				settings.PickerWidth <= SystemParameters.WorkArea.Width)
+			{ Width = settings.PickerWidth; }
+			// 高さ
+			if (settings.PickerHeight > 0 &&
+				settings.PickerHeight <= SystemParameters.WorkArea.Height)
+			{ Height = settings.PickerHeight; }
+			// 最大化
+			if (settings.PickerMaximized)
+			{
+				// ロード後に最大化
+				Loaded += (o, e) => WindowState = WindowState.Maximized;
+			}
+		}
     }
 }

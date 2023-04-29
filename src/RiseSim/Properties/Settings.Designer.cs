@@ -118,5 +118,65 @@ namespace RiseSim.Properties {
                 this["MySetIndexes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double PickerWidth {
+            get {
+                return ((double)(this["PickerWidth"]));
+            }
+            set {
+                this["PickerWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double PickerHeight {
+            get {
+                return ((double)(this["PickerHeight"]));
+            }
+            set {
+                this["PickerHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double PickerLeft {
+            get {
+                return ((double)(this["PickerLeft"]));
+            }
+            set {
+                this["PickerLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double PickerTop {
+            get {
+                return ((double)(this["PickerTop"]));
+            }
+            set {
+                this["PickerTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PickerMaximized {
+            get {
+                return ((bool)(this["PickerMaximized"]));
+            }
+            set {
+                this["PickerMaximized"] = value;
+            }
+        }
     }
 }
