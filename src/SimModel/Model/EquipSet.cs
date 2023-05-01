@@ -730,7 +730,7 @@ namespace SimModel.Model
         }
 
         // 理想錬成の追加スキルが実現可能な状態かチェック
-        private bool IsGSkillValid
+        public bool IsGSkillValid
         {
             get
             {

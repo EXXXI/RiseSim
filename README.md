@@ -10,7 +10,7 @@ Windows上で動くモンハンライズスキルシミュレータです
 
 CSVの対応状況：サンブレイク Var15.0系統に対応
 
-本体の最終更新：2023/04/21 スキルピッカー使用時にスキルレベル固定機能が無効になっていたので修正・シミュ画面左ペインにスクロールバーを追加
+本体の最終更新：2023/05/01 各種プルダウンを直接入力可能に変更・スキルピッカーウィンドウの大きさを保持するように変更・理想錬成を含む装備検索後に、錬成のパターンを検索できる機能を追加
 
 CSVの最終更新：2023/04/22 ヴァチス装備を男女別に修正(プラグマ装備の追加)(SKEIDsさんプルリクありがとうございます)
 
@@ -106,6 +106,16 @@ The MIT License
 プロジェクト：<https://github.com/runceel/ReactiveProperty>
 
 ライセンス：<https://github.com/runceel/ReactiveProperty/blob/main/LICENSE.txt>
+
+### NLog
+
+プロジェクト：<https://nlog-project.org/>
+
+### DotNetKit.Wpf.AutoCompleteComboBox
+
+プロジェクト：<https://github.com/vain0x/DotNetKit.Wpf.AutoCompleteComboBox/>
+
+ライセンス：<https://www.nuget.org/packages/DotNetKit.Wpf.AutoCompleteComboBox/1.6.0/license>
 
 ## スペシャルサンクス
 

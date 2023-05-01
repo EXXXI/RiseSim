@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RiseSim.Views.SubViews;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -113,6 +114,9 @@ namespace RiseSim.ViewModels.SubViews
         // 追加スキル検索コマンド
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
 
+        // 錬成パターン検索コマンド
+        public AsyncReactiveCommand SearchPatternCommand { get; private set; }
+        
         // 検索キャンセルコマンド
         public ReactiveCommand CancelCommand { get; private set; }
 
@@ -147,6 +151,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search());
             SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
+            SearchPatternCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchPattern());
             CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
             AddMySetCommand = CanAddMySet.ToReactiveCommand().WithSubscribe(() => AddMySet());
             AddMyConditionCommand.Subscribe(() => AddMyCondition());
@@ -309,7 +314,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ
             IsBusy.Value = true;
-            
+
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(condition, searchLimit));
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
@@ -436,6 +441,101 @@ namespace RiseSim.ViewModels.SubViews
             }
             LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "追加スキル検索完了";
+        }
+
+
+        // 錬成パターン検索
+        async internal Task SearchPattern()
+        {
+            if (DetailSet.Value == null)
+            {
+                return;
+            }
+
+            // 開始ログ表示
+            LogSb.Clear();
+            LogSb.Append("■錬成パターン検索：\n");
+            LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "錬成パターン検索中・・・";
+
+            // ビジーフラグ
+            IsBusy.Value = true;
+
+            // 錬成スキル枠のカウントアップ
+            int gskillCount = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                gskillCount += DetailSet.Value.Head.Original.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gskillCount += DetailSet.Value.Body.Original.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gskillCount += DetailSet.Value.Arm.Original.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gskillCount += DetailSet.Value.Waist.Original.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gskillCount += DetailSet.Value.Leg.Original.GenericSkills[i];
+            }
+
+            // 注意
+            bool canceled = false;
+            if (gskillCount < 1)
+            {
+                MessageBoxResult mesResult = MessageBox.Show(
+                    $"錬成スキルの枠がないので計算できません。",
+                    "錬成パターン検索",
+                    MessageBoxButton.OK);
+                IsBusy.Value = false;
+                return;
+            }
+            else if (gskillCount == 3)
+            {
+                MessageBoxResult mesResult = MessageBox.Show(
+                    $"錬成スキルの枠が多いので少し時間がかかります。\nよろしいですか？",
+                    "錬成パターン検索",
+                    MessageBoxButton.YesNo);
+                if (mesResult == MessageBoxResult.No)
+                {
+                    IsBusy.Value = false;
+                    return;
+                }
+            }
+            else if (gskillCount > 3)
+            {
+                MessageBoxResult mesResult = MessageBox.Show(
+                    $"錬成スキルの枠が多いのでかなり時間がかかります。\nよろしいですか？",
+                    "錬成パターン検索",
+                    MessageBoxButton.YesNo);
+                if (mesResult == MessageBoxResult.No)
+                {
+                    IsBusy.Value = false;
+                    return;
+                }
+            }
+
+            // 錬成パターン検索
+            List<EquipSet> result = await Task.Run(() => Simulator.SearchOtherGenericSkillPattern(DetailSet.Value.Original));
+            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+
+            // ビジーフラグ解除
+            IsBusy.Value = false;
+
+            // ログ表示
+            if (Simulator.IsCanceling)
+            {
+                LogSb.Append("※中断しました\n");
+                LogSb.Append("※結果は途中経過までを表示しています\n");
+            }
+            LogSb.Append("■錬成パターン検索完了\n");
+            LogBoxText.Value = LogSb.ToString();
+            StatusBarText.Value = "錬成パターン検索完了";
         }
 
         // マイセットを追加

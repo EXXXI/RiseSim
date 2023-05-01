@@ -81,6 +81,9 @@ namespace SimModel.Domain
         // 理想錬成：部位制限つきの理想編成の名前・Index
         private Dictionary<string, int> LimitedIdealAugmentationDictionary { get; set; }
 
+        // 除外・固定条件の制約式の開始Index
+        private Dictionary<string, int> AdditionalFixRowIndexDictionary { get; set; }
+
         // コンストラクタ：検索条件を指定する
         public Searcher(SearchCondition condition)
         {
@@ -172,6 +175,10 @@ namespace SimModel.Domain
             numConstraints += Masters.Ideals.Count; // 理想錬成：部位制限
             numConstraints += ResultSets.Count + FailureSets.Count; // 検索済み結果の除外
             numConstraints += Masters.Cludes.Count; // 除外固定装備設定
+            if (Condition.AdditionalFixData != null)
+            {
+                numConstraints += Condition.AdditionalFixData.Count(); // 錬成パターン検索用、追加固定情報
+            }
 
             Constraint[] y = new Constraint[numConstraints];
 
@@ -287,6 +294,20 @@ namespace SimModel.Domain
                 }
                 y[index++] = solver.MakeConstraint(fix, fix, clude.Name + nameSuffix);
             }
+
+            // 錬成パターン検索用、追加固定情報
+            if (Condition.AdditionalFixData != null)
+            {
+                AdditionalFixRowIndexDictionary = new();
+                foreach (var fixData in Condition.AdditionalFixData)
+                {
+                    string nameSuffix = "_ex_additional";
+                    int fix = fixData.Value;
+                    AdditionalFixRowIndexDictionary.Add(fixData.Key, index);
+                    y[index++] = solver.MakeConstraint(fix, fix, fixData.Key + nameSuffix);
+                }
+            }
+
 
             return y;
         }
@@ -705,6 +726,13 @@ namespace SimModel.Domain
                 y[index].SetCoefficient(xvar, 1);
             }
 
+
+            // 錬成パターン検索用、追加固定情報
+            if (Condition.AdditionalFixData != null && Condition.AdditionalFixData.ContainsKey(equip.Name))
+            {
+                int index = AdditionalFixRowIndexDictionary[equip.Name];
+                y[index].SetCoefficient(xvar, 1);
+            }
         }
 
         // 計算結果整理

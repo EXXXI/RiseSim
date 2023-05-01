@@ -58,6 +58,9 @@ namespace SimModel.Model
         // マイ検索条件保存用名前
         public string DispName { get; set; }
 
+        // 錬成再計算用 部位固定情報
+        public SortedDictionary<string, int>? AdditionalFixData { get; set; } = null;
+
         // CSV用スキル形式
         public string SkillCSV
         {

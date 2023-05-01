@@ -157,6 +157,240 @@ namespace SimModel.Service
             return sortedSkills;
         }
 
+
+        // 錬成の別パターン検索
+        public List<EquipSet> SearchOtherGenericSkillPattern(EquipSet set)
+        {
+            ResetIsCanceling();
+
+            // まだ検索がされていない場合、0件で返す
+            if (Searcher == null)
+            {
+                return new List<EquipSet>();
+            }
+
+            // 検索スキルの中で錬成可能なものをリストアップ
+            List<string> targetEquipNames = new();
+            foreach (var skill in Searcher.Condition.Skills)
+            {
+                foreach (var gskill in Masters.GenericSkills)
+                {
+                    if (skill.Name == gskill.Skills[0].Name)
+                    {
+                        targetEquipNames.Add(gskill.Name);
+                    }
+                }
+            }
+
+            // 錬成スキルの追加可能数をカウントアップ
+            int gSkillCount = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                gSkillCount += set.Head.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gSkillCount += set.Body.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gSkillCount += set.Arm.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gSkillCount += set.Waist.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                gSkillCount += set.Leg.GenericSkills[i];
+            }
+
+            // 錬成スキルの追加パターンを洗い出し
+            List<SortedDictionary<string, int>> duplicatingPatterns = MakeGskillPattern(targetEquipNames, gSkillCount);
+
+            // 重複削除
+            IEnumerable<SortedDictionary<string, int>> patterns = duplicatingPatterns.GroupBy(p =>
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var dic in p)
+                {
+                    sb.Append(dic.Key);
+                    sb.Append(dic.Value.ToString());
+                }
+                return sb.ToString();
+            }).Select(group => group.First()).Where(p => IsValidCost(set, p));
+
+            var x = patterns.Count();
+
+            // 全パターンを走査
+            List<EquipSet> result = new();
+            Parallel.ForEach(patterns,
+                new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = LogicConfig.Instance.MaxDegreeOfParallelism
+                },
+                () => new List<EquipSet>(),
+                (pattern, loop, subResult) =>
+                {
+                    // 中断チェック
+                    // TODO: もし時間がかかるようならCancelToken等でちゃんとループを終了させること
+                    if (IsCanceling)
+                    {
+                        return subResult;
+                    }
+
+                    // 現在の検索条件をコピー
+                    SearchCondition condition = new(Searcher.Condition);
+
+                    // 検索条件に固定条件を追加
+                    if (!string.IsNullOrEmpty(set.Head.Name))
+                    {
+                        pattern.Add(set.Head.Name, 1);
+                    }
+                    if (!string.IsNullOrEmpty(set.Body.Name))
+                    {
+                        pattern.Add(set.Body.Name, 1);
+                    }
+                    if (!string.IsNullOrEmpty(set.Arm.Name))
+                    {
+                        pattern.Add(set.Arm.Name, 1);
+                    }
+                    if (!string.IsNullOrEmpty(set.Waist.Name))
+                    {
+                        pattern.Add(set.Waist.Name, 1);
+                    }
+                    if (!string.IsNullOrEmpty(set.Leg.Name))
+                    {
+                        pattern.Add(set.Leg.Name, 1);
+                    }
+                    if (!string.IsNullOrEmpty(set.Charm.Name))
+                    {
+                        pattern.Add(set.Charm.Name, 1);
+                    }
+                    condition.AdditionalFixData = pattern;
+
+                    // 頑張り度1で検索
+                    Searcher exSearcher;
+                    exSearcher = new Searcher(condition);
+                    exSearcher.ExecSearch(1);
+
+                    // 1件でもヒットすればパターン一覧に追加
+                    if (exSearcher.ResultSets.Count > 0)
+                    {
+                        subResult.Add(exSearcher.ResultSets[0]);
+                    }
+
+                    return subResult;
+                },
+                (finalResult) =>
+                {
+                    lock (result)
+                    {
+                        result.AddRange(finalResult);
+                    }
+                }
+            );
+
+            return result;
+        }
+
+        private bool IsValidCost(EquipSet set, SortedDictionary<string, int> pattern)
+        {
+            int[] reqGSkills = { 0, 0, 0, 0, 0 }; // 要求
+            int[] hasGSkills = { 0, 0, 0, 0, 0 }; // 所持
+            int[] restGSkills = { 0, 0, 0, 0, 0 }; // 空き
+
+
+
+            foreach (var pair in pattern)
+            {
+                int[] cost = Masters.SkillCostByGSkillEquipName(pair.Key);
+                if (cost == null)
+                {
+                    return false;
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    reqGSkills[i] += cost[i];
+                }
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += set.Head.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += set.Body.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += set.Arm.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += set.Waist.GenericSkills[i];
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                hasGSkills[i] += set.Leg.GenericSkills[i];
+            }
+
+            // 空き算出
+            for (int i = 0; i < 5; i++)
+            {
+                restGSkills[i] = hasGSkills[i] - reqGSkills[i];
+            }
+
+            // 足りない分は1Lv上を消費する
+            for (int i = 0; i < 4; i++)
+            {
+                if (restGSkills[i] < 0)
+                {
+                    restGSkills[i + 1] += restGSkills[i];
+                    restGSkills[i] = 0;
+                }
+            }
+
+            if (restGSkills[4] < 0)
+            {
+                // スロット不足
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<SortedDictionary<string, int>> MakeGskillPattern(List<string> targetEquipNames, int nestCount)
+        {
+            if (nestCount < 1)
+            {
+                List<SortedDictionary<string, int>> emptyList = new();
+                emptyList.Add(new SortedDictionary<string, int>());
+                return emptyList;
+            }
+            else
+            {
+                List<SortedDictionary<string, int>> newPatterns = new();
+                foreach (var oldPattern in MakeGskillPattern(targetEquipNames, nestCount - 1))
+                {
+                    foreach (var target in targetEquipNames)
+                    {
+                        SortedDictionary<string, int> newPattern = new(oldPattern);
+                        if (newPattern.ContainsKey(target))
+                        {
+                            newPattern[target] += 1;
+                        }
+                        else
+                        {
+                            newPattern.Add(target, 1);
+                        }
+                        newPatterns.Add(newPattern);
+                    }
+                }
+                return newPatterns;
+            }
+        }
+
         // 除外装備登録
         public Clude? AddExclude(string name)
         {

@@ -487,6 +487,10 @@ namespace SimModel.Domain
                     aug.Slot3 = ParseUtil.Parse(line[@"スロット3"]);
                     aug.DispName = line[@"名前"];
                     aug.Name = line[@"管理用ID"];
+                    if (string.IsNullOrEmpty(aug.Name))
+                    {
+                        aug.Name = Guid.NewGuid().ToString();
+                    }
                 }
                 aug.Def = ParseUtil.Parse(line[@"防御力増減"]);
                 aug.Fire = ParseUtil.Parse(line[@"火耐性増減"]);
