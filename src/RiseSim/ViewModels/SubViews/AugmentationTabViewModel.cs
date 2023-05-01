@@ -34,14 +34,14 @@ namespace RiseSim.ViewModels.SubViews
         // 部位指定
         public ReactivePropertySlim<string> Kind { get; } = new();
 
-        // ベース装備絞込条件
-        public ReactivePropertySlim<string> FilterInput { get; } = new();
-
         // ベース装備一覧
         public ReactivePropertySlim<ObservableCollection<BindableEquipment>> Equips { get; } = new();
 
         // 選択したベース装備
         public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
+
+        // 入力中のベース装備名
+        public ReactivePropertySlim<string> InputBaseEquipName { get; } = new();
 
         // 名前
         public ReactivePropertySlim<string> DispName { get; } = new();
@@ -97,7 +97,6 @@ namespace RiseSim.ViewModels.SubViews
         private void SetCommand()
         {
             Kind.Subscribe(_ => SetEquips());
-            FilterInput.Subscribe(_ => SetEquips());
             SelectedEquip.Subscribe(_ => SetSlots());
             AddCommand.Subscribe(_ => AddAugmentation());
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
@@ -109,6 +108,23 @@ namespace RiseSim.ViewModels.SubViews
         private void UpdateAugmentation()
         {
             if (SelectedAugmentation.Value == null)
+            {
+                return;
+            }
+
+            if (SelectedEquip.Value == null)
+            {
+                foreach (var equip in Equips.Value)
+                {
+                    if (equip.DispName == InputBaseEquipName.Value)
+                    {
+                        SelectedEquip.Value = equip;
+                        break;
+                    }
+                }
+            }
+
+            if (SelectedEquip.Value == null)
             {
                 return;
             }
@@ -143,7 +159,7 @@ namespace RiseSim.ViewModels.SubViews
             aug.Dragon = ParseUtil.Parse(Dragon.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
-                if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                if (Masters.IsSkillName(selector.SkillName.Value))
                 {
                     Skill skill = new(selector.SkillName.Value, selector.SkillLevel.Value, true);
                     aug.Skills.Add(skill);
@@ -164,10 +180,10 @@ namespace RiseSim.ViewModels.SubViews
             {
                 return;
             }
+
             BindableAugmentation aug = SelectedAugmentation.Value;
             DispName.Value = aug.DispName;
             Kind.Value = aug.Kind.Str();
-            FilterInput.Value = string.Empty;
             foreach (var equip in Equips.Value)
             {
                 if (equip.Name == aug.BaseName)
@@ -192,7 +208,7 @@ namespace RiseSim.ViewModels.SubViews
                 }
                 else
                 {
-                    SkillSelectorVMs.Value[i].SkillName.Value = ViewConfig.Instance.NoSkillName;
+                    SkillSelectorVMs.Value[i].SkillName.Value = string.Empty;
                     SkillSelectorVMs.Value[i].SkillLevel.Value = 0;
                 }
             }
@@ -246,6 +262,25 @@ namespace RiseSim.ViewModels.SubViews
         // 錬成情報を追加
         private void AddAugmentation()
         {
+
+
+            if (SelectedEquip.Value == null)
+            {
+                foreach (var equip in Equips.Value)
+                {
+                    if (equip.DispName == InputBaseEquipName.Value)
+                    {
+                        SelectedEquip.Value = equip;
+                        break;
+                    }
+                }
+            }
+
+            if (SelectedEquip.Value == null)
+            {
+                return;
+            }
+
             Augmentation aug = new();
             aug.Name = Guid.NewGuid().ToString();
             string dispName = DispName.Value;
@@ -268,7 +303,7 @@ namespace RiseSim.ViewModels.SubViews
             aug.Dragon = ParseUtil.Parse(Dragon.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
-                if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                if (Masters.IsSkillName(selector.SkillName.Value))
                 {
                     Skill skill = new(selector.SkillName.Value, selector.SkillLevel.Value, true);
                     aug.Skills.Add(skill);
@@ -342,28 +377,28 @@ namespace RiseSim.ViewModels.SubViews
             switch (Kind.Value)
             {
                 case "頭":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, null, 8);
                     break;
                 case "胴":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, null, 8);
                     break;
                 case "腕":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, null, 8);
                     break;
                 case "腰":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, null, 8);
                     break;
                 case "足":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8);
                     break;
                 case "脚":
                     // 誤記
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, FilterInput.Value, 8);
+                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8);
                     break;
                 default:
                     break;
             }
-            SelectedEquip.Value = Equips.Value[0];
+            SelectedEquip.Value = null;
         }
 
         // 錬成装備のマスタ情報をVMにロード

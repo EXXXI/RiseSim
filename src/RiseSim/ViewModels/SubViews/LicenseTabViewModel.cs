@@ -23,7 +23,7 @@ namespace RiseSim.ViewModels.SubViews
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");
-            sb.Append("20230421.0\n");
+            sb.Append("20230501.0\n");
             sb.Append('\n');
             sb.Append("■このシミュのライセンス\n");
             sb.Append("MIT License\n");
@@ -47,6 +47,10 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append('\n');
             sb.Append("・NLog\n");
             sb.Append("プロジェクト：https://nlog-project.org/\n");
+            sb.Append('\n');
+            sb.Append("・DotNetKit.Wpf.AutoCompleteComboBox\n");
+            sb.Append("プロジェクト：https://github.com/vain0x/DotNetKit.Wpf.AutoCompleteComboBox/\n");
+            sb.Append("ライセンス：https://www.nuget.org/packages/DotNetKit.Wpf.AutoCompleteComboBox/1.6.0/license\n");
             sb.Append('\n');
             sb.Append("■スペシャルサンクス\n");
             sb.Append("・5chモンハン板シミュスレの方々\n");

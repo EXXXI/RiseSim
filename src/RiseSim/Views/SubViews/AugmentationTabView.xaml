@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:RiseSim.Views.SubViews" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" d:DataContext="{d:DesignInstance Type=subviews:AugmentationTabViewModel}"
+             xmlns:local="clr-namespace:RiseSim.Views.SubViews" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:controls="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox" d:DataContext="{d:DesignInstance Type=subviews:AugmentationTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid  ShowGridLines="True">
@@ -13,7 +13,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="265"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -24,19 +24,19 @@
                 <ComboBox ItemsSource="{Binding KindMaster.Value, Mode=OneWay}" SelectedItem="{Binding Kind.Value}" Width="165" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
+            <!--StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具絞込"/>
                 <ctrl:FocusTextBox Width="165" Text="{Binding FilterInput.Value, UpdateSourceTrigger=PropertyChanged}"></ctrl:FocusTextBox>
-            </StackPanel>
+            </StackPanel-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具"/>
-                <ComboBox ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Width="165" SelectedIndex="0">
+                <controls:AutoCompleteComboBox TextSearch.TextPath="DispName" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Text="{Binding InputBaseEquipName.Value, UpdateSourceTrigger=PropertyChanged}"  Width="165" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding DispName, Mode=OneWay}" Margin="2.5"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
-                </ComboBox>
+                </controls:AutoCompleteComboBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="名前"/>

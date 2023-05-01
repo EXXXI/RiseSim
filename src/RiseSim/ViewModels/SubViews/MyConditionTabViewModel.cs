@@ -26,9 +26,6 @@ namespace RiseSim.ViewModels.SubViews
         // スロットの最大の大きさ
         private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
 
-        // スキル未選択時の表示
-        private string NoSkillName { get; } = ViewConfig.Instance.NoSkillName;
-
         // スキル選択部品のVM
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> SkillSelectorVMs { get; } = new();
 
@@ -199,7 +196,7 @@ namespace RiseSim.ViewModels.SubViews
             // 同名スキルがない場合、空欄にスキルを追加して終了
             foreach (var vm in SkillSelectorVMs.Value)
             {
-                if (NoSkillName.Equals(vm.SkillName.Value))
+                if (string.IsNullOrEmpty(vm.SkillName.Value))
                 {
                     vm.SkillName.Value = skill.Name;
                     vm.SkillLevel.Value = skill.Level;
@@ -220,7 +217,7 @@ namespace RiseSim.ViewModels.SubViews
             List<Skill> skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if (selectorVM.SkillName.Value != NoSkillName)
+                if (Masters.IsSkillName(selectorVM.SkillName.Value))
                 {
                     skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
                 }
@@ -293,7 +290,7 @@ namespace RiseSim.ViewModels.SubViews
             List<Skill> skills = new();
             foreach (var selectorVM in SkillSelectorVMs.Value)
             {
-                if (selectorVM.SkillName.Value != NoSkillName)
+                if (Masters.IsSkillName(selectorVM.SkillName.Value))
                 {
                     skills.Add(new Skill(selectorVM.SkillName.Value, selectorVM.SkillLevel.Value));
                 }

@@ -14,6 +14,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+using DotNetKit.Windows.Controls;
+using RiseSim.ViewModels.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,12 +38,40 @@ namespace RiseSim.Views.Controls
     /// </summary>
     public partial class SkillSelector : UserControl
     {
-
         public SkillSelector()
         {
             InitializeComponent();
-            
-        }
 
+            combobox.GotFocus += (obj, args) => {
+                placeholder.Visibility = Visibility.Hidden;
+            };
+            combobox.LostFocus += (obj, args) => {
+                bool isEmpty = string.IsNullOrEmpty(combobox.Text);
+                if (isEmpty)
+                {
+                    placeholder.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    placeholder.Visibility = Visibility.Hidden;
+                }
+            };
+            combobox.SelectionChanged += (obj, args) =>
+            {
+                if (!combobox.EditableTextBox.IsFocused)
+                {
+                    if (args.AddedItems.Count > 0)
+                    {
+                        placeholder.Visibility = Visibility.Hidden;
+                    }
+                    else
+                    {
+                        var x = combobox.EditableTextBox.Text;
+                        placeholder.Visibility = Visibility.Visible;
+                    }
+                }
+            };
+
+        }
     }
 }

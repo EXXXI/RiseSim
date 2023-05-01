@@ -199,7 +199,7 @@ namespace RiseSim.ViewModels.SubViews
             ideal.GenericSkills[4] = ParseUtil.Parse(C15.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
-                if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                if (Masters.IsSkillName(selector.SkillName.Value))
                 {
                     Skill skill = new(selector.SkillName.Value, selector.SkillLevel.Value, true);
                     ideal.Skills.Add(skill);
@@ -298,7 +298,7 @@ namespace RiseSim.ViewModels.SubViews
                 }
                 else
                 {
-                    SkillSelectorVMs.Value[i].SkillName.Value = ViewConfig.Instance.NoSkillName;
+                    SkillSelectorVMs.Value[i].SkillName.Value = string.Empty;
                     SkillSelectorVMs.Value[i].SkillLevel.Value = 0;
                 }
             }
@@ -347,7 +347,7 @@ namespace RiseSim.ViewModels.SubViews
             ideal.GenericSkills[4] = ParseUtil.Parse(C15.Value);
             foreach (var selector in SkillSelectorVMs.Value)
             {
-                if (selector.SkillName.Value != ViewConfig.Instance.NoSkillName)
+                if (Masters.IsSkillName(selector.SkillName.Value))
                 {
                     Skill skill = new(selector.SkillName.Value, selector.SkillLevel.Value, true);
                     ideal.Skills.Add(skill);

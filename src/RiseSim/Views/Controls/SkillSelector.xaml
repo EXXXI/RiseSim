@@ -3,16 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:RiseSim.Views"
+             xmlns:local="clr-namespace:RiseSim.Views" xmlns:controls="clr-namespace:RiseSim.Views.Controls" xmlns:dotnetkit="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
              mc:Ignorable="d" 
              d:DesignHeight="22" d:DesignWidth="215">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <ComboBox Name="nameBox" Width="95" ItemsSource="{Binding Skills.Value, Mode=OneWay}" SelectedIndex="0" SelectedItem="{Binding SkillName.Value}">
-        </ComboBox>
-        <ComboBox Name="levelBox" Width="40" ItemsSource="{Binding SkillLevels.Value, Mode=OneWay}" SelectedItem="{Binding SkillLevel.Value}" />
+        <Grid>
+            <dotnetkit:AutoCompleteComboBox x:Name="combobox" Width="115" ItemsSource="{Binding Skills.Value, Mode=OneWay}" Text="{Binding SkillName.Value, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SkillIndex.Value, Mode=OneWay}">
+            </dotnetkit:AutoCompleteComboBox>
+            <TextBlock x:Name="placeholder"  IsHitTestVisible="False" Padding="5 3 0 0" Foreground="Gray" Text="{Binding PlaceHolderText.Value}" />
+        </Grid>
+        <ComboBox Name="levelBox" Width="35" ItemsSource="{Binding SkillLevels.Value, Mode=OneWay}" SelectedItem="{Binding SkillLevel.Value}" />
         <ComboBox Width="50" ItemsSource="{Binding IsFixDisps.Value, Mode=OneWay}" SelectedItem="{Binding IsFixDisp.Value}"  Visibility="{Binding IsWithFix.Value, Converter={StaticResource BoolVisibilityConverter}}"/>
         <Button Content="クリア" Width="30" Command="{Binding ClearCommand}"></Button>
     </StackPanel>

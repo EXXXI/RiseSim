@@ -22,6 +22,9 @@ namespace RiseSim.ViewModels.Controls
         // 選択中の装備
         public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
 
+        // 入力中の装備名
+        public ReactivePropertySlim<string> InputEquipName { get; } = new();
+
         // 固定可能フラグ
         public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
 
@@ -55,6 +58,18 @@ namespace RiseSim.ViewModels.Controls
         // 装備を除外
         internal void Exclude()
         {
+            if (SelectedEquip.Value == null)
+            {
+                foreach (var equip in Equips.Value)
+                {
+                    if (equip.DispName == InputEquipName.Value)
+                    {
+                        SelectedEquip.Value = equip;
+                        break;
+                    }
+                }
+            }
+
             if (SelectedEquip.Value != null)
             {
                 MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
@@ -64,6 +79,17 @@ namespace RiseSim.ViewModels.Controls
         // 装備を固定
         internal void Include()
         {
+            if (SelectedEquip.Value == null)
+            {
+                foreach (var equip in Equips.Value)
+                {
+                    if (equip.DispName == InputEquipName.Value)
+                    {
+                        SelectedEquip.Value = equip;
+                        break;
+                    }
+                }
+            }
             if (SelectedEquip.Value != null)
             {
                 MainViewModel.Instance.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);

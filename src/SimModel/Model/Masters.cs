@@ -644,5 +644,31 @@ namespace SimModel.Model
             }
             return null;
         }
+
+        // スキル名(cxx)からコストを算出
+        public static int[]? SkillCostByGSkillEquipName(string name)
+        {
+            foreach (var skill in GenericSkills)
+            {
+                if (skill.Name == name)
+                {
+                    return skill.GenericSkills;
+                }
+            }
+            return null;
+        }
+
+        // 正しいスキル名かどうかを判定
+        public static bool IsSkillName(string name)
+        {
+            foreach (var skill in Skills)
+            {
+                if (skill.Name == name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -10,7 +10,7 @@
     <Grid>
         <!-- グリッド設定 -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="235" />
+            <ColumnDefinition Width="250" />
             <ColumnDefinition />
             <ColumnDefinition Width="220" />
         </Grid.ColumnDefinitions>
@@ -168,6 +168,7 @@
             <!-- 装備詳細 -->
             <StackPanel Grid.Row="0">
                 <Button x:Name="mySetAddButton" Content="この装備をマイセットに登録する" Command="{Binding AddMySetCommand}" />
+                <Button Content="この装備で他の錬成スキルパターンを検索" Command="{Binding SearchPatternCommand}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
                     <TextBlock Width="100" Text="{Binding DetailSet.Value.WeaponSlotDisp, Mode=OneWay}"/>
