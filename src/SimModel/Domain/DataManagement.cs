@@ -83,6 +83,46 @@ namespace SimModel.Domain
             return true;
         }
 
+        // 指定レア度以下を全て除外設定に追加
+        static internal void ExcludeByRare(int rare)
+        {
+            foreach (var equip in Masters.Heads)
+            {
+                if (equip.Rare <= rare)
+                {
+                    AddClude(equip.Name, CludeKind.exclude);
+                }
+            }
+            foreach (var equip in Masters.Bodys)
+            {
+                if (equip.Rare <= rare)
+                {
+                    AddClude(equip.Name, CludeKind.exclude);
+                }
+            }
+            foreach (var equip in Masters.Arms)
+            {
+                if (equip.Rare <= rare)
+                {
+                    AddClude(equip.Name, CludeKind.exclude);
+                }
+            }
+            foreach (var equip in Masters.Waists)
+            {
+                if (equip.Rare <= rare)
+                {
+                    AddClude(equip.Name, CludeKind.exclude);
+                }
+            }
+            foreach (var equip in Masters.Legs)
+            {
+                if (equip.Rare <= rare)
+                {
+                    AddClude(equip.Name, CludeKind.exclude);
+                }
+            }
+            return;
+        }
 
         // 除外・固定の追加
         static private Clude? AddClude(string name, CludeKind kind)

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RiseSim.Views.SubViews"
-             xmlns:ctrl="clr-namespace:RiseSim.Views.Controls"
+             xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:CludeTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid  ShowGridLines="True">
@@ -32,6 +32,7 @@
             <StackPanel>
                 <Button Command="{Binding DeleteAllCludeCommand}">除外・固定を全て解除</Button>
                 <Button Command="{Binding ExcludeAllAugmentationCommand}">錬成防具を全て除外</Button>
+                <Button Command="{Binding ExcludeRare9Command}">レア9以下を全て除外</Button>
             </StackPanel>
         </StackPanel>
         <!-- 一覧 -->

@@ -31,11 +31,15 @@ namespace RiseSim.ViewModels.SubViews
         // 防具を除外するコマンド
         public ReactiveCommand ExcludeAllAugmentationCommand { get; } = new ReactiveCommand();
 
+        // 防具を除外するコマンド
+        public ReactiveCommand ExcludeRare9Command { get; } = new ReactiveCommand(); 
+
         // コマンドを設定
         private void SetCommand()
         {
             DeleteAllCludeCommand.Subscribe(_ => DeleteAllClude());
             ExcludeAllAugmentationCommand.Subscribe(_ => ExcludeAllAugmentation());
+            ExcludeRare9Command.Subscribe(_ => ExcludeRare9());
         }
 
         // コンストラクタ
@@ -149,8 +153,21 @@ namespace RiseSim.ViewModels.SubViews
         // 錬成防具を全て除外
         internal void ExcludeAllAugmentation()
         {
-            // 解除
+            // 除外
             Simulator.ExcludeAllAugmentation();
+
+            // 除外固定のマスタをリロード
+            LoadCludes();
+
+            // ログ表示
+            StatusBarText.Value = "錬成防具を全て除外";
+        }
+
+        // レア9以下を全て除外
+        internal void ExcludeRare9()
+        {
+            // 除外
+            Simulator.ExcludeByRare(9);
 
             // 除外固定のマスタをリロード
             LoadCludes();
