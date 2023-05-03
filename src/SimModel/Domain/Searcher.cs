@@ -446,7 +446,7 @@ namespace SimModel.Domain
             // 理想錬成以外を優先
             if (Condition.PrioritizeNoIdeal && equip.Ideal != null)
             {
-                score -= 200;
+                score -= 100;
             }
 
             // 防御力

@@ -108,8 +108,10 @@ namespace SimModel.Service
 
                     for (int i = 1; i <= skill.Level; i++)
                     {
-                        // 現在の検索条件をコピー
+                        // 現在の検索条件をコピー&処理を軽くするため一部オプションを無効化
                         SearchCondition condition = new(Searcher.Condition);
+                        condition.PrioritizeNoIdeal = false;
+                        condition.ExcludeAbstract = false;
 
                         // スキルを検索条件に追加
                         Skill exSkill = new(skill.Name, i);
@@ -239,8 +241,10 @@ namespace SimModel.Service
                         return subResult;
                     }
 
-                    // 現在の検索条件をコピー
+                    // 現在の検索条件をコピー&処理を軽くするため一部オプションを無効化
                     SearchCondition condition = new(Searcher.Condition);
+                    condition.PrioritizeNoIdeal = false;
+                    condition.ExcludeAbstract = false;
 
                     // 検索条件に固定条件を追加
                     if (!string.IsNullOrEmpty(set.Head.Name))
@@ -419,6 +423,12 @@ namespace SimModel.Service
         public void ExcludeAllAugmentation()
         {
             DataManagement.ExcludeAllAugmentation();
+        }
+
+        // 指定レア度以下を全除外
+        public void ExcludeByRare(int rare)
+        {
+            DataManagement.ExcludeByRare(rare);
         }
 
         // 護石追加
