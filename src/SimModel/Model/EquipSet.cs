@@ -600,6 +600,14 @@ namespace SimModel.Model
                     sb.Append('\n');
                     sb.Append("-----------");
                 }
+                if (IsDecoValid)
+                {
+                    sb.Append('\n');
+                    sb.Append("装飾品装備例");
+                    sb.Append('\n');
+                    sb.Append(DecoExampleSetting);
+                    sb.Append("-----------");
+                }
                 foreach (var skill in Skills)
                 {
                     if (skill.Level > 0)
@@ -611,6 +619,76 @@ namespace SimModel.Model
                 return sb.ToString();
             }
         }
+
+        // 装飾品をはめ込む例
+        // 装飾品情報がソートされていることを前提としている
+        private string DecoExampleSetting
+        {
+            get
+            {
+                StringBuilder weaponSb = new StringBuilder("・武器スロ\n");
+                StringBuilder headSb = new StringBuilder("・頭\n");
+                StringBuilder bodySb = new StringBuilder("・胴\n");
+                StringBuilder armSb = new StringBuilder("・腕\n");
+                StringBuilder waistSb = new StringBuilder("・腰\n");
+                StringBuilder legSb = new StringBuilder("・脚\n");
+                StringBuilder charmSb = new StringBuilder("・護石\n");
+
+
+                int decoIndex = 0;
+                for (int slotLv = 4; slotLv > 0; slotLv--)
+                {
+                    if (WeaponSlot1 == slotLv)
+                    {
+                        weaponSb.Append(Decos[decoIndex++].DispName);
+                        weaponSb.Append("\n");
+                    }
+                    if (WeaponSlot2 == slotLv)
+                    {
+                        weaponSb.Append(Decos[decoIndex++].DispName);
+                        weaponSb.Append("\n");
+                    }
+                    if (WeaponSlot3 == slotLv)
+                    {
+                        weaponSb.Append(Decos[decoIndex++].DispName);
+                        weaponSb.Append("\n");
+                    }
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Head, headSb);
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Body, bodySb);
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Arm, armSb);
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Waist, waistSb);
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Leg, legSb);
+                    decoIndex = AppendDecoExample(decoIndex, slotLv, Charm, charmSb);
+                }
+
+                return weaponSb.ToString() + headSb.ToString() + bodySb.ToString() + armSb.ToString() + waistSb.ToString() + legSb.ToString() + charmSb.ToString();
+            }
+        }
+
+        // 防具に指定レベルのスロットがあったらそこにはめるべき装飾品情報を書き込む
+        private int AppendDecoExample(int decoIndex, int slotLv, Equipment equip, StringBuilder sb)
+        {
+            if (equip.Slot1 == slotLv)
+            {
+                sb.Append(Decos[decoIndex++].DispName);
+                sb.Append("\n");
+            }
+
+            if (equip.Slot2 == slotLv)
+            {
+                sb.Append(Decos[decoIndex++].DispName);
+                sb.Append("\n");
+            }
+
+            if (equip.Slot3 == slotLv)
+            {
+                sb.Append(Decos[decoIndex++].DispName);
+                sb.Append("\n");
+            }
+
+            return decoIndex;
+        }
+
 
         // 防具の空きスロット合計
         public string EmptySlotNum
