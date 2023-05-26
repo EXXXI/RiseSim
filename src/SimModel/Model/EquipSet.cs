@@ -638,17 +638,17 @@ namespace SimModel.Model
                 int decoIndex = 0;
                 for (int slotLv = 4; slotLv > 0; slotLv--)
                 {
-                    if (WeaponSlot1 == slotLv)
+                    if (WeaponSlot1 == slotLv && decoIndex < Decos.Count)
                     {
                         weaponSb.Append(Decos[decoIndex++].DispName);
                         weaponSb.Append("\n");
                     }
-                    if (WeaponSlot2 == slotLv)
+                    if (WeaponSlot2 == slotLv && decoIndex < Decos.Count)
                     {
                         weaponSb.Append(Decos[decoIndex++].DispName);
                         weaponSb.Append("\n");
                     }
-                    if (WeaponSlot3 == slotLv)
+                    if (WeaponSlot3 == slotLv && decoIndex < Decos.Count)
                     {
                         weaponSb.Append(Decos[decoIndex++].DispName);
                         weaponSb.Append("\n");
@@ -668,19 +668,19 @@ namespace SimModel.Model
         // 防具に指定レベルのスロットがあったらそこにはめるべき装飾品情報を書き込む
         private int AppendDecoExample(int decoIndex, int slotLv, Equipment equip, StringBuilder sb)
         {
-            if (equip.Slot1 == slotLv)
+            if (equip.Slot1 == slotLv && decoIndex < Decos.Count)
             {
                 sb.Append(Decos[decoIndex++].DispName);
                 sb.Append("\n");
             }
 
-            if (equip.Slot2 == slotLv)
+            if (equip.Slot2 == slotLv && decoIndex < Decos.Count)
             {
                 sb.Append(Decos[decoIndex++].DispName);
                 sb.Append("\n");
             }
 
-            if (equip.Slot3 == slotLv)
+            if (equip.Slot3 == slotLv && decoIndex < Decos.Count)
             {
                 sb.Append(Decos[decoIndex++].DispName);
                 sb.Append("\n");
