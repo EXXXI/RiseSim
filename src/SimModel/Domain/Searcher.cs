@@ -686,7 +686,7 @@ namespace SimModel.Domain
             }
 
             // 風雷合一：スキル存在情報
-            if(equip.Kind != EquipKind.deco && equip.Kind != EquipKind.charm)
+            if(equip.Kind != EquipKind.deco && equip.Kind != EquipKind.charm && equip.Kind != EquipKind.gskill)
             {
                 foreach (var condSkill in Condition.Skills)
                 {
