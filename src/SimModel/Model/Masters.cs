@@ -632,6 +632,20 @@ namespace SimModel.Model
             return name;
         }
 
+        // スキル名から最大レベルを算出
+        // マスタに存在しないスキルの場合0
+        public static int SkillMaxLevel(string name)
+        {
+            foreach (var skill in Skills)
+            {
+                if (skill.Name == name)
+                {
+                    return skill.Level;
+                }
+            }
+            return 0;
+        }
+
         // スキル名からコストを算出
         public static int[]? SkillCost(string name)
         {

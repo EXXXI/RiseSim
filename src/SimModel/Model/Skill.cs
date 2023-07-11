@@ -33,7 +33,14 @@ namespace SimModel.Model
             Category = string.IsNullOrEmpty(category) ? @"未分類" : category;
         }
 
-
+        // 最大レベル
+        // マスタに存在しないスキルの場合0
+        public int MaxLevel {
+            get 
+            {
+                return Masters.SkillMaxLevel(Name);
+            }
+        }
 
         // 表示用文字列
         public string Description

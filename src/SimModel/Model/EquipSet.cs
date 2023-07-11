@@ -223,6 +223,15 @@ namespace SimModel.Model
                     JoinSkill(ret, furaiTarget);
                 }
 
+                // スキルレベル最大値調整
+                foreach (var skill in ret)
+                {
+                    if (skill.Level > skill.MaxLevel)
+                    {
+                        skill.Level = skill.MaxLevel;
+                    }
+                }
+
                 ret.Sort((a, b) => b.Level - a.Level);
                 return ret;
             }
@@ -910,6 +919,7 @@ namespace SimModel.Model
         }
 
         // スキルの追加(同名スキルはスキルレベルを加算)
+        // 最大値のチェックはしていない
         private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills)
         {
             foreach (var newSkill in newSkills)
@@ -919,27 +929,13 @@ namespace SimModel.Model
                     continue;
                 }
 
-                int maxLevel = 0;
-                foreach (var skill in Masters.Skills)
-                {
-                    if (newSkill.Name.Equals(skill.Name))
-                    {
-                        maxLevel = skill.Level;
-                    }
-                }
-
                 bool exist = false;
                 foreach (var baseSkill in baseSkills)
                 {
                     if (baseSkill.Name.Equals(newSkill.Name))
                     {
                         exist = true;
-                        int level = baseSkill.Level + newSkill.Level;
-                        if (level > maxLevel)
-                        {
-                            level = maxLevel;
-                        }
-                        baseSkill.Level = level;
+                        baseSkill.Level += newSkill.Level;
                     }
                 }
                 if (!exist)
@@ -951,6 +947,7 @@ namespace SimModel.Model
         }
 
         // スキルの追加(同名スキルはスキルレベルを加算、錬成の追加スキルは除外)
+        // 最大値のチェックはしていない
         private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills, bool excludeAdditional)
         {
             List<Skill> skills = new();
