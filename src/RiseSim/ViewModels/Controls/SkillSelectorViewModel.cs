@@ -127,15 +127,7 @@ namespace RiseSim.ViewModels.Controls
         {
             ObservableCollection<int> list = new();
 
-            int maxLevel = 0;
-
-            foreach (var skill in Masters.Skills)
-            {
-                if (skill.Name.Equals(SkillName.Value))
-                {
-                    maxLevel = skill.Level;
-                }
-            }
+            int maxLevel = Masters.SkillMaxLevel(SkillName.Value);
 
             for (int i = 0; i < Skills.Value.Count; i++)
             {
