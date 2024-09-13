@@ -18,8 +18,15 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
-        
+
         <TabControl>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="スキル選択" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
+                <subviews:SkillSelectTabView x:Name="skillselect" DataContext="{Binding SkillSelectTabVM.Value, Mode=OneWay}"/>
+            </TabItem>
+            
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="シミュレータ" Style="{StaticResource ResourceKey=tabHeader}" />

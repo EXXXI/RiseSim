@@ -78,6 +78,7 @@ namespace SimModel.Service
         }
 
         // 追加スキル検索
+        // TODO:こっちは削除予定
         public List<Skill> SearchExtraSkill()
         {
             ResetIsCanceling();
@@ -87,6 +88,13 @@ namespace SimModel.Service
             {
                 return new List<Skill>();
             }
+            return SearchExtraSkill(Searcher.Condition);
+        }
+
+        // 追加スキル検索
+        public List<Skill> SearchExtraSkill(SearchCondition condition)
+        {
+            ResetIsCanceling();
 
             List<Skill> exSkills = new();
 
@@ -108,21 +116,21 @@ namespace SimModel.Service
 
                     for (int i = 1; i <= skill.Level; i++)
                     {
-                        // 現在の検索条件をコピー&処理を軽くするため一部オプションを無効化
-                        SearchCondition condition = new(Searcher.Condition);
-                        condition.PrioritizeNoIdeal = false;
-                        condition.ExcludeAbstract = false;
+                        // 検索条件をコピー&処理を軽くするため一部オプションを無効化
+                        SearchCondition exCondition = new(condition);
+                        exCondition.PrioritizeNoIdeal = false;
+                        exCondition.ExcludeAbstract = false;
 
                         // スキルを検索条件に追加
                         Skill exSkill = new(skill.Name, i);
-                        bool isNewSkill = condition.AddSkill(new Skill(skill.Name, i));
+                        bool isNewSkill = exCondition.AddSkill(new Skill(skill.Name, i));
 
                         // 新規スキルor既存だが上位Lvのスキルの場合のみ検索を実行
                         if (isNewSkill)
                         {
                             // 頑張り度1で検索
                             Searcher exSearcher;
-                            exSearcher = new Searcher(condition);
+                            exSearcher = new Searcher(exCondition);
                             exSearcher.ExecSearch(1);
 
                             // 1件でもヒットすれば追加スキル一覧に追加

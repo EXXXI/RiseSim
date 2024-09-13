@@ -17,6 +17,9 @@ namespace RiseSim.ViewModels
         public Simulator Simulator { get; set; }
 
         // シミュ画面のVM
+        public ReactivePropertySlim<SkillSelectTabViewModel> SkillSelectTabVM { get; } = new();
+
+        // シミュ画面のVM
         public ReactivePropertySlim<SimulatorTabViewModel> SimulatorTabVM { get; } = new();
 
         // 除外・固定画面のVM
@@ -62,6 +65,7 @@ namespace RiseSim.ViewModels
             IsFree = IsBusy.Select(x => !x).ToReadOnlyReactivePropertySlim();
 
             // 各タブのVMを設定
+            SkillSelectTabVM.Value = new SkillSelectTabViewModel();
             SimulatorTabVM.Value = new SimulatorTabViewModel();
             CludeTabVM.Value = new CludeTabViewModel();
             CharmTabVM.Value = new CharmTabViewModel();
