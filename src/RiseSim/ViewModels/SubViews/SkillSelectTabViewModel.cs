@@ -1,6 +1,7 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.Config;
+using RiseSim.Exceptions;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using RiseSim.Views.SubViews;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.DirectoryServices;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,10 +33,18 @@ namespace RiseSim.ViewModels.SubViews
         private string DefaultLimit { get; } = ViewConfig.Instance.DefaultLimit;
 
         // 追加スキル検索結果
+        // TODO:削除予定
         public ReactivePropertySlim<ObservableCollection<BindableSkill>> ExtraSkills { get; } = new();
 
+        // 追加スキル検索結果用VM
+        public ReactivePropertySlim<ObservableCollection<SkillAdderViewModel>> ExtraSkillVMs { get; } = new();
+
         // 最近使ったスキル
+        // TODO:削除予定
         public ReactivePropertySlim<ObservableCollection<string>> RecentSkillNames { get; } = new();
+
+        // 最近使ったスキル用VM
+        public ReactivePropertySlim<ObservableCollection<SkillAdderViewModel>> RecentSkillVMs { get; } = new();
 
         //スキルカテゴリ表示部品のVM
         public ReactivePropertySlim<ObservableCollection<SkillPickerContainerViewModel>> SkillPickerContainerVMs { get; } = new();
@@ -183,6 +193,8 @@ namespace RiseSim.ViewModels.SubViews
             //}
             //LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "検索完了";
+
+            MainViewModel.Instance.ShowSearchResult(result);
         }
 
         private async Task SearchExtraSkill()
@@ -199,7 +211,16 @@ namespace RiseSim.ViewModels.SubViews
             // 追加スキル検索
             SearchCondition condition = MakeCondition();
             List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill(condition));
-            ExtraSkills.Value = BindableSkill.BeBindableList(result);
+
+            var groups = result.GroupBy(skill => skill.Name);
+
+            ExtraSkillVMs.Value = new ObservableCollection<SkillAdderViewModel>(
+                groups.Select(group => new SkillAdderViewModel(group.Key, group.Select(skill => skill.Level))));
+
+
+
+
+            //ExtraSkills.Value = BindableSkill.BeBindableList(result);
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -225,15 +246,12 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.Cancel();
         }
 
-        private object ClearSearchCondition()
+        private void ClearSearchCondition()
         {
-
-            var vms = new List<SkillSelectorViewModel>();
-            for (var i = 0; i < SkillSelectorCount; i++)
+            foreach (var vm in SkillPickerContainerVMs.Value)
             {
-                vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
+                vm.ClearAll();
             }
-            SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
             WeaponSlots.Value = "0-0-0";
             Def.Value = string.Empty;
             Fire.Value = string.Empty;
@@ -303,7 +321,15 @@ namespace RiseSim.ViewModels.SubViews
         // 最近使ったスキル読み込み
         private void LoadRecentSkills()
         {
-            RecentSkillNames.Value = new ObservableCollection<string>(Masters.RecentSkillNames);
+            var recentSkills = Masters.RecentSkillNames.Join(
+                Masters.Skills, r => r, s => s.Name,
+                (r, s) => new
+                {
+                    Name = s.Name,
+                    Range = Enumerable.Range(1, s.Level)
+                });
+
+            RecentSkillVMs.Value = new ObservableCollection<SkillAdderViewModel>(recentSkills.Select(skill => new SkillAdderViewModel(skill.Name,skill.Range)));
         }
 
         // 検索条件インスタンスを作成
@@ -362,6 +388,15 @@ namespace RiseSim.ViewModels.SubViews
                 return result;
             }
             return null;
+        }
+
+        
+        internal void AddSkill(string name, int level)
+        {
+
+            var isSuccess = SkillPickerContainerVMs.Value
+                .Select(vm => vm.TryAddSkill(name, level))
+                .Contains(true);
         }
     }
 }

@@ -4,17 +4,24 @@ using RiseSim.ViewModels.SubViews;
 using SimModel.Model;
 using SimModel.Service;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace RiseSim.ViewModels
 {
     internal class MainViewModel : BindableBase
     {
+        // 結果画面のタブIndex
+        const int SimulatorTabIndex = 1;
+
         // MainViewインスタンス：子VMからの参照用
         static public MainViewModel Instance { get; set; }
 
         // シミュ本体
         public Simulator Simulator { get; set; }
+
+        // 選択しているタブのIndex
+        public ReactivePropertySlim<int> SelectedTabIndex { get; set; } = new();
 
         // シミュ画面のVM
         public ReactivePropertySlim<SkillSelectTabViewModel> SkillSelectTabVM { get; } = new();
@@ -170,6 +177,17 @@ namespace RiseSim.ViewModels
         {
             // マイセット画面用のVMの設定
             MySetTabVM.Value.LoadMySets();
+        }
+
+        internal void ShowSearchResult(List<EquipSet> result)
+        {
+            SimulatorTabVM.Value.ShowSearchResult(result);
+            SelectedTabIndex.Value = SimulatorTabIndex;
+        }
+
+        internal void AddSkill(string name, int level)
+        {
+            SkillSelectTabVM.Value.AddSkill(name, level);
         }
     }
 }

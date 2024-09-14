@@ -79,5 +79,26 @@ namespace RiseSim.ViewModels.Controls
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        internal void ClearAll()
+        {
+            foreach (var vm in SkillPickerSelectors)
+            {
+                vm.SelectLevel(0);
+            }
+        }
+
+        internal bool TryAddSkill(string name, int level)
+        {
+            foreach (var vm in SkillPickerSelectors)
+            {
+                if (vm.SelectedSkill.Value.Name == name)
+                {
+                    vm.SelectLevel(level);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -812,5 +812,10 @@ namespace RiseSim.ViewModels.SubViews
             }
             return null;
         }
+
+        internal void ShowSearchResult(List<EquipSet> result)
+        {
+            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+        }
     }
 }

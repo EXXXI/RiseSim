@@ -7,10 +7,15 @@
              xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:SkillSelectTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="subtabHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="220"/>
         </Grid.ColumnDefinitions>
 
         <Grid Margin="10" Height="Auto" Width="Auto" VerticalAlignment="Top">
@@ -76,8 +81,51 @@
                     <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                     <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
                     <Button Content="中断" Command="{Binding CancelCommand}" />
+                    <Button Content="検索条件をリセット" Command="{Binding ClearAllCommand}" />
                 </StackPanel>
             </Grid>
         </Grid>
+
+        <TabControl Grid.Column="1" TabStripPlacement="Right">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <TransformGroup>
+                                <RotateTransform Angle="90"/>
+                            </TransformGroup>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="最近使ったスキル" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <ScrollViewer VerticalAlignment="Stretch">
+                    <ItemsControl ItemsSource="{Binding RecentSkillVMs.Value, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ctrl:SkillAdder Margin="0,0,0,5"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="追加スキル検索結果" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <ScrollViewer VerticalAlignment="Stretch">
+                    <ItemsControl ItemsSource="{Binding ExtraSkillVMs.Value, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ctrl:SkillAdder Margin="0,0,0,5"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

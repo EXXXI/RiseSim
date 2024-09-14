@@ -162,9 +162,17 @@
                     <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDispMultiLine, Mode=OneWay}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <TextBlock Grid.Row="1">
-                aaaaa
-            </TextBlock>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <StackPanel>
+                    <TextBlock>
+                        結果が多い、または中断を行ったため検索を打ち切りました。
+                    </TextBlock>
+                    <TextBlock>
+                        さらに検索したい場合は右のボタンを押してください。
+                    </TextBlock>
+                </StackPanel>
+                <Button Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
+            </StackPanel>
         </Grid>
         <!-- 右ペイン -->
         <Grid Grid.Column="2">

@@ -19,7 +19,7 @@
             <RowDefinition Height="15"/>
         </Grid.RowDefinitions>
 
-        <TabControl>
+        <TabControl SelectedIndex="{Binding SelectedTabIndex.Value}">
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="スキル選択" Style="{StaticResource ResourceKey=tabHeader}" />

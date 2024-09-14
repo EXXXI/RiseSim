@@ -63,6 +63,11 @@ namespace RiseSim.ViewModels.Controls
             disposed = true;
         }
 
+        internal void SelectLevel(int v)
+        {
+            SelectedSkill.Value = Items.Where(skill => skill.Level == v).First();
+        }
+
         ~SkillPickerSelectorViewModel() => Dispose(false);
 
     }
