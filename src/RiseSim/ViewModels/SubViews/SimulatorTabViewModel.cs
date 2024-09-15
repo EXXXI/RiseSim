@@ -101,9 +101,8 @@ namespace RiseSim.ViewModels.SubViews
         // 通常装備優先フラグ
         public ReactivePropertySlim<bool> IsExcludeAbstract { get; } = new(false);
 
-        // マイセット追加可能フラグ
-        // TODO:没になったよね
-        public ReactivePropertySlim<bool> CanAddMySet { get; } = new(true);
+        // もっと検索可能フラグ
+        public ReactivePropertySlim<bool> IsRemaining { get; } = new(false);
 
         // 検索コマンド
         public AsyncReactiveCommand SearchCommand { get; private set; }
@@ -121,7 +120,7 @@ namespace RiseSim.ViewModels.SubViews
         public ReactiveCommand CancelCommand { get; private set; }
 
         // マイセット追加コマンド
-        public ReactiveCommand AddMySetCommand { get; private set; }
+        public ReactiveCommand AddMySetCommand { get; } = new ReactiveCommand();
 
         // マイ検索条件追加コマンド
         public ReactiveCommand AddMyConditionCommand { get; } = new ReactiveCommand();
@@ -153,7 +152,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             SearchPatternCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchPattern());
             CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
-            AddMySetCommand = CanAddMySet.ToReactiveCommand().WithSubscribe(() => AddMySet());
+            AddMySetCommand.Subscribe(() => AddMySet());
             AddMyConditionCommand.Subscribe(() => AddMyCondition());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
@@ -240,7 +239,6 @@ namespace RiseSim.ViewModels.SubViews
             // シミュ画面の検索結果と装備詳細を紐づけ
             DetailSet.Subscribe(set => {
                 EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
-                CanAddMySet.Value = true;//!set?.HasIdeal ?? false;
             });
 
             // スロットの選択肢を生成し、シミュ画面と護石画面に反映
@@ -355,6 +353,7 @@ namespace RiseSim.ViewModels.SubViews
         async internal Task SearchMore()
         {
             // 頑張り度を整理
+            // TODO:取得
             int searchLimit;
             try
             {
@@ -405,6 +404,9 @@ namespace RiseSim.ViewModels.SubViews
                 LogSb.Append("続きを検索するには「もっと検索」をクリックしてください\n");
             }
             LogBoxText.Value = LogSb.ToString();
+
+            IsRemaining.Value = Simulator.IsCanceling || !Simulator.IsSearchedAll;
+
             StatusBarText.Value = "もっと検索完了";
         }
 
@@ -813,9 +815,10 @@ namespace RiseSim.ViewModels.SubViews
             return null;
         }
 
-        internal void ShowSearchResult(List<EquipSet> result)
+        internal void ShowSearchResult(List<EquipSet> result, bool remain)
         {
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
+            IsRemaining.Value = remain;
         }
     }
 }

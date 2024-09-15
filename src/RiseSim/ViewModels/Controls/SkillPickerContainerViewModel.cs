@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Prism.Mvvm;
+using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 
 namespace RiseSim.ViewModels.Controls
@@ -27,20 +28,20 @@ namespace RiseSim.ViewModels.Controls
         /// 特定のスキルを担当するSkillPickerSelectorのスキルを設定する
         /// </summary>
         /// <param name="skill"></param>
-        public void SetPickerSelected(Skill skill)
-        {
-            if (skill.Category != Header) 
-            {
-                return;
-            }
-            // 特定のスキルを担当するSkillPickerSelectorは一つしかないのでFirstで良い
-            var selectorViewModel = SkillPickerSelectors.FirstOrDefault(s => s.SelectedSkill.Value.Name == skill.Name);
-            if (selectorViewModel is null)
-            {
-                return;
-            }
-            selectorViewModel.SelectedSkill.Value = skill;
-        }
+        //public void SetPickerSelected(Skill skill)
+        //{
+        //    if (skill.Category != Header) 
+        //    {
+        //        return;
+        //    }
+        //    // 特定のスキルを担当するSkillPickerSelectorは一つしかないのでFirstで良い
+        //    var selectorViewModel = SkillPickerSelectors.FirstOrDefault(s => s.SelectedSkill.Value.Name == skill.Name);
+        //    if (selectorViewModel is null)
+        //    {
+        //        return;
+        //    }
+        //    selectorViewModel.SelectedSkill.Value = skill;
+        //}
 
         /// <summary>
         /// このコンテナにあるSelectorのうち選択されているスキルの配列を返す
@@ -49,7 +50,7 @@ namespace RiseSim.ViewModels.Controls
         public IReadOnlyList<Skill> SelectedSkills() => 
             SkillPickerSelectors
                 .Where(s => s.Selected)
-                .Select(s => s.SelectedSkill.Value)
+                .Select(s => new Skill(s.SelectedSkill.Value.Name, s.SelectedSkill.Value.Level, isFixed:s.IsFix))
                 .ToList();
 
     private bool disposed;
@@ -84,7 +85,7 @@ namespace RiseSim.ViewModels.Controls
         {
             foreach (var vm in SkillPickerSelectors)
             {
-                vm.SelectLevel(0);
+                vm.Reset();
             }
         }
 
@@ -99,6 +100,17 @@ namespace RiseSim.ViewModels.Controls
                 }
             }
             return false;
+        }
+
+        internal bool TryAddSkill(List<Skill> skills)
+        {
+            bool addedAny = false;
+            foreach (var skill in skills)
+            {
+                bool added = TryAddSkill(skill.Name, skill.Level);
+                addedAny = addedAny || added;
+            }
+            return addedAny;
         }
     }
 }

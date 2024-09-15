@@ -20,6 +20,8 @@ namespace RiseSim.ViewModels.SubViews
 {
     internal class SkillSelectTabViewModel : BindableBase
     {
+        const int ExSkillTabIndex = 1;
+
         // MainViewModelから参照を取得
         private Simulator Simulator { get; }
         private ReactivePropertySlim<string> StatusBarText { get; }
@@ -76,6 +78,9 @@ namespace RiseSim.ViewModels.SubViews
         // 頑張り度(検索件数)
         public ReactivePropertySlim<string> Limit { get; } = new();
 
+        // 頑張り度(検索件数)
+        public ReactivePropertySlim<int> SelectedTabIndex { get; } = new();
+
         // スロット選択の選択肢
         public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
 
@@ -103,12 +108,6 @@ namespace RiseSim.ViewModels.SubViews
         // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
 
-        // 追加スキル検索結果から検索条件へスキルを追加するコマンド
-        public ReactiveCommand AddExtraSkillCommand { get; } = new ReactiveCommand();
-
-        // 最近使ったスキルから検索条件へスキルを追加するコマンド
-        public ReactiveCommand AddRecentSkillCommand { get; } = new ReactiveCommand();
-
         // コマンドを設定
         private void SetCommand()
         {
@@ -117,8 +116,6 @@ namespace RiseSim.ViewModels.SubViews
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
-            AddExtraSkillCommand.Subscribe(x => AddSkill(x as BindableSkill));
-            AddRecentSkillCommand.Subscribe(x => AddSkill(x as string));
         }
 
         private async Task Search()
@@ -194,7 +191,7 @@ namespace RiseSim.ViewModels.SubViews
             //LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "検索完了";
 
-            MainViewModel.Instance.ShowSearchResult(result);
+            MainViewModel.Instance.ShowSearchResult(result, Simulator.IsCanceling || !Simulator.IsSearchedAll);
         }
 
         private async Task SearchExtraSkill()
@@ -239,6 +236,8 @@ namespace RiseSim.ViewModels.SubViews
             //}
             //LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "追加スキル検索完了";
+
+            SelectedTabIndex.Value = ExSkillTabIndex;
         }
 
         private void Cancel()
@@ -259,16 +258,6 @@ namespace RiseSim.ViewModels.SubViews
             Thunder.Value = string.Empty;
             Ice.Value = string.Empty;
             Dragon.Value = string.Empty;
-        }
-
-        private object AddSkill(BindableSkill bindableSkill)
-        {
-            throw new NotImplementedException();
-        }
-
-        private object AddSkill(string v)
-        {
-            throw new NotImplementedException();
         }
 
         // コンストラクタ
@@ -397,6 +386,53 @@ namespace RiseSim.ViewModels.SubViews
             var isSuccess = SkillPickerContainerVMs.Value
                 .Select(vm => vm.TryAddSkill(name, level))
                 .Contains(true);
+        }
+
+        // マイセットのスキルをシミュ画面の検索条件に反映
+        internal void InputMySetCondition(EquipSet? mySet)
+        {
+            if (mySet == null)
+            {
+                // マイセットの詳細画面が空の場合何もせず終了
+                return;
+            }
+
+            // ログ表示用
+            //StringBuilder sb = new StringBuilder();
+
+            foreach (var vm in SkillPickerContainerVMs.Value)
+            {
+                vm.ClearAll();
+                vm.TryAddSkill(mySet.Skills);
+            }
+
+            //// マイセットの内容を反映したスキル入力部品を用意
+            //var vms = new List<SkillSelectorViewModel>();
+            //for (int i = 0; i < mySet.Skills.Count; i++)
+            //{
+            //    if (mySet.Skills[i].Level <= 0)
+            //    {
+            //        continue;
+            //    }
+
+            //    // スキル情報反映
+            //    vms.Add(new SkillSelectorViewModel(mySet.Skills[i], SkillSelectorKind.WithFixs));
+
+            //    // ログ表示用
+            //    sb.Append(mySet.Skills[i].Description);
+            //    sb.Append(',');
+            //}
+            //for (var i = vms.Count; i < SkillSelectorCount; i++)
+            //{
+            //    vms.Add(new SkillSelectorViewModel(SkillSelectorKind.WithFixs));
+            //}
+            //SkillSelectorVMs.Value = new ObservableCollection<SkillSelectorViewModel>(vms);
+
+            // スロット情報反映
+            WeaponSlots.Value = mySet.WeaponSlotDisp;
+
+            // ログ表示
+            //StatusBarText.Value = "検索条件反映：" + sb.ToString();
         }
     }
 }

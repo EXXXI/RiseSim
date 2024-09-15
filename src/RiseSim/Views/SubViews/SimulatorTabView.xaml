@@ -7,6 +7,9 @@
              xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:SimulatorTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
+    </UserControl.Resources>
     <Grid>
         <!-- グリッド設定 -->
         <Grid.ColumnDefinitions>
@@ -162,7 +165,7 @@
                     <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDispMultiLine, Mode=OneWay}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Visibility="{Binding IsRemaining.Value, Converter={StaticResource BoolVisibilityConverter}}">
                 <StackPanel>
                     <TextBlock>
                         結果が多い、または中断を行ったため検索を打ち切りました。
@@ -171,7 +174,8 @@
                         さらに検索したい場合は右のボタンを押してください。
                     </TextBlock>
                 </StackPanel>
-                <Button Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
+                <Button Content="もっと検索する" Command="{Binding SearchMoreCommand}" Width="100"/>
+                <Button Content="中断" Command="{Binding CancelCommand}" Width="100"/>
             </StackPanel>
         </Grid>
         <!-- 右ペイン -->

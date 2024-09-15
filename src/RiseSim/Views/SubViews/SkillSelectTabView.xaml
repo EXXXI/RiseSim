@@ -86,7 +86,7 @@
             </Grid>
         </Grid>
 
-        <TabControl Grid.Column="1" TabStripPlacement="Right">
+        <TabControl Grid.Column="1" TabStripPlacement="Right" SelectedIndex="{Binding SelectedTabIndex.Value}">
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="LayoutTransform">

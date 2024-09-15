@@ -11,6 +11,8 @@ namespace RiseSim.ViewModels
 {
     internal class MainViewModel : BindableBase
     {
+        // スキル選択画面のタブIndex
+        const int SkillSelectorTabIndex = 0;
         // 結果画面のタブIndex
         const int SimulatorTabIndex = 1;
 
@@ -122,7 +124,8 @@ namespace RiseSim.ViewModels
         // マイセットのスキルをシミュ画面の検索条件に反映　処理本体はシミュ画面VM
         internal void InputMySetCondition(EquipSet? set)
         {
-            SimulatorTabVM.Value.InputMySetCondition(set);
+            SkillSelectTabVM.Value.InputMySetCondition(set);
+            SelectedTabIndex.Value = SkillSelectorTabIndex;
         }
 
         // マイ検索条件をシミュ画面の検索条件に反映　処理本体はシミュ画面VM
@@ -179,9 +182,9 @@ namespace RiseSim.ViewModels
             MySetTabVM.Value.LoadMySets();
         }
 
-        internal void ShowSearchResult(List<EquipSet> result)
+        internal void ShowSearchResult(List<EquipSet> result, bool remain)
         {
-            SimulatorTabVM.Value.ShowSearchResult(result);
+            SimulatorTabVM.Value.ShowSearchResult(result, remain);
             SelectedTabIndex.Value = SimulatorTabIndex;
         }
 

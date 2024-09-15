@@ -38,7 +38,7 @@ internal class SkillPickerWindowViewModel : BindableBase, IDisposable
 
                     foreach (var skill in value)
                     {
-                        vm.SetPickerSelected(skill);
+                       /// vm.SetPickerSelected(skill);
                     }
 
                     return vm;
@@ -52,11 +52,11 @@ internal class SkillPickerWindowViewModel : BindableBase, IDisposable
 
     private void Accept()
     {
-        OnAccept?.Invoke(
-            ContainerViewModels
-                .SelectMany(vm => vm.SelectedSkills())
-                .ToList()
-        );
+        //OnAccept?.Invoke(
+        //    //ContainerViewModels
+        //    //    .SelectMany(vm => vm.SelectedSkills())
+        //    //    .ToList()
+        //);
     }
 
     private bool disposed;

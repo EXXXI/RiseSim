@@ -15,7 +15,7 @@ namespace RiseSim.ViewModels.BindableWrapper
         public string Name { get; }
 
         // スキルレベル
-        public int Level { get; }
+        public int Level { get; set; }
 
         // 追加スキルフラグ
         public bool IsAdditional { get; set; }
@@ -46,5 +46,14 @@ namespace RiseSim.ViewModels.BindableWrapper
             }
             return bindableList;
         }
+
+        /// <summary>
+        /// SkillPickerSelectorViewでComboBoxの表示に使う文字列を返す
+        /// </summary>
+        public string PickerSelectorDisplayName => Level switch
+        {
+            0 => Name,
+            _ => $"{Name}Lv{Level}"
+        };
     }
 }

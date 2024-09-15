@@ -22,12 +22,15 @@
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        <ComboBox VerticalAlignment="Center" HorizontalContentAlignment="Center"
-                  ItemsSource="{Binding Path=Items, Mode=OneWay}" 
-                  DisplayMemberPath="PickerSelectorDisplayName"
-                  SelectedIndex="0"
-                  SelectedItem="{Binding Path=SelectedSkill.Value}"
-                  Height="22"
-                  Width="165"/>
+        <StackPanel Orientation="Horizontal">
+            <ComboBox VerticalAlignment="Center" HorizontalContentAlignment="Center"
+                      ItemsSource="{Binding Path=Items, Mode=OneWay}" 
+                      DisplayMemberPath="PickerSelectorDisplayName"
+                      SelectedIndex="0"
+                      SelectedItem="{Binding Path=SelectedSkill.Value}"
+                      Height="22"
+                      Width="150"/>
+            <ComboBox Width="50" ItemsSource="{Binding IsFixDisps.Value, Mode=OneWay}" SelectedItem="{Binding IsFixDisp.Value}" />
+        </StackPanel>
     </Border>
 </UserControl>
