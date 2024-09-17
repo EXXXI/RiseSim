@@ -34,22 +34,17 @@ namespace RiseSim.ViewModels.SubViews
         // デフォルトの頑張り度
         private string DefaultLimit { get; } = ViewConfig.Instance.DefaultLimit;
 
-        // 追加スキル検索結果
-        // TODO:削除予定
-        public ReactivePropertySlim<ObservableCollection<BindableSkill>> ExtraSkills { get; } = new();
-
         // 追加スキル検索結果用VM
         public ReactivePropertySlim<ObservableCollection<SkillAdderViewModel>> ExtraSkillVMs { get; } = new();
-
-        // 最近使ったスキル
-        // TODO:削除予定
-        public ReactivePropertySlim<ObservableCollection<string>> RecentSkillNames { get; } = new();
 
         // 最近使ったスキル用VM
         public ReactivePropertySlim<ObservableCollection<SkillAdderViewModel>> RecentSkillVMs { get; } = new();
 
         //スキルカテゴリ表示部品のVM
         public ReactivePropertySlim<ObservableCollection<SkillPickerContainerViewModel>> SkillPickerContainerVMs { get; } = new();
+
+        // マイ検索条件表示部品のVM
+        public ReactivePropertySlim<ObservableCollection<MyConditionRowViewModel>> MyConditionVMs { get; } = new();
 
         // 武器スロ指定
         public ReactivePropertySlim<string> WeaponSlots { get; } = new();
@@ -108,6 +103,9 @@ namespace RiseSim.ViewModels.SubViews
         // 検索条件クリアコマンド
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
 
+        // マイ検索条件追加コマンド
+        public ReactiveCommand AddMyConditionCommand { get; } = new ReactiveCommand();
+
         // コマンドを設定
         private void SetCommand()
         {
@@ -116,6 +114,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
             CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
+            AddMyConditionCommand.Subscribe(_ => AddMyCondition());
         }
 
         private async Task Search()
@@ -191,7 +190,7 @@ namespace RiseSim.ViewModels.SubViews
             //LogBoxText.Value = LogSb.ToString();
             StatusBarText.Value = "検索完了";
 
-            MainViewModel.Instance.ShowSearchResult(result, Simulator.IsCanceling || !Simulator.IsSearchedAll);
+            MainViewModel.Instance.ShowSearchResult(result, Simulator.IsCanceling || !Simulator.IsSearchedAll, searchLimit);
         }
 
         private async Task SearchExtraSkill()
@@ -303,8 +302,19 @@ namespace RiseSim.ViewModels.SubViews
             // 最近使ったスキル読み込み
             LoadRecentSkills();
 
+            // マイ検索条件
+            LoadMyCondition();
+
             // コマンドを設定
             SetCommand();
+        }
+
+        public void LoadMyCondition()
+        {
+            List<SearchCondition> conditions = Masters.MyConditions;
+            MyConditionVMs.Value = new ObservableCollection<MyConditionRowViewModel>(
+                Masters.MyConditions.Select(condition => new MyConditionRowViewModel(condition))
+            );
         }
 
         // 最近使ったスキル読み込み
@@ -433,6 +443,45 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             //StatusBarText.Value = "検索条件反映：" + sb.ToString();
+        }
+
+        internal void ApplyMyCondition(SearchCondition condition)
+        {
+            // スキル
+            foreach (var vm in SkillPickerContainerVMs.Value)
+            {
+                vm.ClearAll();
+                vm.TryAddSkill(condition.Skills);
+            }
+
+            // スロット情報反映
+            WeaponSlots.Value = condition.WeaponSlot1 + "-" + condition.WeaponSlot2 + "-" + condition.WeaponSlot3;
+
+            // 性別を反映
+            SelectedSex.Value = condition.Sex.Str();
+
+            // 防御力・耐性を反映
+            Def.Value = condition.Def?.ToString() ?? string.Empty;
+            Fire.Value = condition.Fire?.ToString() ?? string.Empty;
+            Water.Value = condition.Water?.ToString() ?? string.Empty;
+            Thunder.Value = condition.Thunder?.ToString() ?? string.Empty;
+            Ice.Value = condition.Ice?.ToString() ?? string.Empty;
+            Dragon.Value = condition.Dragon?.ToString() ?? string.Empty;
+        }
+
+        internal void AddMyCondition()
+        {
+            SearchCondition condition = MakeCondition();
+            string condName = string.Empty;
+            bool hasSameName = true;
+            for (int i = 1; hasSameName; i++)
+            {
+                condName = "検索条件" + i;
+                hasSameName = Masters.MyConditions.Any(cond => cond.DispName == condName);
+            }
+            condition.DispName = condName;
+            Simulator.AddMyCondition(condition);
+            LoadMyCondition();
         }
     }
 }

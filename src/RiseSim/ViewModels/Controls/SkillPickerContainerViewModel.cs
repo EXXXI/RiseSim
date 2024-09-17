@@ -89,13 +89,14 @@ namespace RiseSim.ViewModels.Controls
             }
         }
 
-        internal bool TryAddSkill(string name, int level)
+        internal bool TryAddSkill(string name, int level, bool isFixed = false)
         {
             foreach (var vm in SkillPickerSelectors)
             {
                 if (vm.SelectedSkill.Value.Name == name)
                 {
                     vm.SelectLevel(level);
+                    vm.SetIsFix(isFixed);
                     return true;
                 }
             }
@@ -107,7 +108,7 @@ namespace RiseSim.ViewModels.Controls
             bool addedAny = false;
             foreach (var skill in skills)
             {
-                bool added = TryAddSkill(skill.Name, skill.Level);
+                bool added = TryAddSkill(skill.Name, skill.Level, skill.IsFixed);
                 addedAny = addedAny || added;
             }
             return addedAny;

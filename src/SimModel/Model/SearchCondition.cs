@@ -77,6 +77,10 @@ namespace SimModel.Model
                     sb.Append(skill.Name);
                     sb.Append(',');
                     sb.Append(skill.Level);
+                    if (skill.IsFixed)
+                    {
+                        sb.Append("固定");
+                    }
                     isFirst = false;
                 }
                 return sb.ToString();
@@ -91,7 +95,12 @@ namespace SimModel.Model
                     {
                         return;
                     }
-                    Skill skill = new(splitted[i], ParseUtil.Parse(splitted[++i]));
+                    string name = splitted[i];
+                    string levelStr = splitted[++i];
+                    bool isFixed = levelStr.EndsWith("固定");
+                    levelStr = levelStr.Replace("固定", string.Empty);
+                    Skill skill = new(name, ParseUtil.Parse(levelStr));
+                    skill.IsFixed = isFixed;
                     Skills.Add(skill);
                 }
             }
@@ -163,6 +172,4 @@ namespace SimModel.Model
         }
 
     }
-
-    
 }

@@ -17,6 +17,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // スキルレベル
         public int Level { get; set; }
 
+        // 固定フラグ
+        public bool IsFixed { get; set; }
+
         // 追加スキルフラグ
         public bool IsAdditional { get; set; }
 
@@ -33,6 +36,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             Level = skill.Level;
             IsAdditional = skill.IsAdditional;
             Description = skill.Description;
+            IsFixed = skill.IsFixed;
             Original = skill;
         }
 

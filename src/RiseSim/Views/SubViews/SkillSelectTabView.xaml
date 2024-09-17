@@ -15,7 +15,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
 
         <Grid Margin="10" Height="Auto" Width="Auto" VerticalAlignment="Top">
@@ -125,6 +125,23 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <StackPanel>
+                    <Button Content="現在の検索条件を保存する" Command="{Binding AddMyConditionCommand}"/>
+                    <ScrollViewer VerticalAlignment="Stretch">
+                        <ItemsControl ItemsSource="{Binding MyConditionVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:MyConditionRow Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

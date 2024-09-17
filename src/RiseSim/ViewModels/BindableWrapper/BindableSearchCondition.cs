@@ -47,6 +47,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         // CSV用スキル形式
         public ReactivePropertySlim<string> SkillCSV { get; set; } = new();
 
+        // 表示用詳細
+        public ReactivePropertySlim<string> Description { get; set; } = new();
+
         public SearchCondition Original { get; set; }
 
         // コンストラクタ
@@ -65,6 +68,23 @@ namespace RiseSim.ViewModels.BindableWrapper
             DispName.Value = condition.DispName;
             SkillCSV.Value = condition.SkillCSV;
             Original = condition;
+
+            Description.Value = MakeDescription(condition);
+        }
+
+        private string MakeDescription(SearchCondition condition)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"武器スロ:{WeaponSlot.Value}");
+            sb.AppendLine($"防御力:{Def.Value}, 性別:{SexCond.Value}");
+            sb.AppendLine($"火:{Fire.Value},水:{Water.Value},雷:{Thunder.Value},氷:{Ice.Value},龍:{Dragon.Value}");
+            foreach (var skill in Skills)
+            {
+                sb.Append(skill.PickerSelectorDisplayName);
+                sb.AppendLine(skill.IsFixed ? "(固定)" : string.Empty);
+            }
+
+            return sb.ToString();
         }
 
         // リストをまとめてバインド用クラスに変換

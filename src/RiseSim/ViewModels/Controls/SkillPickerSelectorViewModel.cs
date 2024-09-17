@@ -98,6 +98,11 @@ namespace RiseSim.ViewModels.Controls
             IsFixDisp.Value = NotFixStr;
         }
 
+        internal void SetIsFix(bool isFix)
+        {
+            IsFixDisp.Value = isFix ? FixStr : NotFixStr;
+        }
+
         ~SkillPickerSelectorViewModel() => Dispose(false);
 
     }

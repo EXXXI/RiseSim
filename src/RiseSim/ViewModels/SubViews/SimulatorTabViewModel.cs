@@ -80,8 +80,8 @@ namespace RiseSim.ViewModels.SubViews
         // 龍耐性指定
         public ReactivePropertySlim<string> Dragon { get; } = new(string.Empty);
 
-        // 頑張り度(検索件数)
-        public ReactivePropertySlim<string> Limit { get; } = new();
+        // 頑張り度(前回の検索の値を保存)
+        public int Limit { get; set; }
 
         // ログ表示
         public ReactivePropertySlim<string> LogBoxText { get; } = new();
@@ -264,7 +264,7 @@ namespace RiseSim.ViewModels.SubViews
             SelectedSex.Value = ViewConfig.Instance.DefaultSex.Str();
 
             // 頑張り度を設定
-            Limit.Value = DefaultLimit;
+            //Limit.Value = DefaultLimit;
 
             // 最近使ったスキル読み込み
             LoadRecentSkills();
@@ -281,7 +281,7 @@ namespace RiseSim.ViewModels.SubViews
             int searchLimit;
             try
             {
-                searchLimit = int.Parse(Limit.Value);
+                //searchLimit = int.Parse(Limit.Value);
             }
             catch (Exception)
             {
@@ -314,8 +314,8 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = true;
 
             // 検索
-            List<EquipSet> result = await Task.Run(() => Simulator.Search(condition, searchLimit));
-            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+            //List<EquipSet> result = await Task.Run(() => Simulator.Search(condition, searchLimit));
+            //SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -352,19 +352,6 @@ namespace RiseSim.ViewModels.SubViews
         // もっと検索
         async internal Task SearchMore()
         {
-            // 頑張り度を整理
-            // TODO:取得
-            int searchLimit;
-            try
-            {
-                searchLimit = int.Parse(Limit.Value);
-            }
-            catch (Exception)
-            {
-                // 数値以外が入力されていたら初期値を利用
-                searchLimit = int.Parse(DefaultLimit);
-            }
-
             // 開始ログ表示
             LogSb.Clear();
             LogSb.Append("■もっと検索開始：\n");
@@ -375,7 +362,7 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = true;
 
             // もっと検索
-            List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(searchLimit));
+            List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(Limit));
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
 
             // ビジーフラグ解除
@@ -815,10 +802,11 @@ namespace RiseSim.ViewModels.SubViews
             return null;
         }
 
-        internal void ShowSearchResult(List<EquipSet> result, bool remain)
+        internal void ShowSearchResult(List<EquipSet> result, bool remain, int limit)
         {
             SearchResult.Value = BindableEquipSet.BeBindableList(result);
             IsRemaining.Value = remain;
+            Limit = limit;
         }
     }
 }

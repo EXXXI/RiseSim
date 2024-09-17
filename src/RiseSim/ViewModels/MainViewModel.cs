@@ -6,6 +6,7 @@ using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Xml.Linq;
 
 namespace RiseSim.ViewModels
 {
@@ -182,15 +183,25 @@ namespace RiseSim.ViewModels
             MySetTabVM.Value.LoadMySets();
         }
 
-        internal void ShowSearchResult(List<EquipSet> result, bool remain)
+        internal void ShowSearchResult(List<EquipSet> result, bool remain, int limit)
         {
-            SimulatorTabVM.Value.ShowSearchResult(result, remain);
+            SimulatorTabVM.Value.ShowSearchResult(result, remain, limit);
             SelectedTabIndex.Value = SimulatorTabIndex;
         }
 
         internal void AddSkill(string name, int level)
         {
             SkillSelectTabVM.Value.AddSkill(name, level);
+        }
+
+        internal void LoadMyCondition()
+        {
+            SkillSelectTabVM.Value.LoadMyCondition();
+        }
+
+        internal void ApplyMyCondition(SearchCondition condition)
+        {
+            SkillSelectTabVM.Value.ApplyMyCondition(condition);
         }
     }
 }

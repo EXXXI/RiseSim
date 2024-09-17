@@ -100,7 +100,7 @@
                     <Button Content="中断" Command="{Binding CancelCommand}" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="50" Text="頑張り度"/>
-                        <ctrl:FocusTextBox x:Name="limitBox" Width="115" Text="{Binding Limit.Value}"/>
+                        <ctrl:FocusTextBox x:Name="limitBox" Width="115" Text=""/>
                     </StackPanel>
                 </StackPanel>
 

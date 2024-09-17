@@ -453,7 +453,7 @@ namespace SimModel.Domain
                     condition.Skills = newCondition.Skills;
 
                     // マスタへ反映
-                    CsvOperation.SaveIdealCSV();
+                    CsvOperation.SaveMyConditionCSV();
 
                     return;
                 }
