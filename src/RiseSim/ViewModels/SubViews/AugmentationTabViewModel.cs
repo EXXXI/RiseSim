@@ -1,5 +1,4 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
@@ -10,92 +9,165 @@ using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    internal class AugmentationTabViewModel : BindableBase
+    /// <summary>
+    /// 錬成装備タブのVM
+    /// </summary>
+    internal class AugmentationTabViewModel : ChildViewModelBase
     {
-        // MainViewModelから参照を取得
-        private Simulator Simulator { get; }
-        private ReactivePropertySlim<string> StatusBarText { get; }
-
-
-        // スロットの最大の大きさ
+        /// <summary>
+        /// スロットの最大の大きさ
+        /// </summary>
         private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
 
-
-        // 部位指定の選択肢
+        /// <summary>
+        /// 部位指定の選択肢
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> KindMaster { get; } = new();
 
-        // 部位指定
+        /// <summary>
+        /// 部位指定
+        /// </summary>
         public ReactivePropertySlim<string> Kind { get; } = new();
 
-        // ベース装備一覧
+        /// <summary>
+        /// ベース装備一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<BindableEquipment>> Equips { get; } = new();
 
-        // 選択したベース装備
-        public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
+        /// <summary>
+        /// 選択したベース装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment?> SelectedEquip { get; } = new();
 
-        // 入力中のベース装備名
+        /// <summary>
+        /// 入力中のベース装備名
+        /// </summary>
         public ReactivePropertySlim<string> InputBaseEquipName { get; } = new();
 
-        // 名前
+        /// <summary>
+        /// 名前
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 増加防御力
+        /// <summary>
+        /// 増加防御力
+        /// </summary>
         public ReactivePropertySlim<string> Def { get; } = new();
 
-        // スロット選択の選択肢
+        /// <summary>
+        /// スロット選択の選択肢
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
 
-        // スロット
+        /// <summary>
+        /// スロット
+        /// </summary>
         public ReactivePropertySlim<string> Slots { get; } = new();
 
-        // 増加火耐性
+        /// <summary>
+        /// 増加火耐性
+        /// </summary>
         public ReactivePropertySlim<string> Fire { get; } = new();
 
-        // 増加水耐性
+        /// <summary>
+        /// 増加水耐性
+        /// </summary>
         public ReactivePropertySlim<string> Water { get; } = new();
 
-        // 増加雷耐性
+        /// <summary>
+        /// 増加雷耐性
+        /// </summary>
         public ReactivePropertySlim<string> Thunder { get; } = new();
 
-        // 増加氷耐性
+        /// <summary>
+        /// 増加氷耐性
+        /// </summary>
         public ReactivePropertySlim<string> Ice { get; } = new();
 
-        // 増加龍耐性
+        /// <summary>
+        /// 増加龍耐性
+        /// </summary>
         public ReactivePropertySlim<string> Dragon { get; } = new();
 
-        // スキル選択部品のVM
+        /// <summary>
+        /// スキル選択部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> SkillSelectorVMs { get; } = new();
 
-        // 錬成装備一覧
+        /// <summary>
+        /// 錬成装備一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<BindableAugmentation>> Augmentations { get; } = new();
 
-        // 一覧の選択行データ
+        /// <summary>
+        /// 一覧の選択行データ
+        /// </summary>
         public ReactivePropertySlim<BindableAugmentation> SelectedAugmentation { get; } = new();
 
-
-        // 追加コマンド
+        /// <summary>
+        /// 追加コマンド
+        /// </summary>
         public ReactiveCommand AddCommand { get; private set; } = new();
 
-        // 削除コマンド
+        /// <summary>
+        /// 削除コマンド
+        /// </summary>
         public ReactiveCommand DeleteCommand { get; private set; } = new();
 
-        // 反映コマンド
+        /// <summary>
+        /// 反映コマンド
+        /// </summary>
         public ReactiveCommand InputCommand { get; private set; } = new();
 
-        // 上書きコマンド
+        /// <summary>
+        /// 上書きコマンド
+        /// </summary>
         public ReactiveCommand UpdateCommand { get; private set; } = new();
 
 
-        // コマンドを設定
-        private void SetCommand()
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public AugmentationTabViewModel()
         {
+            // スキル選択部品準備
+            ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
+            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
+            {
+                selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.Augmentation));
+            }
+            SkillSelectorVMs.Value = selectorVMs;
+
+            // スロットの選択肢を生成
+            ObservableCollection<string> slots = new();
+            for (int i = 0; i <= MaxSlotSize; i++)
+            {
+                for (int j = 0; j <= i; j++)
+                {
+                    for (int k = 0; k <= j; k++)
+                    {
+                        slots.Add(string.Join('-', i, j, k));
+                    }
+                }
+            }
+            SlotMaster.Value = slots;
+            Slots.Value = "0-0-0";
+
+            // 部位の選択肢を生成
+            ObservableCollection<string> kinds = new();
+            kinds.Add(EquipKind.head.Str());
+            kinds.Add(EquipKind.body.Str());
+            kinds.Add(EquipKind.arm.Str());
+            kinds.Add(EquipKind.waist.Str());
+            kinds.Add(EquipKind.leg.Str());
+            KindMaster.Value = kinds;
+            Kind.Value = EquipKind.head.Str();
+
+            // コマンドを設定
             Kind.Subscribe(_ => SetEquips());
             SelectedEquip.Subscribe(_ => SetSlots());
             AddCommand.Subscribe(_ => AddAugmentation());
@@ -104,7 +176,9 @@ namespace RiseSim.ViewModels.SubViews
             UpdateCommand.Subscribe(_ => UpdateAugmentation());
         }
 
-        // 上書きコマンド
+        /// <summary>
+        /// 上書きコマンド
+        /// </summary>
         private void UpdateAugmentation()
         {
             if (SelectedAugmentation.Value == null)
@@ -168,12 +242,14 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.UpdateAugmentation(aug);
 
             // 装備情報修正・マイセットの内容を更新
-            MainViewModel.Instance.LoadEquips();
+            MainVM.LoadEquips();
             Simulator.LoadMySet();
-            MainViewModel.Instance.LoadMySets();
+            MySetTabVM.LoadMySets();
         }
 
-        // 反映コマンド
+        /// <summary>
+        /// 反映コマンド
+        /// </summary>
         private void InputAugmentation()
         {
             if (SelectedAugmentation.Value == null)
@@ -215,55 +291,11 @@ namespace RiseSim.ViewModels.SubViews
 
         }
 
-        // コンストラクタ
-        public AugmentationTabViewModel()
-        {
-            // MainViewModelから参照を取得
-            Simulator = MainViewModel.Instance.Simulator;
-            StatusBarText = MainViewModel.Instance.StatusBarText;
-
-            // スキル選択部品準備
-            ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
-            for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
-            {
-                selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.Augmentation));
-            }
-            SkillSelectorVMs.Value = selectorVMs;
-
-            // スロットの選択肢を生成
-            ObservableCollection<string> slots = new();
-            for (int i = 0; i <= MaxSlotSize; i++)
-            {
-                for (int j = 0; j <= i; j++)
-                {
-                    for (int k = 0; k <= j; k++)
-                    {
-                        slots.Add(string.Join('-', i, j, k));
-                    }
-                }
-            }
-            SlotMaster.Value = slots;
-            Slots.Value = "0-0-0";
-
-            // 部位の選択肢を生成
-            ObservableCollection<string> kinds = new();
-            kinds.Add(EquipKind.head.Str());
-            kinds.Add(EquipKind.body.Str());
-            kinds.Add(EquipKind.arm.Str());
-            kinds.Add(EquipKind.waist.Str());
-            kinds.Add(EquipKind.leg.Str());
-            KindMaster.Value = kinds;
-            Kind.Value = EquipKind.head.Str();
-
-            // コマンドを設定
-            SetCommand();
-        }
-
-        // 錬成情報を追加
+        /// <summary>
+        /// 錬成情報を追加
+        /// </summary>
         private void AddAugmentation()
         {
-
-
             if (SelectedEquip.Value == null)
             {
                 foreach (var equip in Equips.Value)
@@ -312,10 +344,12 @@ namespace RiseSim.ViewModels.SubViews
 
             Simulator.AddAugmentation(aug);
 
-            MainViewModel.Instance.LoadEquips();
+            MainVM.LoadEquips();
         }
 
-        // 錬成情報を削除
+        /// <summary>
+        /// 錬成情報を削除
+        /// </summary>
         private void DeleteAugmentation()
         {
             BindableAugmentation aug = SelectedAugmentation.Value;
@@ -345,12 +379,15 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.DeleteAugmentation(SelectedAugmentation.Value.Original);
 
             // マスタをリロード
-            MainViewModel.Instance.LoadCludes();
-            MainViewModel.Instance.LoadMySets();
-            MainViewModel.Instance.LoadEquips();
+            CludeTabVM.LoadCludes();
+            MySetTabVM.LoadMySets();
+            MainVM.LoadEquips();
         }
 
-        // 指定した錬成装備を使っているマイセットがあったら削除
+        /// <summary>
+        /// 指定した錬成装備を使っているマイセットがあったら削除
+        /// </summary>
+        /// <param name="name">錬成装備名</param>
         private void DeleteMySetUsingAugmentation(string name)
         {
             List<EquipSet> delMySets = new();
@@ -371,7 +408,9 @@ namespace RiseSim.ViewModels.SubViews
             }
         }
 
-        // ベース装備一覧を変更
+        /// <summary>
+        /// ベース装備一覧を変更
+        /// </summary>
         private void SetEquips()
         {
             switch (Kind.Value)
@@ -401,14 +440,18 @@ namespace RiseSim.ViewModels.SubViews
             SelectedEquip.Value = null;
         }
 
-        // 錬成装備のマスタ情報をVMにロード
+        /// <summary>
+        /// 錬成装備のマスタ情報をVMにロード
+        /// </summary>
         internal void LoadAugmentations()
         {
             // 錬成装備情報の設定
             Augmentations.Value = BindableAugmentation.BeBindableList(Masters.Augmentations);
         }
 
-        // スロットの初期値を反映
+        /// <summary>
+        /// スロットの初期値を反映
+        /// </summary>
         private void SetSlots()
         {
             if (SelectedEquip?.Value != null)

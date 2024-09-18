@@ -1,58 +1,77 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
 using SimModel.Service;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    class MySetTabViewModel : BindableBase
+    /// <summary>
+    /// マイセット画面のVM
+    /// </summary>
+    class MySetTabViewModel : ChildViewModelBase
     {
-        // MainViewModelから参照を取得
-        private Simulator Simulator { get; }
-        private ReactivePropertySlim<string> StatusBarText { get; }
-
-
-        // マイセット一覧
+        /// <summary>
+        /// マイセット一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<BindableEquipSet>> MySetList { get; } = new();
 
-        // マイセットの選択行データ
+        /// <summary>
+        /// マイセットの選択行データ
+        /// </summary>
         public ReactivePropertySlim<BindableEquipSet> MyDetailSet { get; } = new();
 
-        // マイセット画面の装備詳細の各行のVM
+        /// <summary>
+        /// マイセット画面の装備詳細の各行のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<EquipRowViewModel>> MyEquipRowVMs { get; } = new();
 
-        // マイセット名前入力欄
+        /// <summary>
+        /// マイセット名前入力欄
+        /// </summary>
         public ReactivePropertySlim<string> MyDetailName { get; } = new();
 
-
-        // マイセット削除コマンド
+        /// <summary>
+        /// マイセット削除コマンド
+        /// </summary>
         public ReactiveCommand DeleteMySetCommand { get; } = new ReactiveCommand();
 
-        // マイセットの内容を検索条件に指定するコマンド
+        /// <summary>
+        /// マイセットの内容を検索条件に指定するコマンド
+        /// </summary>
         public ReactiveCommand InputMySetConditionCommand { get; } = new ReactiveCommand();
 
-        // マイセットの名前変更を保存するコマンド
+        /// <summary>
+        /// マイセットの名前変更を保存するコマンド
+        /// </summary>
         public ReactiveCommand ChangeNameCommand { get; } = new ReactiveCommand();
 
-        // 防具を除外するコマンド
+        /// <summary>
+        /// 防具を除外するコマンド
+        /// </summary>
         public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
 
-        // 防具を固定するコマンド
+        /// <summary>
+        /// 防具を固定するコマンド
+        /// </summary>
         public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
 
 
-        // コマンドを設定
-        private void SetCommand()
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public MySetTabViewModel()
         {
+            // マイセット画面の一覧と装備詳細を紐づけ
+            MyDetailSet.Subscribe(set => {
+                MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
+                MyDetailName.Value = MyDetailSet.Value?.Name ?? String.Empty;
+            });
+
+            // コマンドを設定
             DeleteMySetCommand.Subscribe(_ => DeleteMySet());
             InputMySetConditionCommand.Subscribe(_ => InputMySetCondition());
             ChangeNameCommand.Subscribe(_ => ChangeName());
@@ -60,25 +79,9 @@ namespace RiseSim.ViewModels.SubViews
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
         }
 
-        // 装備除外
-        private void Exclude(BindableEquipment? equip)
-        {
-            if (equip != null)
-            {
-                MainViewModel.Instance.AddExclude(equip.Name, equip.DispName);
-            }
-        }
-
-        // 装備固定
-        private void Include(BindableEquipment? equip)
-        {
-            if (equip != null)
-            {
-                MainViewModel.Instance.AddInclude(equip.Name, equip.DispName);
-            }
-        }
-
-        // マイセットの名前変更
+        /// <summary>
+        /// マイセットの名前変更
+        /// </summary>
         private void ChangeName()
         {
             if (MyDetailSet.Value == null)
@@ -96,7 +99,7 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.SaveMySet();
 
             // マイセットマスタのリロード
-            MainViewModel.Instance.LoadMySets();
+            LoadMySets();
 
             // 選択状態が解除されてしまうのでDetailSetを再選択
             foreach (var mySet in MySetList.Value)
@@ -108,27 +111,13 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // ログ表示
-            StatusBarText.Value = "マイセット名前変更：" + MyDetailName.Value;
+            SetStatusBar("マイセット名前変更：" + MyDetailName.Value);
         }
 
-        public MySetTabViewModel()
-        {
-            // MainViewModelから参照を取得
-            Simulator = MainViewModel.Instance.Simulator;
-            StatusBarText = MainViewModel.Instance.StatusBarText;
-
-            // マイセット画面の一覧と装備詳細を紐づけ
-            MyDetailSet.Subscribe(set => {
-                MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
-                MyDetailName.Value = MyDetailSet.Value?.Name ?? String.Empty;
-            });
-
-            // コマンドを設定
-            SetCommand();
-        }
-
-        // マイセットを削除
-        internal void DeleteMySet()
+        /// <summary>
+        /// マイセットを削除
+        /// </summary>
+        private void DeleteMySet()
         {
             EquipSet? set = MyDetailSet.Value?.Original;
             if (set == null)
@@ -151,23 +140,51 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.DeleteMySet(set);
 
             // マイセットマスタのリロード
-            MainViewModel.Instance.LoadMySets();
+            LoadMySets();
 
             // ログ表示
-            StatusBarText.Value = "マイセット解除：" + set.SimpleSetName;
+            SetStatusBar("マイセット解除：" + set.SimpleSetName);
         }
 
-        // マイセットのスキルをシミュ画面の検索条件に反映
-        internal void InputMySetCondition()
+        /// <summary>
+        /// マイセットのスキルをシミュ画面の検索条件に反映
+        /// </summary>
+        private void InputMySetCondition()
         {
-            MainViewModel.Instance.InputMySetCondition(MyDetailSet.Value?.Original);
+            SkillSelectTabVM.InputMySetCondition(MyDetailSet.Value?.Original);
         }
 
-        // マイセットのマスタ情報をVMにロード
+        /// <summary>
+        /// マイセットのマスタ情報をVMにロード
+        /// </summary>
         internal void LoadMySets()
         {
             // マイセット画面用のVMの設定
             MySetList.Value = BindableEquipSet.BeBindableList(Masters.MySets);
+        }
+
+        /// <summary>
+        /// 装備除外
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Exclude(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                CludeTabVM.AddExclude(equip.Name, equip.DispName);
+            }
+        }
+
+        /// <summary>
+        /// 装備固定
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Include(BindableEquipment? equip)
+        {
+            if (equip != null)
+            {
+                CludeTabVM.AddInclude(equip.Name, equip.DispName);
+            }
         }
     }
 }

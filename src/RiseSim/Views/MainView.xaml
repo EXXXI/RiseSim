@@ -29,7 +29,7 @@
             
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="シミュレータ" Style="{StaticResource ResourceKey=tabHeader}" />
+                    <TextBlock Text="検索結果" Style="{StaticResource ResourceKey=tabHeader}" />
                 </TabItem.Header>
                 <subviews:SimulatorTabView x:Name="simulator" DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
             </TabItem>
@@ -67,13 +67,6 @@
                     <TextBlock Text="マイセット" Style="{StaticResource ResourceKey=tabHeader}" />
                 </TabItem.Header>
                 <subviews:MySetTabView x:Name="myset" DataContext="{Binding MySetTabVM.Value, Mode=OneWay}"/>
-            </TabItem>
-
-            <TabItem>
-                <TabItem.Header>
-                    <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=tabHeader}" />
-                </TabItem.Header>
-                <subviews:MyConditionTabView DataContext="{Binding MyConditionTabVM.Value, Mode=OneWay}"/>
             </TabItem>
 
             <TabItem>

@@ -1,73 +1,98 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.Config;
+using RiseSim.Exceptions;
 using SimModel.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using RiseSim.Exceptions;
-using RiseSim.Views.Controls;
 
 namespace RiseSim.ViewModels.Controls
 {
-    class SkillSelectorViewModel : BindableBase
+    /// <summary>
+    /// スキル選択部品(スキル種類選択可)
+    /// </summary>
+    class SkillSelectorViewModel : ChildViewModelBase
     {
+        /// <summary>
+        /// 「固定」文字列
+        /// </summary>
         const string FixStr = "固定";
+
+        /// <summary>
+        /// 「以上」文字列
+        /// </summary>
         const string NotFixStr = "以上";
 
-        // TODO: あまりやりたくないのでいい方法を考えたい
-        // 画面インスタンス
-        public SkillSelector Instance { get; set; }
-
-        // スキル名一覧
+        /// <summary>
+        /// スキル名一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> Skills { get; } = new();
 
-        // 選択中スキルのレベル一覧
+        /// <summary>
+        /// 選択中スキルのレベル一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<int>> SkillLevels { get; } = new();
 
-        // 選択中スキル名
+        /// <summary>
+        /// 選択中スキル名
+        /// </summary>
         public ReactivePropertySlim<string> SkillName { get; } = new();
 
-        // 選択中スキルレベル
+        /// <summary>
+        /// 選択中スキルレベル
+        /// </summary>
         public ReactivePropertySlim<int> SkillLevel { get; } = new();
 
-        // 選択中スキル番号
+        /// <summary>
+        /// 選択中スキル番号
+        /// </summary>
         public ReactivePropertySlim<int> SkillIndex { get; } = new(-1);
 
-        // 画面の種類
+        /// <summary>
+        /// 画面の種類
+        /// </summary>
         public SkillSelectorKind Kind { get; set; } = SkillSelectorKind.Normal;
 
-        // スキル値固定の表示有無
+        /// <summary>
+        /// スキル値固定の表示有無
+        /// </summary>
         public ReactivePropertySlim<bool> IsWithFix { get; } = new(false);
 
-        // スキル値固定の表示候補
+        /// <summary>
+        /// スキル値固定の表示候補
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> IsFixDisps { get; } = new();
 
-        // スキル値固定の表示内容
+        /// <summary>
+        /// スキル値固定の表示内容
+        /// </summary>
         public ReactivePropertySlim<string> IsFixDisp { get; } = new();
 
-        // スキル値固定状態
+        /// <summary>
+        /// スキル値固定状態
+        /// </summary>
         public bool IsFix { get; set; } = false;
 
-        // プレースホルダーの表示フラグ
-        public ReactivePropertySlim<bool> ShowPlaceHolder { get; } = new();
+        /// <summary>
+        /// プレースホルダーの表示フラグ
+        /// </summary>
+        //public ReactivePropertySlim<bool> ShowPlaceHolder { get; } = new();
 
-        // プレースホルダーの内容
+        /// <summary>
+        /// プレースホルダーの内容
+        /// </summary>
         public ReactivePropertySlim<string> PlaceHolderText { get; } = new(ViewConfig.Instance.NoSkillName);
 
-
-        // クリアコマンド
+        /// <summary>
+        /// クリアコマンド
+        /// </summary>
         public ReactiveCommand ClearCommand { get; } = new ReactiveCommand();
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            ClearCommand.Subscribe(_ => SetDefault());
-            IsFixDisp.Subscribe(_ => { IsFix = IsFixDisp.Value == FixStr; });
-        }
 
-
-        // スキルマスタを読み込み
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="kind">部品の種類</param>
         public SkillSelectorViewModel(SkillSelectorKind kind = SkillSelectorKind.Normal)
         {
             Kind = kind;
@@ -79,7 +104,7 @@ namespace RiseSim.ViewModels.Controls
             IsFixDisps.Value.Add(FixStr);
             IsFixDisp.Value = NotFixStr;
 
-
+            // スキルの一覧
             ObservableCollection<string> skillList = new();
             foreach (var skill in Masters.Skills)
             {
@@ -91,38 +116,13 @@ namespace RiseSim.ViewModels.Controls
             SkillName.Subscribe(_ => SetLevels());
 
             // コマンドを設定
-            SetCommand();
+            ClearCommand.Subscribe(_ => SetDefault());
+            IsFixDisp.Subscribe(_ => { IsFix = IsFixDisp.Value == FixStr; });
         }
 
         /// <summary>
-        /// 特定のスキルを選択した状態のSkillSelectorViewModelを作って返す
+        /// 選択中スキル名にあわせてスキルレベルの選択肢を変更
         /// </summary>
-        /// <param name="skill"></param>
-        public SkillSelectorViewModel(Skill skill, SkillSelectorKind kind = SkillSelectorKind.Normal) : this(kind)
-        {
-            SkillName.Value = skill.Name;
-            SkillLevel.Value = skill.Level;
-        }
-
-        /// <summary>
-        /// このSkillSelectorが選択しているスキルをSkillにして返す
-        /// </summary>
-        public Skill GetSelectedSkill()
-        {
-            var sameNameSkills = Masters.Skills.Where(s => s.Name == SkillName.Value).ToList();
-
-            if (!sameNameSkills.Any())
-            {
-                throw new SkillNotFoundException(SkillName.Value);
-            }
-
-            return sameNameSkills.First() with
-            {
-                Level = Math.Min(sameNameSkills.Max(s => s.Level), SkillLevel.Value)
-            };
-        }
-
-        // 選択中スキル名にあわせてスキルレベルの選択肢を変更
         internal void SetLevels()
         {
             ObservableCollection<int> list = new();
@@ -180,7 +180,9 @@ namespace RiseSim.ViewModels.Controls
             }
         }
 
-        // 選択状態をリセット
+        /// <summary>
+        /// 選択状態をリセット
+        /// </summary>
         internal void SetDefault()
         {
             SkillName.Value = string.Empty;

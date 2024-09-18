@@ -1,5 +1,4 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
@@ -8,54 +7,55 @@ using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    class CharmTabViewModel : BindableBase
+    /// <summary>
+    /// 護石タブのVM
+    /// </summary>
+    class CharmTabViewModel : ChildViewModelBase
     {
-        // MainViewModelから参照を取得
-        private Simulator Simulator { get; }
-        private ReactivePropertySlim<string> StatusBarText { get; }
-
-
-        // 護石のスキル個数
+        /// <summary>
+        /// 護石のスキル個数
+        /// </summary>
         private int MaxCharmSkillCount { get; } = LogicConfig.Instance.MaxCharmSkillCount;
 
-        // スロットの最大の大きさ
+        /// <summary>
+        /// スロットの最大の大きさ
+        /// </summary>
         private int MaxSlotSize { get; } = ViewConfig.Instance.MaxSlotSize;
 
-        // 護石画面のスキル選択部品のVM
+        /// <summary>
+        /// 護石画面のスキル選択部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> CharmSkillSelectorVMs { get; } = new();
 
-        // 護石画面の一覧用部品のVM
+        /// <summary>
+        /// 護石画面の一覧用部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<CharmRowViewModel>> CharmRowVMs { get; } = new();
 
-        // 護石画面のスロット指定
+        /// <summary>
+        /// 護石画面のスロット指定
+        /// </summary>
         public ReactivePropertySlim<string> CharmWeaponSlots { get; } = new();
 
-        // スロット選択の選択肢
+        /// <summary>
+        /// スロット選択の選択肢
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> SlotMaster { get; } = new();
 
-
-        // 護石追加コマンド
+        /// <summary>
+        /// 護石追加コマンド
+        /// </summary>
         public ReactiveCommand AddCharmCommand { get; } = new ReactiveCommand();
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            AddCharmCommand.Subscribe(_ => AddCharm());
-        }
-
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public CharmTabViewModel()
         {
-            // MainViewModelから参照を取得
-            Simulator = MainViewModel.Instance.Simulator;
-            StatusBarText = MainViewModel.Instance.StatusBarText;
-
             // 護石画面のスキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> charmSelectorVMs = new();
             for (int i = 0; i < MaxCharmSkillCount; i++)
@@ -80,10 +80,12 @@ namespace RiseSim.ViewModels.SubViews
             CharmWeaponSlots.Value = "0-0-0";
 
             // コマンドを設定
-            SetCommand();
+            AddCharmCommand.Subscribe(_ => AddCharm());
         }
 
-        // 護石追加
+        /// <summary>
+        /// 護石追加
+        /// </summary>
         internal void AddCharm()
         {
             // スキルを整理
@@ -106,13 +108,17 @@ namespace RiseSim.ViewModels.SubViews
             Equipment added = Simulator.AddCharm(skills, weaponSlot1, weaponSlot2, weaponSlot3);
 
             // 装備マスタをリロード
-            MainViewModel.Instance.LoadEquips();
+            MainVM.LoadEquips();
 
             // ログ表示
-            StatusBarText.Value = "護石追加：" + added.DispName;
+            SetStatusBar("護石追加：" + added.DispName);
         }
 
-        // 護石削除
+        /// <summary>
+        /// 護石削除
+        /// </summary>
+        /// <param name="trueName">物理名</param>
+        /// <param name="dispName">表示名</param>
         internal void DeleteCharm(string trueName, string dispName)
         {
             if (string.IsNullOrEmpty(trueName))
@@ -141,15 +147,18 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.DeleteCharm(trueName);
 
             // マスタをリロード
-            MainViewModel.Instance.LoadCludes();
-            MainViewModel.Instance.LoadMySets();
-            MainViewModel.Instance.LoadEquips();
+            CludeTabVM.LoadCludes();
+            MySetTabVM.LoadMySets();
+            MainVM.LoadEquips();
 
             // ログ表示
-            StatusBarText.Value = "護石削除：" + dispName;
+            SetStatusBar("護石削除：" + dispName);
         }
 
-        // 指定した護石を使っているマイセットがあったら削除
+        /// <summary>
+        /// 指定した護石を使っているマイセットがあったら削除
+        /// </summary>
+        /// <param name="name">護石名</param>
         private void DeleteMySetUsingCharm(string name)
         {
             List<EquipSet> delMySets = new();
@@ -166,7 +175,9 @@ namespace RiseSim.ViewModels.SubViews
             }
         }
 
-        // 装備関係のマスタ情報をVMにロード
+        /// <summary>
+        /// 装備関係のマスタ情報をVMにロード
+        /// </summary>
         internal void LoadEquipsForCharm()
         {
 

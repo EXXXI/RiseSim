@@ -1,86 +1,58 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
 using SimModel.Service;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    class CludeTabViewModel : BindableBase
+    /// <summary>
+    /// 除外固定設定タブのVM
+    /// </summary>
+    class CludeTabViewModel : ChildViewModelBase
     {
-        // MainViewModelから参照を取得
-        private Simulator Simulator { get; }
-        private ReactivePropertySlim<string> StatusBarText { get; }
-
-
-        // 除外・固定画面の登録部品のVM
+        /// <summary>
+        /// 除外・固定画面の登録部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<EquipSelectRowViewModel>> EquipSelectRowVMs { get; } = new();
 
-        // 除外・固定画面の一覧表示の各行のVM
+        /// <summary>
+        /// 除外・固定画面の一覧表示の各行のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<CludeRowViewModel>> CludeRowVMs { get; } = new();
 
-        // 防具を除外するコマンド
+        /// <summary>
+        /// 除外固定をすべて解除するコマンド
+        /// </summary>
         public ReactiveCommand DeleteAllCludeCommand { get; } = new ReactiveCommand();
 
-        // 防具を除外するコマンド
+        /// <summary>
+        /// 防具を除外するコマンド
+        /// </summary>
         public ReactiveCommand ExcludeAllAugmentationCommand { get; } = new ReactiveCommand();
 
-        // 防具を除外するコマンド
+        /// <summary>
+        /// レア9以下防具を除外するコマンド
+        /// </summary>
         public ReactiveCommand ExcludeRare9Command { get; } = new ReactiveCommand(); 
 
-        // コマンドを設定
-        private void SetCommand()
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public CludeTabViewModel()
         {
+            // コマンドを設定
             DeleteAllCludeCommand.Subscribe(_ => DeleteAllClude());
             ExcludeAllAugmentationCommand.Subscribe(_ => ExcludeAllAugmentation());
             ExcludeRare9Command.Subscribe(_ => ExcludeRare9());
         }
 
-        // コンストラクタ
-        public CludeTabViewModel()
-        {
-            // MainViewModelから参照を取得
-            Simulator = MainViewModel.Instance.Simulator;
-            StatusBarText = MainViewModel.Instance.StatusBarText;
-            
-            // コマンドを設定
-            SetCommand();
-        }
-
-        // 装備のマスタ情報をVMにロード
-        internal void LoadEquipsForClude()
-        {
-            // 除外固定画面用のVMの設定
-            ObservableCollection<EquipSelectRowViewModel> equipList = new();
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.head.StrWithColon(), Masters.Heads));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.body.StrWithColon(), Masters.Bodys));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.arm.StrWithColon(), Masters.Arms));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.waist.StrWithColon(), Masters.Waists));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.leg.StrWithColon(), Masters.Legs));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.charm.StrWithColon(), Masters.Charms));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.deco.StrWithColon(), Masters.Decos));
-            EquipSelectRowVMs.Value = equipList;
-        }
-
-        // 除外固定のマスタ情報をVMにロード
-        internal void LoadCludes()
-        {
-            // 除外固定画面用のVMの設定
-            ObservableCollection<CludeRowViewModel> cludeList = new();
-            foreach (var clude in Masters.Cludes)
-            {
-                cludeList.Add(new CludeRowViewModel(clude));
-            }
-            CludeRowVMs.Value = cludeList;
-        }
-
-        // 除外装備設定
+        /// <summary>
+        /// 除外装備設定
+        /// </summary>
+        /// <param name="trueName">物理名</param>
+        /// <param name="dispName">表示名</param>
         internal void AddExclude(string trueName, string dispName)
         {
             if (string.IsNullOrEmpty(trueName))
@@ -96,10 +68,14 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "除外：" + dispName;
+            SetStatusBar("除外：" + dispName);
         }
 
-        // 固定装備設定
+        /// <summary>
+        /// 固定装備設定
+        /// </summary>
+        /// <param name="trueName">物理名</param>
+        /// <param name="dispName">表示名</param>
         internal void AddInclude(string trueName, string dispName)
         {
             if (string.IsNullOrEmpty(trueName))
@@ -115,10 +91,14 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "固定：" + dispName;
+            SetStatusBar("固定：" + dispName);
         }
 
-        // 除外・固定の解除
+        /// <summary>
+        /// 除外・固定の解除
+        /// </summary>
+        /// <param name="trueName">物理名</param>
+        /// <param name="dispName">表示名</param>
         internal void DeleteClude(string trueName, string dispName)
         {
             if (string.IsNullOrEmpty(trueName))
@@ -134,11 +114,13 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "解除：" + dispName;
+            SetStatusBar("解除：" + dispName);
         }
 
-        // 除外・固定の全解除
-        internal void DeleteAllClude()
+        /// <summary>
+        /// 除外・固定の全解除
+        /// </summary>
+        private void DeleteAllClude()
         {
             // 解除
             Simulator.DeleteAllClude();
@@ -147,11 +129,13 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "固定・除外を全解除";
+            SetStatusBar("固定・除外を全解除");
         }
 
-        // 錬成防具を全て除外
-        internal void ExcludeAllAugmentation()
+        /// <summary>
+        /// 錬成防具を全て除外
+        /// </summary>
+        private void ExcludeAllAugmentation()
         {
             // 除外
             Simulator.ExcludeAllAugmentation();
@@ -160,11 +144,13 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "錬成防具を全て除外";
+            SetStatusBar("錬成防具を全て除外");
         }
 
-        // レア9以下を全て除外
-        internal void ExcludeRare9()
+        /// <summary>
+        /// レア9以下を全て除外
+        /// </summary>
+        private void ExcludeRare9()
         {
             // 除外
             Simulator.ExcludeByRare(9);
@@ -173,7 +159,38 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            StatusBarText.Value = "錬成防具を全て除外";
+            SetStatusBar("錬成防具を全て除外");
+        }
+
+        /// <summary>
+        /// 装備のマスタ情報をVMにロード
+        /// </summary>
+        internal void LoadEquipsForClude()
+        {
+            // 除外固定画面用のVMの設定
+            ObservableCollection<EquipSelectRowViewModel> equipList = new();
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.head.StrWithColon(), Masters.Heads));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.body.StrWithColon(), Masters.Bodys));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.arm.StrWithColon(), Masters.Arms));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.waist.StrWithColon(), Masters.Waists));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.leg.StrWithColon(), Masters.Legs));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.charm.StrWithColon(), Masters.Charms));
+            equipList.Add(new EquipSelectRowViewModel(EquipKind.deco.StrWithColon(), Masters.Decos));
+            EquipSelectRowVMs.Value = equipList;
+        }
+
+        /// <summary>
+        /// 除外固定のマスタ情報をVMにロード
+        /// </summary>
+        internal void LoadCludes()
+        {
+            // 除外固定画面用のVMの設定
+            ObservableCollection<CludeRowViewModel> cludeList = new();
+            foreach (var clude in Masters.Cludes)
+            {
+                cludeList.Add(new CludeRowViewModel(clude));
+            }
+            CludeRowVMs.Value = cludeList;
         }
     }
 }

@@ -13,103 +13,12 @@
     <Grid>
         <!-- グリッド設定 -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
             <ColumnDefinition />
             <ColumnDefinition Width="220" />
         </Grid.ColumnDefinitions>
 
-        <!-- 左ペイン -->
-        <ScrollViewer>
-            <Grid>
-                <!-- グリッド設定 -->
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- 条件入力 -->
-                <StackPanel Grid.Row="0">
-                    <StackPanel.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="検索条件を全てクリアする" Command="{Binding ClearAllCommand}"/>
-                            <MenuItem Header="最近使ったスキルから検索条件に追加する" ItemsSource="{Binding RecentSkillNames.Value}" Command="{Binding AddExtraSkillCommand}">
-                                <MenuItem.ItemContainerStyle>
-                                    <Style TargetType="MenuItem">
-                                        <Setter Property="Header" Value="{Binding}"/>
-                                        <Setter Property="Command" Value="{Binding DataContext.AddRecentSkillCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
-                                        <Setter Property="CommandParameter" Value="{Binding}"/>
-                                    </Style>
-                                </MenuItem.ItemContainerStyle>
-                            </MenuItem>
-                            <MenuItem Header="追加スキル検索結果から検索条件に追加する" ItemsSource="{Binding ExtraSkills.Value}">
-                                <MenuItem.ItemContainerStyle>
-                                    <Style TargetType="MenuItem">
-                                        <Setter Property="Header" Value="{Binding Description}"/>
-                                        <Setter Property="Command" Value="{Binding DataContext.AddExtraSkillCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
-                                        <Setter Property="CommandParameter" Value="{Binding}"/>
-                                    </Style>
-                                </MenuItem.ItemContainerStyle>
-                            </MenuItem>
-                            <MenuItem Header="検索条件をマイ検索条件に追加する" Command="{Binding AddMyConditionCommand}"/>
-                        </ContextMenu>
-                    </StackPanel.ContextMenu>
-                    <StackPanel>
-                        <Button x:Name="LaunchSkillPicker" 
-                                Content="スキルピッカーを開く"
-                                Command="{Binding Path=LaunchSkillPickerCommand}"/>
-                    </StackPanel>
-                    <StackPanel>
-                        <ItemsControl ItemsSource="{Binding SkillSelectorVMs.Value, Mode=OneWay}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <ctrl:SkillSelector/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="50" Text="武器スロ"/>
-                        <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}" SelectedItem="{Binding WeaponSlots.Value}" Width="115" SelectedIndex="0">
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="40" Text="防御力"/>
-                        <ctrl:FocusTextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></ctrl:FocusTextBox>
-                        <TextBlock Width="30" Text="性別"/>
-                        <ComboBox ItemsSource="{Binding SexMaster.Value, Mode=OneWay}" SelectedItem="{Binding SelectedSex.Value}" Width="53" SelectedIndex="0">
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="12" Text="火"/>
-                        <ctrl:FocusTextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
-                        <TextBlock Width="12" Text="水"/>
-                        <ctrl:FocusTextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
-                        <TextBlock Width="12" Text="雷"/>
-                        <ctrl:FocusTextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
-                        <TextBlock Width="12" Text="氷"/>
-                        <ctrl:FocusTextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
-                        <TextBlock Width="12" Text="龍"/>
-                        <ctrl:FocusTextBox Width="17" Text="{Binding Dragon.Value}"></ctrl:FocusTextBox>
-                    </StackPanel>
-                    <CheckBox IsChecked="{Binding IsIncludeIdeal.Value}">理想錬成を使う</CheckBox>
-                    <CheckBox IsChecked="{Binding IsPrioritizeNoIdeal.Value}" IsEnabled="{Binding IsIncludeIdeal.Value}" Margin="7.5,0,0,0">既存装備を優先する</CheckBox>
-                    <CheckBox IsChecked="{Binding IsExcludeAbstract.Value}" IsEnabled="{Binding IsPrioritizeNoIdeal.Value}" Margin="15,0,0,0">同等の既存装備で組める場合を除外</CheckBox>
-                    <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
-                    <Button x:Name="searchMoreButton" Content="もっと検索する" Command="{Binding SearchMoreCommand}" />
-                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
-                    <Button Content="中断" Command="{Binding CancelCommand}" />
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="50" Text="頑張り度"/>
-                        <ctrl:FocusTextBox x:Name="limitBox" Width="115" Text=""/>
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- ログ出力 -->
-                <TextBox x:Name="logBox" Grid.Column="0" Text="{Binding LogBoxText.Value, Mode=OneWay}" Grid.Row="1" MinHeight="250"/>
-            </Grid>
-        </ScrollViewer>
-        <!-- 中央ペイン：結果出力 -->
-        <Grid Grid.Column="1">
+        <!-- 結果出力ペイン -->
+        <Grid>
             <!-- グリッド設定 -->
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -179,7 +88,7 @@
             </StackPanel>
         </Grid>
         <!-- 右ペイン -->
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="1">
             <!-- グリッド設定 -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

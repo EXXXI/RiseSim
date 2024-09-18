@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class EquipSelectRowViewModel : BindableBase
+    internal class EquipSelectRowViewModel : ChildViewModelBase
     {
         // 表示用装備種類
         public ReactivePropertySlim<string> DispKind { get; } = new();
@@ -72,7 +72,7 @@ namespace RiseSim.ViewModels.Controls
 
             if (SelectedEquip.Value != null)
             {
-                MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
 
@@ -92,7 +92,7 @@ namespace RiseSim.ViewModels.Controls
             }
             if (SelectedEquip.Value != null)
             {
-                MainViewModel.Instance.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
             }
         }
     }
