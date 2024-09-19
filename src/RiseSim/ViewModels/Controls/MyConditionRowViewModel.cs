@@ -1,40 +1,64 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class MyConditionRowViewModel : BindableBase
+    /// <summary>
+    /// マイ検索条件表示部品
+    /// </summary>
+    internal class MyConditionRowViewModel : ChildViewModelBase
     {
+        /// <summary>
+        /// マイ検索条件
+        /// </summary>
         public BindableSearchCondition Condition { get; }
 
+        /// <summary>
+        /// 名前変更中
+        /// </summary>
         public ReactivePropertySlim<bool> IsRenaming { get; } = new(false);
 
+        /// <summary>
+        /// 名前変更中でない
+        /// </summary>
         public ReactivePropertySlim<bool> IsNotRenaming { get; } = new(true);
 
+        /// <summary>
+        /// 名前変更時の入力した名前
+        /// </summary>
         public ReactivePropertySlim<string> InputName { get; } = new();
 
-        // 名称変更開始コマンド
+        /// <summary>
+        /// 名称変更開始コマンド
+        /// </summary>
         public ReactiveCommand BeginRenameCommand { get; private set; }
 
-        // 名称変更完了コマンド
+        /// <summary>
+        /// 名称変更完了コマンド
+        /// </summary>
         public ReactiveCommand ApplyRenameCommand { get; private set; }
 
-        // 名称変更キャンセルコマンド
+        /// <summary>
+        /// 名称変更キャンセルコマンド
+        /// </summary>
         public ReactiveCommand CancelRenameCommand { get; private set; }
 
-        // 検索条件適用コマンド
+        /// <summary>
+        /// 検索条件適用コマンド
+        /// </summary>
         public ReactiveCommand ApplyConditionCommand { get; } = new();
 
-        // 検索条件削除コマンド
+        /// <summary>
+        /// 検索条件削除コマンド
+        /// </summary>
         public ReactiveCommand DeleteConditionCommand { get; } = new();
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="condition">マイ検索条件</param>
         public MyConditionRowViewModel(SearchCondition condition)
         {
             Condition = new BindableSearchCondition(condition);
@@ -48,30 +72,41 @@ namespace RiseSim.ViewModels.Controls
             DeleteConditionCommand.Subscribe(() => DeleteCondition());
         }
 
-        private void DeleteCondition()
-        {
-            MainViewModel.Instance.Simulator.DeleteMyCondition(Condition.Original);
-            MainViewModel.Instance.LoadMyCondition();
-        }
-
+        /// <summary>
+        /// マイ検索条件適用
+        /// </summary>
         private void ApplyMyCondition()
         {
-            MainViewModel.Instance.ApplyMyCondition(Condition.Original);
+            SkillSelectTabVM.ApplyMyCondition(Condition.Original);
         }
 
+        /// <summary>
+        /// マイ検索条件削除
+        /// </summary>
+        private void DeleteCondition()
+        {
+            Simulator.DeleteMyCondition(Condition.Original);
+            SkillSelectTabVM.LoadMyCondition();
+        }
+
+        /// <summary>
+        /// 名前変更キャンセル
+        /// </summary>
         private void CancelRename()
         {
             InputName.Value = Condition.DispName.Value;
             IsRenaming.Value = false;
         }
 
+        /// <summary>
+        /// 名前変更確定
+        /// </summary>
         private void ApplyRename()
         {
             IsRenaming.Value = false;
             Condition.Original.DispName = InputName.Value;
-            MainViewModel.Instance.Simulator.UpdateMyCondition(Condition.Original);
-            MainViewModel.Instance.LoadMyCondition();
-
+            Simulator.UpdateMyCondition(Condition.Original);
+            SkillSelectTabVM.LoadMyCondition();
         }
     }
 }

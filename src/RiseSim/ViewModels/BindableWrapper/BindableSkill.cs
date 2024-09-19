@@ -1,35 +1,48 @@
-﻿using Prism.Mvvm;
-using SimModel.Model;
-using System;
+﻿using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableSkill : BindableBase
+    /// <summary>
+    /// バインド用Skill
+    /// </summary>
+    internal class BindableSkill : ChildViewModelBase
     {   
-        // スキル名
+        /// <summary>
+        /// スキル名
+        /// </summary>
         public string Name { get; }
 
-        // スキルレベル
+        /// <summary>
+        /// スキルレベル
+        /// </summary>
         public int Level { get; set; }
 
-        // 固定フラグ
+        /// <summary>
+        /// 固定フラグ
+        /// </summary>
         public bool IsFixed { get; set; }
 
-        // 追加スキルフラグ
+        /// <summary>
+        /// 追加スキルフラグ
+        /// </summary>
         public bool IsAdditional { get; set; }
 
-        // 説明
+        /// <summary>
+        /// 説明
+        /// </summary>
         public string Description { get; }
 
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public Skill Original { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="skill"></param>
         public BindableSkill(Skill skill)
         {
             Name = skill.Name;
@@ -40,7 +53,11 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = skill;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
         static public ObservableCollection<BindableSkill> BeBindableList(List<Skill> list)
         {
             ObservableCollection<BindableSkill> bindableList = new ObservableCollection<BindableSkill>();

@@ -1,7 +1,6 @@
 ﻿using SimModel.Config;
 using SimModel.Domain;
 using SimModel.Model;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,19 +8,29 @@ using System.Threading.Tasks;
 
 namespace SimModel.Service
 {
-    // シミュ本体
+    /// <summary>
+    /// シミュ本体
+    /// </summary>
     public class Simulator
     {
-        // 検索インスタンス
+        /// <summary>
+        /// 検索インスタンス
+        /// </summary>
         private Searcher Searcher { get; set; }
 
-        // 全件検索完了フラグ
+        /// <summary>
+        /// 全件検索完了フラグ
+        /// </summary>
         public bool IsSearchedAll { get; set; }
 
-        // 中断フラグ
+        /// <summary>
+        /// 中断フラグ
+        /// </summary>
         public bool IsCanceling { get; private set; } = false;
 
-        // データ読み込み
+        /// <summary>
+        /// データ読み込み
+        /// </summary>
         public void LoadData()
         {
             // マスタデータ類の読み込み
@@ -46,7 +55,12 @@ namespace SimModel.Service
             CsvOperation.LoadMySetCSV();
         }
 
-        // 新規検索
+        /// <summary>
+        /// 新規検索
+        /// </summary>
+        /// <param name="condition">検索条件</param>
+        /// <param name="limit">頑張り度</param>
+        /// <returns>検索結果</returns>
         public List<EquipSet> Search(SearchCondition condition, int limit)
         {
             ResetIsCanceling();
@@ -61,7 +75,11 @@ namespace SimModel.Service
             return Searcher.ResultSets;
         }
 
-        // 条件そのまま追加検索
+        /// <summary>
+        /// 条件そのまま追加検索
+        /// </summary>
+        /// <param name="limit">頑張り度</param>
+        /// <returns>検索結果</returns>
         public List<EquipSet> SearchMore(int limit)
         {
             ResetIsCanceling();
@@ -77,27 +95,16 @@ namespace SimModel.Service
             return Searcher.ResultSets;
         }
 
-        // 追加スキル検索
-        // TODO:こっちは削除予定
-        public List<Skill> SearchExtraSkill()
-        {
-            ResetIsCanceling();
-
-            // まだ検索がされていない場合、0件で返す
-            if (Searcher == null)
-            {
-                return new List<Skill>();
-            }
-            return SearchExtraSkill(Searcher.Condition);
-        }
-
-        // 追加スキル検索
+        /// <summary>
+        /// 追加スキル検索
+        /// </summary>
+        /// <param name="condition">検索条件</param>
+        /// <returns>検索結果</returns>
         public List<Skill> SearchExtraSkill(SearchCondition condition)
         {
             ResetIsCanceling();
 
             List<Skill> exSkills = new();
-
 
             // 全スキル全レベルを走査
             Parallel.ForEach(Masters.Skills,
@@ -168,7 +175,11 @@ namespace SimModel.Service
         }
 
 
-        // 錬成の別パターン検索
+        /// <summary>
+        /// 錬成の別パターン検索
+        /// </summary>
+        /// <param name="set">装備セット</param>
+        /// <returns>検索結果</returns>
         public List<EquipSet> SearchOtherGenericSkillPattern(EquipSet set)
         {
             ResetIsCanceling();
@@ -306,6 +317,12 @@ namespace SimModel.Service
             return result;
         }
 
+        /// <summary>
+        /// 錬成スキルが適正かどうか判断
+        /// </summary>
+        /// <param name="set">装備セット</param>
+        /// <param name="pattern">錬成パターン</param>
+        /// <returns>適正ならtrue</returns>
         private bool IsValidCost(EquipSet set, SortedDictionary<string, int> pattern)
         {
             int[] reqGSkills = { 0, 0, 0, 0, 0 }; // 要求
@@ -372,10 +389,17 @@ namespace SimModel.Service
             return true;
         }
 
+        /// <summary>
+        /// 錬成パターン作成
+        /// </summary>
+        /// <param name="targetEquipNames">錬成対象スキル</param>
+        /// <param name="nestCount">残り錬成可能数</param>
+        /// <returns></returns>
         private List<SortedDictionary<string, int>> MakeGskillPattern(List<string> targetEquipNames, int nestCount)
         {
             if (nestCount < 1)
             {
+                // 錬成可能数が残ってない場合、取得パターンは空
                 List<SortedDictionary<string, int>> emptyList = new();
                 emptyList.Add(new SortedDictionary<string, int>());
                 return emptyList;
@@ -383,6 +407,7 @@ namespace SimModel.Service
             else
             {
                 List<SortedDictionary<string, int>> newPatterns = new();
+                // １つ少ない錬成可能数の錬成パターンを先に計算し、それに1スキル追加したパターンを総当たりで作る
                 foreach (var oldPattern in MakeGskillPattern(targetEquipNames, nestCount - 1))
                 {
                     foreach (var target in targetEquipNames)
@@ -403,127 +428,191 @@ namespace SimModel.Service
             }
         }
 
-        // 除外装備登録
+        /// <summary>
+        /// 除外装備登録
+        /// </summary>
+        /// <param name="name">対象装備名</param>
+        /// <returns>追加できた場合その設定、追加できなかった場合null</returns>
         public Clude? AddExclude(string name)
         {
             return DataManagement.AddExclude(name);
         }
 
-        // 固定装備登録
+        /// <summary>
+        /// 固定装備登録
+        /// </summary>
+        /// <param name="name">対象装備名</param>
+        /// <returns>追加できた場合その設定、追加できなかった場合null</returns>
         public Clude? AddInclude(string name)
         {
             return DataManagement.AddInclude(name);
         }
 
-        // 除外・固定解除
+        /// <summary>
+        /// 除外・固定解除
+        /// </summary>
+        /// <param name="name">対象装備名</param>
         public void DeleteClude(string name)
         {
             DataManagement.DeleteClude(name);
         }
 
-        // 除外・固定全解除
+        /// <summary>
+        /// 除外・固定全解除
+        /// </summary>
         public void DeleteAllClude()
         {
             DataManagement.DeleteAllClude();
         }
 
-        // 錬成防具を全除外
+        /// <summary>
+        /// 錬成防具を全除外
+        /// </summary>
         public void ExcludeAllAugmentation()
         {
             DataManagement.ExcludeAllAugmentation();
         }
 
-        // 指定レア度以下を全除外
+        /// <summary>
+        /// 指定レア度以下を全除外
+        /// </summary>
+        /// <param name="rare">レア度</param>
         public void ExcludeByRare(int rare)
         {
             DataManagement.ExcludeByRare(rare);
         }
 
-        // 護石追加
+        /// <summary>
+        /// 護石追加
+        /// </summary>
+        /// <param name="skill">スキルリスト</param>
+        /// <param name="slot1">スロット1</param>
+        /// <param name="slot2">スロット2</param>
+        /// <param name="slot3">スロット3</param>
+        /// <returns>登録装備</returns>
         public Equipment AddCharm(List<Skill> skill, int slot1, int slot2, int slot3)
         {
             return DataManagement.AddCharm(skill, slot1, slot2, slot3);
         }
 
-        // 護石削除
+        /// <summary>
+        /// 護石削除
+        /// </summary>
+        /// <param name="guid">削除対象</param>
         public void DeleteCharm(string guid)
         {
             DataManagement.DeleteCharm(guid);
         }
 
-        // マイセット登録
+        /// <summary>
+        /// マイセット登録
+        /// </summary>
+        /// <param name="set">マイセット</param>
+        /// <returns>登録セット</returns>
         public EquipSet AddMySet(EquipSet set)
         {
             return DataManagement.AddMySet(set);
         }
 
-        // マイセット削除
+        /// <summary>
+        /// マイセット削除
+        /// </summary>
+        /// <param name="set">削除対象</param>
         public void DeleteMySet(EquipSet set)
         {
             DataManagement.DeleteMySet(set);
         }
 
-        // マイセット更新
+        /// <summary>
+        /// マイセット更新
+        /// </summary>
         public void SaveMySet()
         {
             DataManagement.SaveMySet();
         }
 
-        // マイセット再読み込み
+        /// <summary>
+        /// マイセット再読み込み
+        /// </summary>
         public void LoadMySet()
         {
             DataManagement.LoadMySet();
         }
 
-        // 最近使ったスキル更新
+        /// <summary>
+        /// 最近使ったスキル更新
+        /// </summary>
+        /// <param name="skills">検索で使ったスキル</param>
         public void UpdateRecentSkill(List<Skill> skills)
         {
             DataManagement.UpdateRecentSkill(skills);
         }
 
-        // 錬成装備登録
+        /// <summary>
+        /// 錬成装備登録
+        /// </summary>
+        /// <param name="aug">登録対象</param>
         public void AddAugmentation(Augmentation aug)
         {
             DataManagement.AddAugmentation(aug);
         }
 
-        // 錬成装備削除
+        /// <summary>
+        /// 錬成装備削除
+        /// </summary>
+        /// <param name="aug">削除対象</param>
         public void DeleteAugmentation(Augmentation aug)
         {
             DataManagement.DeleteAugmentation(aug);
         }
 
-        // 錬成装備更新
+        /// <summary>
+        /// 錬成装備更新
+        /// </summary>
+        /// <param name="aug">更新対象</param>
         public void UpdateAugmentation(Augmentation aug)
         {
             DataManagement.UpdateAugmentation(aug);
         }
 
-        // 理想錬成登録
+        /// <summary>
+        /// 理想錬成登録
+        /// </summary>
+        /// <param name="ideal">登録対象</param>
         public void AddIdealAugmentation(IdealAugmentation ideal)
         {
             DataManagement.AddIdealAugmentation(ideal);
         }
 
-        // 理想錬成削除
+        /// <summary>
+        /// 理想錬成削除
+        /// </summary>
+        /// <param name="ideal">削除対象</param>
         public void DeleteIdealAugmentation(IdealAugmentation ideal)
         {
             DataManagement.DeleteIdealAugmentation(ideal);
         }
 
-        // 理想錬成更新
+        /// <summary>
+        /// 理想錬成更新
+        /// </summary>
+        /// <param name="ideal">更新対象</param>
         public void UpdateIdealAugmentation(IdealAugmentation ideal)
         {
             DataManagement.UpdateIdealAugmentation(ideal);
         }
 
-        // 装備マスタリロード
+        /// <summary>
+        /// 装備マスタリロード
+        /// </summary>
         public void RefreshEquipmentMasters()
         {
             Masters.RefreshEquipmentMasters();
         }
 
-        // 中断フラグをオン
+        /// <summary>
+        /// 中断フラグをオン
+        /// </summary>
         public void Cancel()
         {
             IsCanceling = true;
@@ -533,7 +622,9 @@ namespace SimModel.Service
             }
         }
 
-        // 中断フラグをリセット
+        /// <summary>
+        /// 中断フラグをリセット
+        /// </summary>
         public void ResetIsCanceling()
         {
             IsCanceling = false;
@@ -543,26 +634,36 @@ namespace SimModel.Service
             }
         }
 
-        // マイ検索条件登録
+        /// <summary>
+        /// マイ検索条件登録
+        /// </summary>
+        /// <param name="condition">登録対象</param>
         public void AddMyCondition(SearchCondition condition)
         {
             DataManagement.AddMyCondition(condition);
         }
 
-        // マイ検索条件削除
+        /// <summary>
+        /// マイ検索条件削除
+        /// </summary>
+        /// <param name="condition">削除対象</param>
         public void DeleteMyCondition(SearchCondition condition)
         {
             DataManagement.DeleteMyCondition(condition);
         }
 
-        // マイ検索条件更新
+        /// <summary>
+        /// マイ検索条件更新
+        /// </summary>
+        /// <param name="condition">更新対象</param>
         public void UpdateMyCondition(SearchCondition condition)
         {
             DataManagement.UpdateMyCondition(condition);
         }
 
-        // TODO:名前が良くない　というか設計が良くない
-        // 理想錬成更新
+        /// <summary>
+        /// 理想錬成更新
+        /// </summary>
         public void SaveIdeal()
         {
             DataManagement.SaveIdeal();

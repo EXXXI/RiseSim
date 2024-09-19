@@ -1,41 +1,49 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using SimModel.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class CludeRowViewModel : BindableBase
+    /// <summary>
+    /// 除外固定装備表示部品
+    /// </summary>
+    internal class CludeRowViewModel : ChildViewModelBase
     {
-        // 表示用装備種類
+        /// <summary>
+        /// 表示用装備種類
+        /// </summary>
         public ReactivePropertySlim<string> DispKind { get; } = new();
 
-        // 表示用装備名
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 除外・固定状況
+        /// <summary>
+        /// 除外・固定状況
+        /// </summary>
         public ReactivePropertySlim<string> Status { get; } = new();
 
-        // 管理用装備種類
+        /// <summary>
+        /// 管理用装備種類
+        /// </summary>
         public EquipKind TrueKind { get; set; }
 
-        // 管理用装備名
+        /// <summary>
+        /// 管理用装備名
+        /// </summary>
         public string TrueName { get; set; }
 
-        // 除外・固定解除コマンド
+        /// <summary>
+        /// 除外・固定解除コマンド
+        /// </summary>
         public ReactiveCommand DeleteCludeCommand { get; } = new ReactiveCommand();
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            DeleteCludeCommand.Subscribe(_ => DeleteClude());
-        }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="clude">除外固定情報</param>
+        /// <exception cref="ArgumentException"></exception>
         public CludeRowViewModel(Clude clude)
         {
             Equipment? equip = Masters.GetEquipByName(clude.Name, false);
@@ -60,13 +68,15 @@ namespace RiseSim.ViewModels.Controls
             }
 
             // コマンド設定
-            SetCommand();
+            DeleteCludeCommand.Subscribe(_ => DeleteClude());
         }
 
-        // 除外・固定の解除
-        internal void DeleteClude()
+        /// <summary>
+        /// 除外・固定の解除
+        /// </summary>
+        private void DeleteClude()
         {
-            MainViewModel.Instance.DeleteClude(TrueName, DispName.Value);
+            CludeTabVM.DeleteClude(TrueName, DispName.Value);
         }
     }
 }

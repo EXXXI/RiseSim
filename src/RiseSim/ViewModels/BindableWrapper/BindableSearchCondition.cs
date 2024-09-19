@@ -1,58 +1,90 @@
 ﻿using Reactive.Bindings;
 using SimModel.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableSearchCondition
+    /// <summary>
+    /// バインド用マイ検索条件
+    /// </summary>
+    internal class BindableSearchCondition : ChildViewModelBase
     {
-        // スキルリスト
+        /// <summary>
+        /// スキルリスト
+        /// </summary>
         public ObservableCollection<BindableSkill> Skills { get; set; } = new();
 
-        // 武器スロ
+        /// <summary>
+        /// 武器スロ
+        /// </summary>
         public ReactivePropertySlim<string> WeaponSlot { get; set; } = new();
 
-        // 防御力
+        /// <summary>
+        /// 防御力
+        /// </summary>
         public ReactivePropertySlim<string> Def { get; set; } = new();
 
-        // 火耐性
+        /// <summary>
+        /// 火耐性
+        /// </summary>
         public ReactivePropertySlim<string> Fire { get; set; } = new();
 
-        // 水耐性
+        /// <summary>
+        /// 水耐性
+        /// </summary>
         public ReactivePropertySlim<string> Water { get; set; } = new();
 
-        // 雷耐性
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
         public ReactivePropertySlim<string> Thunder { get; set; } = new();
 
-        // 氷耐性
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
         public ReactivePropertySlim<string> Ice { get; set; } = new();
 
-        // 龍耐性
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
         public ReactivePropertySlim<string> Dragon { get; set; } = new();
 
-        // 性別
+        /// <summary>
+        /// 性別
+        /// </summary>
         public ReactivePropertySlim<string> SexCond { get; set; } = new();
 
-        // マイ検索条件保存用ID
+        /// <summary>
+        /// マイ検索条件保存用ID
+        /// </summary>
         public string ID { get; set; }
 
-        // マイ検索条件保存用名前
+        /// <summary>
+        /// マイ検索条件保存用名前
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; set; } = new();
 
-        // CSV用スキル形式
+        /// <summary>
+        /// CSV用スキル形式
+        /// </summary>
         public ReactivePropertySlim<string> SkillCSV { get; set; } = new();
 
-        // 表示用詳細
+        /// <summary>
+        /// 表示用詳細
+        /// </summary>
         public ReactivePropertySlim<string> Description { get; set; } = new();
 
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public SearchCondition Original { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="condition"></param>
         public BindableSearchCondition(SearchCondition condition)
         {
             Skills = BindableSkill.BeBindableList(condition.Skills);
@@ -72,6 +104,11 @@ namespace RiseSim.ViewModels.BindableWrapper
             Description.Value = MakeDescription(condition);
         }
 
+        /// <summary>
+        /// 表示用説明
+        /// </summary>
+        /// <param name="condition">検索条件</param>
+        /// <returns>表示用説明文字列</returns>
         private string MakeDescription(SearchCondition condition)
         {
             StringBuilder sb = new StringBuilder();
@@ -87,7 +124,11 @@ namespace RiseSim.ViewModels.BindableWrapper
             return sb.ToString();
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableSearchCondition> BeBindableList(List<SearchCondition> list)
         {
             ObservableCollection<BindableSearchCondition> bindableList = new ObservableCollection<BindableSearchCondition>();

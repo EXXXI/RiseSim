@@ -1,71 +1,107 @@
-﻿using Prism.Mvvm;
-using SimModel.Model;
-using System;
+﻿using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableAugmentation : BindableBase
+    /// <summary>
+    /// バインド用錬成
+    /// </summary>
+    internal class BindableAugmentation : ChildViewModelBase
     {
-        // 管理用装備名(GUID)
+        /// <summary>
+        /// 管理用装備名(GUID)
+        /// </summary>
         public string Name { get; set; } = string.Empty;
 
-        // 表示用装備名
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
         public string DispName { get; set; } = string.Empty;
 
-        // 装備種類
+        /// <summary>
+        /// 装備種類
+        /// </summary>
         public EquipKind Kind { get; set; }
 
-        // 装備種類(文字列)
+        /// <summary>
+        /// 装備種類(文字列)
+        /// </summary>
         public string KindStr { get; set; }
 
-        // ベース装備名
+        /// <summary>
+        /// ベース装備名
+        /// </summary>
         public string BaseName { get; set; } = string.Empty;
 
-        // スロット1つ目
+        /// <summary>
+        /// スロット1つ目
+        /// </summary>
         public int Slot1 { get; set; }
 
-        // スロット2つ目
+        /// <summary>
+        /// スロット2つ目
+        /// </summary>
         public int Slot2 { get; set; }
 
-        // スロット3つ目
+        /// <summary>
+        /// スロット3つ目
+        /// </summary>
         public int Slot3 { get; set; }
 
-        // スロット表示
+        /// <summary>
+        /// スロット表示
+        /// </summary>
         public string SlotDisp { get; set; }
 
-        // 防御力増減
+        /// <summary>
+        /// 防御力増減
+        /// </summary>
         public int Def { get; set; }
 
-        // 火耐性増減
+        /// <summary>
+        /// 火耐性増減
+        /// </summary>
         public int Fire { get; set; }
 
-        // 水耐性増減
+        /// <summary>
+        /// 水耐性増減
+        /// </summary>
         public int Water { get; set; }
 
-        // 雷耐性増減
+        /// <summary>
+        /// 雷耐性増減
+        /// </summary>
         public int Thunder { get; set; }
 
-        // 氷耐性増減
+        /// <summary>
+        /// 氷耐性増減
+        /// </summary>
         public int Ice { get; set; }
 
-        // 龍耐性増減
+        /// <summary>
+        /// 龍耐性増減
+        /// </summary>
         public int Dragon { get; set; }
 
-        // 追加スキル
+        /// <summary>
+        /// 追加スキル
+        /// </summary>
         public ObservableCollection<BindableSkill> Skills { get; set; } = new();
 
-        // スキルのCSV形式
+        /// <summary>
+        /// スキルのCSV形式
+        /// </summary>
         public string SkillsDisp { get; set; }
 
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public Augmentation Original { get; set; }
 
-        // 防具データ(ベース含)
+        /// <summary>
+        /// 防具データ(ベース含)
+        /// </summary>
         public BindableEquipment Equip { 
             get
             {
@@ -73,7 +109,10 @@ namespace RiseSim.ViewModels.BindableWrapper
             }
         }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="aug">元の錬成クラス</param>
         public BindableAugmentation(Augmentation aug)
         {
             Name = aug.Name;
@@ -96,7 +135,11 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = aug;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableAugmentation> BeBindableList(List<Augmentation> list)
         {
             ObservableCollection<BindableAugmentation> bindableList = new ObservableCollection<BindableAugmentation>();

@@ -1,16 +1,25 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class SkillPickerSelectorViewModel : BindableBase, IDisposable
+    /// <summary>
+    /// スキルレベル選択部品
+    /// </summary>
+    internal class SkillPickerSelectorViewModel : ChildViewModelBase
     {
+        /// <summary>
+        /// 「固定」文字列
+        /// </summary>
         const string FixStr = "固定";
+
+        /// <summary>
+        /// 「以上」文字列
+        /// </summary>
         const string NotFixStr = "以上";
 
         /// <summary>
@@ -23,23 +32,30 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         public ReactivePropertySlim<BindableSkill> SelectedSkill { get; set; }
 
-        // スキル値固定の表示候補
+        /// <summary>
+        /// スキル値固定有無の表示候補
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<string>> IsFixDisps { get; } = new();
 
-        // スキル値固定の表示内容
+        /// <summary>
+        /// スキル値固定有無の表示内容
+        /// </summary>
         public ReactivePropertySlim<string> IsFixDisp { get; } = new();
 
-        // スキル値固定状態
+        /// <summary>
+        /// スキル値固定有無状態
+        /// </summary>
         public bool IsFix { get; set; } = false;
 
-        private bool skillSelected;
+        /// <summary>
+        /// 設定有無
+        /// </summary>
+        public ReactivePropertySlim<bool> Selected { get; } = new(false);
 
-        public bool Selected
-        {
-            get => skillSelected;
-            set => SetProperty(ref skillSelected, value);
-        }
-
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="skill">スキル情報</param>
         public SkillPickerSelectorViewModel(Skill skill)
         {
             // スキル値固定関連準備
@@ -48,62 +64,50 @@ namespace RiseSim.ViewModels.Controls
             IsFixDisps.Value.Add(FixStr);
             IsFixDisp.Value = NotFixStr;
 
+            // レベル分のBindableSkillを作成
             Items = new ObservableCollection<BindableSkill>(Enumerable.Range(0, skill.Level + 1)
                 .Select(level => new BindableSkill(skill) { Level = level }));
 
+            // 初期値
             SelectedSkill = new ReactivePropertySlim<BindableSkill> { Value = Items.First() };
+
+            // 設定有無フラグのロジック
             SelectedSkill.Subscribe(selected =>
             {
-                Selected = SelectedSkill.Value.Level != 0 || IsFix;
+                Selected.Value = SelectedSkill.Value.Level != 0 || IsFix;
             });
-
             IsFixDisp.Subscribe(_ => 
             { 
                 IsFix = IsFixDisp.Value == FixStr;
-                Selected = SelectedSkill.Value.Level != 0 || IsFix;
+                Selected.Value = SelectedSkill.Value.Level != 0 || IsFix;
             });
         }
 
-        private bool disposed = false;
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-            {
-                return;
-            }
-            if (!disposing)
-            {
-                return;
-            }
-
-            SelectedSkill.Dispose();
-
-            disposed = true;
-        }
-
+        /// <summary>
+        /// 指定のレベルを選択する
+        /// </summary>
+        /// <param name="v">レベル</param>
         internal void SelectLevel(int v)
         {
             SelectedSkill.Value = Items.Where(skill => skill.Level == v).First();
         }
 
+        /// <summary>
+        /// 選択状態をリセット
+        /// </summary>
         internal void Reset()
         {
             SelectLevel(0);
             IsFixDisp.Value = NotFixStr;
         }
 
+        /// <summary>
+        /// 固定有無を指定したものに変更
+        /// </summary>
+        /// <param name="isFix">指定</param>
         internal void SetIsFix(bool isFix)
         {
             IsFixDisp.Value = isFix ? FixStr : NotFixStr;
         }
-
-        ~SkillPickerSelectorViewModel() => Dispose(false);
-
     }
 }

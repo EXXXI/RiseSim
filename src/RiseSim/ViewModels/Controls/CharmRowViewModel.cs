@@ -1,45 +1,48 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using SimModel.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class CharmRowViewModel : BindableBase
+    /// <summary>
+    /// 護石表示部品
+    /// </summary>
+    internal class CharmRowViewModel : ChildViewModelBase
     {
-        // 表示用護石名
+        /// <summary>
+        /// 表示用護石名
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 管理用護石名(GUID)
+        /// <summary>
+        /// 管理用護石名(GUID)
+        /// </summary>
         public string TrueName { get; set; }
 
-        // 護石削除コマンド
+        /// <summary>
+        /// 護石削除コマンド
+        /// </summary>
         public ReactiveCommand DeleteCharmCommand { get; } = new ReactiveCommand();
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            DeleteCharmCommand.Subscribe(_ => DeleteCharm());
-        }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="charm">護石情報</param>
         public CharmRowViewModel(Equipment charm)
         {
             TrueName = charm.Name;
             DispName.Value = charm.DispName;
 
             // コマンドを設定
-            SetCommand();
+            DeleteCharmCommand.Subscribe(_ => DeleteCharm());
         }
 
-        // 護石削除
+        /// <summary>
+        /// 護石削除
+        /// </summary>
         internal void DeleteCharm()
         {
-            MainViewModel.Instance.DeleteCharm(TrueName, DispName.Value);
+            CharmTabVM.DeleteCharm(TrueName, DispName.Value);
         }
     }
 }

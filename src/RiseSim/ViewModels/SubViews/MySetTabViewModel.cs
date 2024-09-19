@@ -152,6 +152,7 @@ namespace RiseSim.ViewModels.SubViews
         private void InputMySetCondition()
         {
             SkillSelectTabVM.InputMySetCondition(MyDetailSet.Value?.Original);
+            MainVM.ShowSkillSelectorTab();
         }
 
         /// <summary>

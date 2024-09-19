@@ -1,10 +1,8 @@
 ﻿using Reactive.Bindings;
 using RiseSim.Config;
-using RiseSim.Exceptions;
 using SimModel.Model;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace RiseSim.ViewModels.Controls
 {
@@ -74,11 +72,6 @@ namespace RiseSim.ViewModels.Controls
         public bool IsFix { get; set; } = false;
 
         /// <summary>
-        /// プレースホルダーの表示フラグ
-        /// </summary>
-        //public ReactivePropertySlim<bool> ShowPlaceHolder { get; } = new();
-
-        /// <summary>
         /// プレースホルダーの内容
         /// </summary>
         public ReactivePropertySlim<string> PlaceHolderText { get; } = new(ViewConfig.Instance.NoSkillName);
@@ -123,7 +116,7 @@ namespace RiseSim.ViewModels.Controls
         /// <summary>
         /// 選択中スキル名にあわせてスキルレベルの選択肢を変更
         /// </summary>
-        internal void SetLevels()
+        private void SetLevels()
         {
             ObservableCollection<int> list = new();
 
@@ -183,7 +176,7 @@ namespace RiseSim.ViewModels.Controls
         /// <summary>
         /// 選択状態をリセット
         /// </summary>
-        internal void SetDefault()
+        private void SetDefault()
         {
             SkillName.Value = string.Empty;
             IsFixDisp.Value = NotFixStr;

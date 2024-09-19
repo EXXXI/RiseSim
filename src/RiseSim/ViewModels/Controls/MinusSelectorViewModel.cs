@@ -1,32 +1,35 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
-using System;
-using System.Collections.Generic;
+﻿using Reactive.Bindings;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    // 理想錬成の削除スキル選択部品のVM
-    internal class MinusSelectorViewModel : BindableBase
+    /// <summary>
+    /// 理想錬成の削除スキル選択部品のVM
+    /// </summary>
+    internal class MinusSelectorViewModel : ChildViewModelBase
     {
-
-        // 選択肢一覧
+        /// <summary>
+        /// 選択肢一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<MinusSelectorItem>> ItemMaster { get; } = new();
 
-        // 選択中項目
+        /// <summary>
+        /// 選択中項目
+        /// </summary>
         public ReactivePropertySlim<MinusSelectorItem> SelectedItem { get; } = new();
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public MinusSelectorViewModel()
         {
             ItemMaster.Value = MinusSelectorItem.MakeMinusSelectorItems();
             SelectedItem.Value = ItemMaster.Value[0];
         }
 
-        // クラス外部とintで選択状態をやり取りする
+        /// <summary>
+        /// クラス外部とintで選択状態をやり取りする
+        /// </summary>
         public int SelectedIndex { 
             get
             {

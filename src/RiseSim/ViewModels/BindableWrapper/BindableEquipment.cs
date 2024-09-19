@@ -1,81 +1,124 @@
-﻿using Prism.Mvvm;
-using SimModel.Model;
-using System;
+﻿using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableEquipment : BindableBase
+    /// <summary>
+    /// バインド用装備
+    /// </summary>
+    internal class BindableEquipment : ChildViewModelBase
     {
-        // 管理用装備名
+        /// <summary>
+        /// 管理用装備名
+        /// </summary>
         public string Name { get; set; }
 
-        // 性別制限
+        /// <summary>
+        /// 性別制限
+        /// </summary>
         public Sex Sex { get; set; }
 
-        // レア度
+        /// <summary>
+        /// レア度
+        /// </summary>
         public int Rare { get; set; }
 
-        // スロット1つ目
+        /// <summary>
+        /// スロット1つ目
+        /// </summary>
         public int Slot1 { get; set; }
 
-        // スロット2つ目
+        /// <summary>
+        /// スロット2つ目
+        /// </summary>
         public int Slot2 { get; set; }
 
-        // スロット3つ目
+        /// <summary>
+        /// スロット3つ目
+        /// </summary>
         public int Slot3 { get; set; }
 
-        // スロットの文字列表現
+        /// <summary>
+        /// スロットの文字列表現
+        /// </summary>
         public string SlotStr { get { return Slot1 + "-" + Slot2 + "-" + Slot3; } }
 
-        // 初期防御力
+        /// <summary>
+        /// 初期防御力
+        /// </summary>
         public int Mindef { get; set; }
 
-        // 最大防御力
+        /// <summary>
+        /// 最大防御力
+        /// </summary>
         public int Maxdef { get; set; }
 
-        // 火耐性
+        /// <summary>
+        /// 火耐性
+        /// </summary>
         public int Fire { get; set; }
 
-        // 水耐性
+        /// <summary>
+        /// 水耐性
+        /// </summary>
         public int Water { get; set; }
 
-        // 雷耐性
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
         public int Thunder { get; set; }
 
-        // 氷耐性
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
         public int Ice { get; set; }
 
-        // 龍耐性
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
         public int Dragon { get; set; }
 
-        // スキル
+        /// <summary>
+        /// スキル
+        /// </summary>
         public ObservableCollection<BindableSkill> Skills { get; set; } = new();
 
-        // 装備種類
+        /// <summary>
+        /// 装備種類
+        /// </summary>
         public EquipKind Kind { get; set; }
 
-        // 表示用装備名(護石のみ特殊処理)
+        /// <summary>
+        /// 表示用装備名(護石のみ特殊処理)
+        /// </summary>
         public string DispName { get; set; }
 
         // TODO:仮実装
-        // 一覧での詳細表示用
+        /// <summary>
+        /// 一覧での詳細表示用
+        /// </summary>
         public string DetailDispName { get; set; }
 
-        // 装備の説明
+        /// <summary>
+        /// 装備の説明
+        /// </summary>
         public string Description { get; set; }
 
-        // 装備の簡易説明(名前とスロットのみ)
+        /// <summary>
+        /// 装備の簡易説明(名前とスロットのみ)
+        /// </summary>
         public string SimpleDescription { get; set; }
 
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public Equipment Original { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="equip">装備情報</param>
         public BindableEquipment(Equipment equip)
         {
             Name = equip.Name;
@@ -100,7 +143,13 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = equip;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <param name="filter">フィルタ文字列</param>
+        /// <param name="minRare">最低レア度</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter, int minRare)
         {
             ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();
@@ -123,13 +172,22 @@ namespace RiseSim.ViewModels.BindableWrapper
             return bindableList;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <param name="filter">フィルタ文字列</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter)
         {
             return BeBindableList(list, null, 0);
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
         {
             return BeBindableList(list, null);

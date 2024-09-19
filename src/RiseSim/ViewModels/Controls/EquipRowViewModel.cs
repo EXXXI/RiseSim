@@ -1,53 +1,64 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
+    /// <summary>
+    /// 装備表示部品
+    /// </summary>
     internal class EquipRowViewModel : ChildViewModelBase
     {
-        // 表示用装備種類
+        /// <summary>
+        /// 表示用装備種類
+        /// </summary>
         public ReactivePropertySlim<string> DispKind { get; } = new();
 
-        // 表示用装備名
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 装備説明
+        /// <summary>
+        /// 装備説明
+        /// </summary>
         public ReactivePropertySlim<string> Description { get; } = new();
 
-        // 固定可能フラグ
+        /// <summary>
+        /// 固定可能フラグ
+        /// </summary>
         public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
 
-        // 除外可能フラグ
+        /// <summary>
+        /// 除外可能フラグ
+        /// </summary>
         public ReactivePropertySlim<bool> CanExclude { get; } = new(true);
 
-        // 管理用装備種類
+        /// <summary>
+        /// 管理用装備種類
+        /// </summary>
         public EquipKind TrueKind { get; set; }
 
-        // 管理用装備名
+        /// <summary>
+        /// 管理用装備名
+        /// </summary>
         public string TrueName { get; set; }
 
-        // 除外コマンド
+        /// <summary>
+        /// 除外コマンド
+        /// </summary>
         public ReactiveCommand ExcludeCommand { get; private set; }
 
-        // 固定コマンド
+        /// <summary>
+        /// 固定コマンド
+        /// </summary>
         public ReactiveCommand IncludeCommand { get; private set; }
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude());
-            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
-        }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="equip">装備</param>
         public EquipRowViewModel(BindableEquipment equip)
         {
             DispName.Value = equip.DispName;
@@ -65,10 +76,16 @@ namespace RiseSim.ViewModels.Controls
             Description.Value = equip.Description;
             DispKind.Value = TrueKind.StrWithColon();
 
-            SetCommand();
+            // コマンドを設定
+            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude());
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
         }
 
-        // 装備セットを丸ごとVMのリストにして返却
+        /// <summary>
+        /// 装備セットを丸ごとVMのリストにして返却
+        /// </summary>
+        /// <param name="set">装備セット</param>
+        /// <returns>装備表示部品VMのリスト</returns>
         static public ObservableCollection<EquipRowViewModel> SetToEquipRows(BindableEquipSet set)
         {
             ObservableCollection<EquipRowViewModel> list = new();
@@ -92,15 +109,19 @@ namespace RiseSim.ViewModels.Controls
             return list;
         }
 
-        // 装備を除外
-        internal void Exclude()
+        /// <summary>
+        /// 装備を除外
+        /// </summary>
+        private void Exclude()
         {
             CludeTabVM.AddExclude(TrueName, DispName.Value);
 
         }
 
-        // 装備を固定
-        internal void Include()
+        /// <summary>
+        /// 装備を固定
+        /// </summary>
+        private void Include()
         {
             CludeTabVM.AddInclude(TrueName, DispName.Value);
         }

@@ -1,22 +1,30 @@
-﻿using System;
+﻿using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Prism.Mvvm;
-using RiseSim.ViewModels.BindableWrapper;
-using SimModel.Model;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class SkillPickerContainerViewModel : BindableBase, IDisposable
+    /// <summary>
+    /// カテゴリごとにスキルレベル選択部品を表示するコンテナ
+    /// </summary>
+    internal class SkillPickerContainerViewModel : ChildViewModelBase
     {
         /// <summary>
         /// Expanderに設定するタイトル。スキルカテゴリを設定する想定
         /// </summary>
         public string Header { get; init; }
 
+        /// <summary>
+        /// 格納するスキルレベル選択部品
+        /// </summary>
         public ObservableCollection<SkillPickerSelectorViewModel> SkillPickerSelectors { get; init; }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="categoryName">カテゴリ名</param>
+        /// <param name="skills">スキル一覧</param>
         public SkillPickerContainerViewModel(string categoryName, IEnumerable<Skill> skills)
         {
             Header = categoryName;
@@ -25,62 +33,18 @@ namespace RiseSim.ViewModels.Controls
         }
 
         /// <summary>
-        /// 特定のスキルを担当するSkillPickerSelectorのスキルを設定する
-        /// </summary>
-        /// <param name="skill"></param>
-        //public void SetPickerSelected(Skill skill)
-        //{
-        //    if (skill.Category != Header) 
-        //    {
-        //        return;
-        //    }
-        //    // 特定のスキルを担当するSkillPickerSelectorは一つしかないのでFirstで良い
-        //    var selectorViewModel = SkillPickerSelectors.FirstOrDefault(s => s.SelectedSkill.Value.Name == skill.Name);
-        //    if (selectorViewModel is null)
-        //    {
-        //        return;
-        //    }
-        //    selectorViewModel.SelectedSkill.Value = skill;
-        //}
-
-        /// <summary>
         /// このコンテナにあるSelectorのうち選択されているスキルの配列を返す
         /// </summary>
-        /// <returns></returns>
+        /// <returns>選択されているスキルの配列</returns>
         public IReadOnlyList<Skill> SelectedSkills() => 
             SkillPickerSelectors
-                .Where(s => s.Selected)
+                .Where(s => s.Selected.Value)
                 .Select(s => new Skill(s.SelectedSkill.Value.Name, s.SelectedSkill.Value.Level, isFixed:s.IsFix))
                 .ToList();
 
-    private bool disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-            {
-                return;
-            }
-            if (!disposing)
-            {
-                return;
-            }
-
-            foreach (var skillPickerSelectorViewModel in SkillPickerSelectors)
-            {
-                skillPickerSelectorViewModel.Dispose();
-            }
-
-            disposed = true;
-        }
-
-        ~SkillPickerContainerViewModel() => Dispose(false);
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
+        /// <summary>
+        /// すべてのスキルレベル選択部品をリセット
+        /// </summary>
         internal void ClearAll()
         {
             foreach (var vm in SkillPickerSelectors)
@@ -89,6 +53,13 @@ namespace RiseSim.ViewModels.Controls
             }
         }
 
+        /// <summary>
+        /// 指定のスキルに対応するスキルレベル選択部品を持っていた場合それを適用する
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <param name="level">レベル</param>
+        /// <param name="isFixed">固定有無</param>
+        /// <returns>適用があった場合true</returns>
         internal bool TryAddSkill(string name, int level, bool isFixed = false)
         {
             foreach (var vm in SkillPickerSelectors)
@@ -103,6 +74,11 @@ namespace RiseSim.ViewModels.Controls
             return false;
         }
 
+        /// <summary>
+        /// 指定のスキルリストについて、対応するスキルレベル選択部品を持っていた場合それを適用する
+        /// </summary>
+        /// <param name="skills">スキルリスト</param>
+        /// <returns>適用が１つでもあった場合true</returns>
         internal bool TryAddSkill(List<Skill> skills)
         {
             bool addedAny = false;

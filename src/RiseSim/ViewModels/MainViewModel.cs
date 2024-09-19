@@ -1,16 +1,14 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using RiseSim.ViewModels.SubViews;
-using SimModel.Model;
 using SimModel.Service;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace RiseSim.ViewModels
 {
     /// <summary>
     /// MainViewのViewModel
-    /// 各タブのVMの設定や、VMを跨ぐ処理の仲介を行う
+    /// 各タブのVMの設定を行う
     /// </summary>
     internal class MainViewModel : BindableBase
     {
@@ -129,34 +127,6 @@ namespace RiseSim.ViewModels
             StatusBarText.Value = "モンハンライズスキルシミュレータ for Windows";
         }
 
-
-        /// <summary>
-        /// スキル選択画面へスキルを反映　処理本体はスキル選択画面
-        /// </summary>
-        /// <param name="name">スキル名</param>
-        /// <param name="level">レベル</param>
-        internal void AddSkill(string name, int level)
-        {
-            SkillSelectTabVM.Value.AddSkill(name, level);
-        }
-
-        /// <summary>
-        /// マイ検索条件の再読み込み　処理本体はスキル選択画面
-        /// </summary>
-        internal void LoadMyCondition()
-        {
-            SkillSelectTabVM.Value.LoadMyCondition();
-        }
-
-        /// <summary>
-        /// マイ検索条件のスキル選択への適用　処理本体はスキル選択画面
-        /// </summary>
-        /// <param name="condition"></param>
-        internal void ApplyMyCondition(SearchCondition condition)
-        {
-            SkillSelectTabVM.Value.ApplyMyCondition(condition);
-        }
-
         /// <summary>
         /// 検索結果画面を表示
         /// </summary>
@@ -166,39 +136,11 @@ namespace RiseSim.ViewModels
         }
 
         /// <summary>
-        /// 除外・固定の解除　処理本体は除外・固定画面VM
-        /// </summary>
-        /// <param name="trueName">物理名</param>
-        /// <param name="dispName">表示名</param>
-        internal void DeleteClude(string trueName, string dispName)
-        {
-            CludeTabVM.Value.DeleteClude(trueName, dispName);
-        }
-
-        /// <summary>
-        /// 護石削除　処理本体は護石画面VM
-        /// </summary>
-        /// <param name="trueName">物理名</param>
-        /// <param name="dispName">表示名</param>
-        internal void DeleteCharm(string trueName, string dispName)
-        {
-            CharmTabVM.Value.DeleteCharm(trueName, dispName);
-        }
-
-        /// <summary>
         /// スキル選択画面を表示
         /// </summary>
         internal void ShowSkillSelectorTab()
         {
             SelectedTabIndex.Value = SkillSelectorTabIndex;
-        }
-
-        /// <summary>
-        /// 理想錬成更新 処理本体は理想錬成VM
-        /// </summary>
-        internal void SaveIdeal()
-        {
-            IdealAugmentationTabVM.Value.SaveIdeal();
         }
 
 

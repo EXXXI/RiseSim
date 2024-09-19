@@ -1,107 +1,168 @@
-﻿using Prism.Mvvm;
-using SimModel.Model;
-using System;
+﻿using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableEquipSet : BindableBase
+    /// <summary>
+    /// バインド用装備セット
+    /// </summary>
+    internal class BindableEquipSet : ChildViewModelBase
     {
-        // 頭装備
+        /// <summary>
+        /// 頭装備
+        /// </summary>
         public BindableEquipment Head { get; set; }
 
-        // 胴装備
+        /// <summary>
+        /// 胴装備
+        /// </summary>
         public BindableEquipment Body { get; set; }
 
-        // 腕装備
+        /// <summary>
+        /// 腕装備
+        /// </summary>
         public BindableEquipment Arm { get; set; }
 
-        // 腰装備
+        /// <summary>
+        /// 腰装備
+        /// </summary>
         public BindableEquipment Waist { get; set; }
 
-        // 足装備
+        /// <summary>
+        /// 足装備
+        /// </summary>
         public BindableEquipment Leg { get; set; }
 
-        // 護石
+        /// <summary>
+        /// 護石
+        /// </summary>
         public BindableEquipment Charm { get; set; }
 
-        // 装飾品(リスト)
+        /// <summary>
+        /// 装飾品(リスト)
+        /// </summary>
         public ObservableCollection<BindableEquipment> Decos { get; set; } = new();
 
-        // 理想錬成スキル(リスト)
+        /// <summary>
+        /// 理想錬成スキル(リスト)
+        /// </summary>
         public ObservableCollection<BindableEquipment> GenericSkills { get; set; } = new();
 
-        // 武器スロ1つ目
+        /// <summary>
+        /// 武器スロ1つ目
+        /// </summary>
         public int WeaponSlot1 { get; set; }
 
-        // 武器スロ2つ目
+        /// <summary>
+        /// 武器スロ2つ目
+        /// </summary>
         public int WeaponSlot2 { get; set; }
 
-        // 武器スロ3つ目
+        /// <summary>
+        /// 武器スロ3つ目
+        /// </summary>
         public int WeaponSlot3 { get; set; }
 
-        // マイセット用名前
+        /// <summary>
+        /// マイセット用名前
+        /// </summary>
         public string Name { get; set; }
 
-        // 初期防御力
+        /// <summary>
+        /// 初期防御力
+        /// </summary>
         public int Mindef { get; set; }
 
-        // 最大防御力
+        /// <summary>
+        /// 最大防御力
+        /// </summary>
         public int Maxdef { get; set; }
 
-        // 火耐性
+        /// <summary>
+        /// 火耐性
+        /// </summary>
         public int Fire { get; set; }
 
-        // 水耐性
+        /// <summary>
+        /// 水耐性
+        /// </summary>
         public int Water { get; set; }
 
-        // 雷耐性
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
         public int Thunder { get; set; }
 
-        // 氷耐性
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
         public int Ice { get; set; }
 
-        // 龍耐性
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
         public int Dragon { get; set; }
 
-        // スキル(リスト)
+        /// <summary>
+        /// スキル(リスト)
+        /// </summary>
         public ObservableCollection<BindableSkill> Skills { get; set; } = new();
 
-        // 表示用CSV表記
+        /// <summary>
+        /// 表示用CSV表記
+        /// </summary>
         public string SimpleSetName { get; set; }
 
-        // 装飾品のCSV表記 Set可能
+        /// <summary>
+        /// 装飾品のCSV表記 Set可能
+        /// </summary>
         public string DecoNameCSV { get; set; }
 
-        // 装飾品のCSV表記 3行
+        /// <summary>
+        /// 装飾品のCSV表記 3行
+        /// </summary>
         public string DecoNameCSVMultiLine { get; set; }
 
-        // 武器スロの表示用形式(2-2-0など)
+        /// <summary>
+        /// 武器スロの表示用形式(2-2-0など)
+        /// </summary>
         public string WeaponSlotDisp { get; set; }
 
-        // スキルのCSV形式
+        /// <summary>
+        /// スキルのCSV形式
+        /// </summary>
         public string SkillsDisp { get; set; }
 
-        // スキルのCSV形式 3行
+        /// <summary>
+        /// スキルのCSV形式 3行
+        /// </summary>
         public string SkillsDispMultiLine { get; set; }
 
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public EquipSet Original { get; set; }
 
-        // 説明
+        /// <summary>
+        /// 説明
+        /// </summary>
         public string Description { get; set; }
 
-        // 空きスロット数
+        /// <summary>
+        /// 空きスロット数
+        /// </summary>
         public string EmptySlotNum { get; set; }
 
-        // 理想錬成防具を含むかどうか
+        /// <summary>
+        /// 理想錬成防具を含むかどうか
+        /// </summary>
         public bool HasIdeal { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="set"></param>
         public BindableEquipSet(EquipSet set)
         {
             Head = new BindableEquipment(set.Head);
@@ -136,7 +197,11 @@ namespace RiseSim.ViewModels.BindableWrapper
             Original = set;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipSet> BeBindableList(List<EquipSet> list)
         {
             ObservableCollection<BindableEquipSet> bindableList = new ObservableCollection<BindableEquipSet>();

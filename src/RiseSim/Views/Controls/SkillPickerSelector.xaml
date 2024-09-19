@@ -15,7 +15,7 @@
                 <Setter Property="BorderThickness" Value="4"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Path=Selected}" Value="true">
+                    <DataTrigger Binding="{Binding Path=Selected.Value}" Value="true">
                         <Setter Property="BorderBrush" Value="Orange"/>
                         <Setter Property="BorderThickness" Value="4"/>
                     </DataTrigger>
