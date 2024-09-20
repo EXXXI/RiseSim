@@ -113,6 +113,7 @@ namespace RiseSim.ViewModels.SubViews
         {
             // ビジーフラグ
             IsBusy.Value = true;
+            MainVM.IsIndeterminate.Value = true;
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(Limit));
@@ -120,6 +121,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ解除
             IsBusy.Value = false;
+            MainVM.IsIndeterminate.Value = false;
 
             // もっと検索可否を設定
             IsRemaining.Value = Simulator.IsCanceling || !Simulator.IsSearchedAll;
@@ -144,6 +146,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ
             IsBusy.Value = true;
+            MainVM.IsIndeterminate.Value = true;
 
             // 錬成スキル枠のカウントアップ
             int gskillCount = 0;
@@ -176,6 +179,7 @@ namespace RiseSim.ViewModels.SubViews
                     "錬成パターン検索",
                     MessageBoxButton.OK);
                 IsBusy.Value = false;
+                MainVM.IsIndeterminate.Value = false;
                 return;
             }
             else if (gskillCount == 3)
@@ -187,6 +191,7 @@ namespace RiseSim.ViewModels.SubViews
                 if (mesResult == MessageBoxResult.No)
                 {
                     IsBusy.Value = false;
+                    MainVM.IsIndeterminate.Value = false;
                     return;
                 }
             }
@@ -199,6 +204,7 @@ namespace RiseSim.ViewModels.SubViews
                 if (mesResult == MessageBoxResult.No)
                 {
                     IsBusy.Value = false;
+                    MainVM.IsIndeterminate.Value = false;
                     return;
                 }
             }
@@ -209,6 +215,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ解除
             IsBusy.Value = false;
+            MainVM.IsIndeterminate.Value = false;
 
             // ログ表示
             SetStatusBar("錬成パターン検索完了");

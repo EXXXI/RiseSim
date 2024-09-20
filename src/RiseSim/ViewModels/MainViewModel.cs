@@ -40,6 +40,16 @@ namespace RiseSim.ViewModels
         public ReadOnlyReactivePropertySlim<bool> IsFree { get; private set; }
 
         /// <summary>
+        /// プログレスバー進捗
+        /// </summary>
+        public ReactivePropertySlim<double> Progress { get; } = new();
+
+        /// <summary>
+        /// プログレスバー無限動作フラグ
+        /// </summary>
+        public ReactivePropertySlim<bool> IsIndeterminate { get; } = new();
+
+        /// <summary>
         /// ステータスバー表示
         /// </summary>
         public ReactivePropertySlim<string> StatusBarText { get; } = new();

@@ -241,12 +241,14 @@ namespace RiseSim.ViewModels.SubViews
 
             // ビジーフラグ
             IsBusy.Value = true;
+            MainVM.IsIndeterminate.Value = true;
 
             // 検索
             List<EquipSet> result = await Task.Run(() => Simulator.Search(condition, searchLimit));
 
             // ビジーフラグ解除
             IsBusy.Value = false;
+            MainVM.IsIndeterminate.Value = false;
 
             // 最近使ったスキル再読み込み
             LoadRecentSkills();
@@ -273,7 +275,8 @@ namespace RiseSim.ViewModels.SubViews
 
             // 追加スキル検索
             SearchCondition condition = MakeCondition();
-            List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill(condition));
+            List<Skill> result = await Task.Run(() => Simulator.SearchExtraSkill(condition, MainVM.Progress));
+            MainVM.Progress.Value = 0;
 
             // 追加スキル表示用VMをセット
             var groups = result.GroupBy(skill => skill.Name);

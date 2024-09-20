@@ -85,7 +85,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="{Binding StatusBarText.Value, Mode=OneWay}"/>
-            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsBusy.Value, Mode=OneWay}"/>
+            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsIndeterminate.Value, Mode=OneWay}" Minimum="0" Maximum="1" Value="{Binding Progress.Value, Mode=OneWay}"/>
         </Grid>
     </Grid>
 </Window>

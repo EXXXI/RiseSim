@@ -100,11 +100,17 @@ namespace SimModel.Service
         /// </summary>
         /// <param name="condition">検索条件</param>
         /// <returns>検索結果</returns>
-        public List<Skill> SearchExtraSkill(SearchCondition condition)
+        public List<Skill> SearchExtraSkill(SearchCondition condition, Reactive.Bindings.ReactivePropertySlim<double>? progress = null)
         {
             ResetIsCanceling();
 
             List<Skill> exSkills = new();
+
+            // プログレスバー
+            if (progress != null)
+            {
+                progress.Value = 0.0;
+            }
 
             // 全スキル全レベルを走査
             Parallel.ForEach(Masters.Skills,
@@ -147,6 +153,17 @@ namespace SimModel.Service
                             }
                         }
                     }
+
+                    // プログレスバー
+                    if (progress != null)
+                    {
+                        lock (progress)
+                        {
+                            progress.Value += 1.0 / Masters.Skills.Count;
+                        }
+                        
+                    }
+
                     return subResult;
                 },
                 (finalResult) =>
