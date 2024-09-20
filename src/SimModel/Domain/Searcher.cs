@@ -36,55 +36,90 @@ namespace SimModel.Domain
         const int c12RowIndex = 20;
         const int c15RowIndex = 21;
 
-        // 検索条件
+        /// <summary>
+        /// 検索条件
+        /// </summary>
         public SearchCondition Condition { get; set; }
 
-        // 検索結果
+        /// <summary>
+        /// 検索結果
+        /// </summary>
         public List<EquipSet> ResultSets { get; set; }
 
-        // 失敗結果
+        /// <summary>
+        /// 失敗結果
+        /// </summary>
         public List<EquipSet> FailureSets { get; set; }
 
-        // 中断フラグ
+        /// <summary>
+        /// 中断フラグ
+        /// </summary>
         public bool IsCanceling { get; set; } = false;
 
-        // 検索対象の頭一覧
+        /// <summary>
+        /// 検索対象の頭一覧
+        /// </summary>
         private List<Equipment> Heads { get; set; }
 
-        // 検索対象の胴一覧
+        /// <summary>
+        /// 検索対象の胴一覧
+        /// </summary>
         private List<Equipment> Bodys { get; set; }
 
-        // 検索対象の腕一覧
+        /// <summary>
+        /// 検索対象の腕一覧
+        /// </summary>
         private List<Equipment> Arms { get; set; }
 
-        // 検索対象の腰一覧
+        /// <summary>
+        /// 検索対象の腰一覧
+        /// </summary>
         private List<Equipment> Waists { get; set; }
 
-        // 検索対象の足一覧
+        /// <summary>
+        /// 検索対象の足一覧
+        /// </summary>
         private List<Equipment> Legs { get; set; }
 
-        // スキル条件の制約式の開始Index
+        /// <summary>
+        /// スキル条件の制約式の開始Index
+        /// </summary>
         private int FirstSkillRowIndex { get; set; }
 
-        // 検索結果除外条件の制約式の開始Index
+        /// <summary>
+        /// 検索結果除外条件の制約式の開始Index
+        /// </summary>
         private int FirstResultExcludeRowIndex { get; set; }
 
-        // 除外・固定条件の制約式の開始Index
+        /// <summary>
+        /// 除外・固定条件の制約式の開始Index
+        /// </summary>
         private int FirstCludeRowIndex { get; set; }
 
-        // 風雷合一：スキル条件の制約式の開始Index
+        /// <summary>
+        /// 風雷合一：スキル条件の制約式の開始Index
+        /// </summary>
         private int FirstFuraiSkillRowIndex { get; set; }
 
-        // 風雷合一：フラグ条件の制約式の開始Index
+        /// <summary>
+        /// 風雷合一：フラグ条件の制約式の開始Index
+        /// </summary>
         private int FirstFuraiFlagRowIndex { get; set; }
 
-        // 理想錬成：部位制限つきの理想編成の名前・Index
+        /// <summary>
+        /// 理想錬成：部位制限つきの理想編成の名前・Index
+        /// </summary>
         private Dictionary<string, int> LimitedIdealAugmentationDictionary { get; set; }
 
-        // 除外・固定条件の制約式の開始Index
+        /// <summary>
+        /// 除外・固定条件の制約式の開始Index
+        /// </summary>
         private Dictionary<string, int> AdditionalFixRowIndexDictionary { get; set; }
 
-        // コンストラクタ：検索条件を指定する
+        /// <summary>
+        /// コンストラクタ：検索条件を指定する
+        /// </summary>
+        /// <param name="condition"></param>
         public Searcher(SearchCondition condition)
         {
             Condition = condition;
@@ -109,7 +144,11 @@ namespace SimModel.Domain
             }
         }
 
-        // 検索 全件検索完了した場合trueを返す
+        /// <summary>
+        /// 検索
+        /// </summary>
+        /// <param name="limit">頑張り度</param>
+        /// <returns>全件検索完了した場合true</returns>
         public bool ExecSearch(int limit)
         {
             // 目標検索件数
@@ -157,7 +196,11 @@ namespace SimModel.Domain
             return false;
         }
 
-        // 制約式設定
+        /// <summary>
+        /// 制約式設定
+        /// </summary>
+        /// <param name="solver">ソルバ</param>
+        /// <returns>制約式の配列</returns>
         private Constraint[] SetConstraints(Solver solver)
         {
 
@@ -312,7 +355,11 @@ namespace SimModel.Domain
             return y;
         }
 
-        // 変数設定
+        /// <summary>
+        /// 変数設定
+        /// </summary>
+        /// <param name="solver">ソルバ</param>
+        /// <returns>変数の配列</returns>
         private Variable[] SetVariables(Solver solver)
         {
             // 変数の数
@@ -381,7 +428,11 @@ namespace SimModel.Domain
         }
 
         // TODO: 目的関数、防御力以外も対応する？
-        // 目的関数設定(防御力)
+        /// <summary>
+        /// 目的関数設定(防御力)
+        /// </summary>
+        /// <param name="solver">ソルバ</param>
+        /// <param name="x">変数の配列</param>
         private void SetObjective(Solver solver, Variable[] x)
         {
             Objective objective = solver.Objective();
@@ -423,6 +474,11 @@ namespace SimModel.Domain
             objective.SetMaximization();
         }
 
+        /// <summary>
+        /// 装備の評価スコアを返す
+        /// </summary>
+        /// <param name="equip">装備</param>
+        /// <returns>スコア</returns>
         private int Score(Equipment equip)
         {
             int slot1 = 0;
@@ -475,7 +531,12 @@ namespace SimModel.Domain
             return score;
         }
 
-        // 係数設定(防具データ)
+        /// <summary>
+        /// 係数設定(防具データ)
+        /// </summary>
+        /// <param name="solver">ソルバ</param>
+        /// <param name="x">変数の配列</param>
+        /// <param name="y">制約式の配列</param>
         private void SetDatas(Solver solver, Variable[] x, Constraint[] y)
         {
             // 防具データ
@@ -593,7 +654,12 @@ namespace SimModel.Domain
             }
         }
 
-        // 装備のデータを係数として登録
+        /// <summary>
+        /// 装備のデータを係数として登録
+        /// </summary>
+        /// <param name="xvar">変数</param>
+        /// <param name="y">制約式の配列</param>
+        /// <param name="equip">装備</param>
         private void SetEquipData(Variable xvar, Constraint[] y, Equipment equip)
         {
             // 部位情報
@@ -735,7 +801,11 @@ namespace SimModel.Domain
             }
         }
 
-        // 計算結果整理
+        /// <summary>
+        /// 計算結果整理
+        /// </summary>
+        /// <param name="x">変数の配列</param>
+        /// <returns>成功でtrue</returns>
         private bool MakeSet(Variable[] x)
         {
             EquipSet equipSet = new();
@@ -842,7 +912,10 @@ namespace SimModel.Domain
             return false;
         }
 
-        // 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
+        /// <summary>
+        /// 重複する結果(今回の結果に無駄な装備を加えたもの)が既に見つかっていた場合、それを削除
+        /// </summary>
+        /// <param name="newSet">新しい検索結果</param>
         private void RemoveDuplicateSet(EquipSet newSet)
         {
             List<EquipSet> removeList = new();
@@ -883,14 +956,22 @@ namespace SimModel.Domain
             }
         }
 
-        // 重複判定
+        /// <summary>
+        /// 重複判定
+        /// </summary>
+        /// <param name="newName">新セットの防具名</param>
+        /// <param name="oldName">旧セットの防具名</param>
+        /// <returns></returns>
         private bool IsDuplicateEquipName(string newName, string oldName)
         {
             return string.IsNullOrWhiteSpace(newName) || newName.Equals(oldName);
         }
 
-
-        // 理想錬成を含む装備セットについて、同ベース装備の既存の錬成で作成できた場合、理想錬成での結果を除外
+        /// <summary>
+        /// 理想錬成を含む装備セットについて、同ベース装備の既存の錬成で作成できるか否か
+        /// </summary>
+        /// <param name="newSet">新セット</param>
+        /// <returns>既存の錬成で作成できる場合true</returns>
         private bool IsAbstractSet(EquipSet newSet)
         {
             foreach (var set in ResultSets)
@@ -926,7 +1007,12 @@ namespace SimModel.Domain
             return false;
         }
 
-        // 抽象判定
+        /// <summary>
+        /// 抽象判定
+        /// </summary>
+        /// <param name="newEquip">新防具</param>
+        /// <param name="oldEquip">旧防具</param>
+        /// <returns>既存の錬成で置き換え可能ならtrue</returns>
         private bool IsAbstractEquip(Equipment newEquip, Equipment oldEquip)
         {
             // 同じ防具
@@ -1046,7 +1132,11 @@ namespace SimModel.Domain
         }
 
 
-        // 理想錬成のスキルが実現可能か確認
+        /// <summary>
+        /// 理想錬成のスキルが実現可能か確認
+        /// </summary>
+        /// <param name="equipSet">セット</param>
+        /// <returns>可能ならtrue</returns>
         private bool IsValidGenericSkill(EquipSet equipSet)
         {
             // 組み合わせ一覧作成
@@ -1070,7 +1160,12 @@ namespace SimModel.Domain
             return false;
         }
 
-        // planの組み合わせで理想錬成のスキルが実現可能か確認
+        /// <summary>
+        /// planの組み合わせで理想錬成のスキルが実現可能か確認
+        /// </summary>
+        /// <param name="equipSet">装備セット</param>
+        /// <param name="plan">組み合わせ</param>
+        /// <returns>実現可能ならtrue</returns>
         private bool ValidateGenericSkill(EquipSet equipSet, List<int> plan)
         {
             List<Equipment> gSkillEquips = equipSet.GenericSkills;
@@ -1104,6 +1199,14 @@ namespace SimModel.Domain
             return true;
         }
 
+        /// <summary>
+        /// 指定防具に指定のスキルが実装可能かどうか確認
+        /// </summary>
+        /// <param name="gSkillEquips">錬成スキル一覧</param>
+        /// <param name="plan">組み合わせ</param>
+        /// <param name="kindIndex">plan上の表記に対応する部位番号</param>
+        /// <param name="equip">装備</param>
+        /// <returns>実装可能ならtrue</returns>
         private static bool ValidateEquipSkill(List<Equipment> gSkillEquips, List<int> plan, int kindIndex, Equipment equip)
         {
 
@@ -1183,7 +1286,11 @@ namespace SimModel.Domain
             return true;
         }
 
-        // 組み合わせ一覧作成
+        /// <summary>
+        /// 組み合わせ一覧作成
+        /// </summary>
+        /// <param name="count">残りスキル数</param>
+        /// <returns>組み合わせ一覧(0～4(頭～足)の順列のリスト)</returns>
         private List<List<int>> MakeValidatePlans(int count)
         {
             if (count < 1)
@@ -1217,14 +1324,16 @@ namespace SimModel.Domain
             }
 
             return newList;
-
         }
 
-
-
-
-        // スロットの計算
-        // 例：3-1-1→1スロ以下2個2スロ以下2個3スロ以下3個
+        /// <summary>
+        /// GLPK用のスロット計算
+        /// 例：3-1-1→1スロ以下2個2スロ以下2個3スロ以下3個
+        /// </summary>
+        /// <param name="slot1">スロット1</param>
+        /// <param name="slot2">スロット2</param>
+        /// <param name="slot3">スロット3</param>
+        /// <returns>GLPK用のスロット値</returns>
         private int[] SlotCalc(int slot1, int slot2, int slot3)
         {
             int[] slotCond = new int[4];
@@ -1243,7 +1352,11 @@ namespace SimModel.Domain
             return slotCond;
         }
 
-        // コスト計算
+        /// <summary>
+        /// GLPK用のコスト計算
+        /// </summary>
+        /// <param name="genericSkills">錬成スキル一覧</param>
+        /// <returns>GLPK用のコスト値</returns>
         private int[] CostCalc(int[] genericSkills)
         {
             int[] result = new int[5];

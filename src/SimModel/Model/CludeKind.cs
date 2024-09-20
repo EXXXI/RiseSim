@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimModel.Model
+﻿namespace SimModel.Model
 {
-    // 除外or固定
+    /// <summary>
+    /// 除外or固定
+    /// </summary>
     public enum CludeKind
     {
         exclude = 0,

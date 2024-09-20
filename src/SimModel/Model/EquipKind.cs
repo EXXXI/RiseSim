@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimModel.Model
+﻿namespace SimModel.Model
 {
-    // 装備種類
+    /// <summary>
+    /// 装備種類
+    /// </summary>
     public enum EquipKind
     {
         head,
@@ -19,9 +15,17 @@ namespace SimModel.Model
         gskill,
         error
     }
+
+    /// <summary>
+    /// 装備種類拡張メソッド用クラス
+    /// </summary>
     public static class EquipKindExt
     {
-        // 日本語名を返す
+        /// <summary>
+        /// 日本語名を返す
+        /// </summary>
+        /// <param name="kind">Kind</param>
+        /// <returns>日本語名</returns>
         public static string Str(this EquipKind kind)
         {
             switch (kind)
@@ -47,13 +51,21 @@ namespace SimModel.Model
             }
         }
 
-        // 日本語名と区切り用のコロンを返す
+        /// <summary>
+        /// 日本語名と区切り用のコロンを返す
+        /// </summary>
+        /// <param name="kind">Kind</param>
+        /// <returns>日本語名と区切り用のコロン</returns>
         public static string StrWithColon(this EquipKind kind)
         {
             return Str(kind) + '：';
         }
 
-        // 文字列をEquipKindに
+        /// <summary>
+        /// 文字列をEquipKindに
+        /// </summary>
+        /// <param name="str">文字列</param>
+        /// <returns>Kind</returns>
         public static EquipKind ToEquipKind(this string? str)
         {
             return str switch

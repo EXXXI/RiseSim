@@ -1,40 +1,67 @@
-using System;
-
 namespace SimModel.Model
 {
-    // スキル
+    /// <summary>
+    /// スキル
+    /// </summary>
     public record Skill
     {
 
-        // スキル名
+        /// <summary>
+        /// スキル名
+        /// </summary>
         public string Name { get; }
 
-        // スキルレベル
+        /// <summary>
+        /// スキルレベル
+        /// </summary>
         public int Level { get; set; } = 0;
 
-        // 追加スキルフラグ
+        /// <summary>
+        /// 追加スキルフラグ
+        /// </summary>
         public bool IsAdditional { get; init; } = false;
 
-        // 固定検索フラグ
+        /// <summary>
+        /// 固定検索フラグ
+        /// </summary>
         public bool IsFixed { get; set; } = false;
 
-        // スキルのカテゴリ
+        /// <summary>
+        /// スキルのカテゴリ
+        /// </summary>
         public string Category { get; init; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <param name="level">レベル</param>
+        /// <param name="isAdditional">追加スキルかどうかのフラグ</param>
+        /// <param name="isFixed">固定検索フラグ</param>
         public Skill(string name, int level, bool isAdditional = false, bool isFixed = false) : this(name, level, "", isAdditional, isFixed) { }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <param name="level">レベル</param>
+        /// <param name="category">カテゴリ</param>
+        /// <param name="isAdditional">追加スキルかどうかのフラグ</param>
+        /// <param name="isFixed">固定検索フラグ</param>
         public Skill(string name, int level, string category, bool isAdditional = false, bool isFixed = false)
         {
             Name = name;
             Level = level;
             IsAdditional = isAdditional;
             IsFixed = isFixed;
+            // TODO: Masterから取得できないか
             Category = string.IsNullOrEmpty(category) ? @"未分類" : category;
         }
 
-        // 最大レベル
-        // マスタに存在しないスキルの場合0
+        /// <summary>
+        /// 最大レベル
+        /// マスタに存在しないスキルの場合0
+        /// </summary>
         public int MaxLevel {
             get 
             {
@@ -42,7 +69,9 @@ namespace SimModel.Model
             }
         }
 
-        // 表示用文字列
+        /// <summary>
+        /// 表示用文字列
+        /// </summary>
         public string Description
         {
             get
@@ -55,14 +84,5 @@ namespace SimModel.Model
                 return (IsAdditional ? "(追加)" : string.Empty) + Name + "Lv" + Level;
             }
         }
-
-        /// <summary>
-        /// SkillPickerSelectorViewでComboBoxの表示に使う文字列を返す
-        /// </summary>
-        public string PickerSelectorDisplayName => Level switch
-        {
-            0 => Name,
-            _ => $"{Name}Lv{Level}"
-        };
     }
 }

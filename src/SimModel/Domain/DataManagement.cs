@@ -8,12 +8,21 @@ using System.Threading.Tasks;
 
 namespace SimModel.Domain
 {
+    /// <summary>
+    /// データ管理クラス
+    /// </summary>
     static internal class DataManagement
     {
-        // 最近使ったスキルの記憶容量
+        /// <summary>
+        /// 最近使ったスキルの記憶容量
+        /// </summary>
         static public int MaxRecentSkillCount { get; } = LogicConfig.Instance.MaxRecentSkillCount;
 
-        // 除外設定を追加
+        /// <summary>
+        /// 除外設定を追加
+        /// </summary>
+        /// <param name="name">防具名</param>
+        /// <returns>除外情報</returns>
         static internal Clude? AddExclude(string name)
         {
             Equipment? equip = Masters.GetEquipByName(name);
@@ -28,7 +37,11 @@ namespace SimModel.Domain
             return AddClude(equip.Name, CludeKind.exclude);
         }
 
-        // 固定設定を追加
+        /// <summary>
+        /// 固定設定を追加
+        /// </summary>
+        /// <param name="name">防具名</param>
+        /// <returns>固定情報</returns>
         static internal Clude? AddInclude(string name)
         {
             Equipment? equip = Masters.GetEquipByName(name);
@@ -66,7 +79,10 @@ namespace SimModel.Domain
             return AddClude(equip.Name, CludeKind.include);
         }
 
-        // 錬成防具を全て除外設定に追加
+        /// <summary>
+        /// 錬成防具を全て除外設定に追加
+        /// </summary>
+        /// <returns>成功時true、失敗時false</returns>
         static internal bool ExcludeAllAugmentation()
         {
             foreach (var aug in Masters.Augmentations)
@@ -83,7 +99,10 @@ namespace SimModel.Domain
             return true;
         }
 
-        // 指定レア度以下を全て除外設定に追加
+        /// <summary>
+        /// 指定レア度以下を全て除外設定に追加
+        /// </summary>
+        /// <param name="rare">レア度</param>
         static internal void ExcludeByRare(int rare)
         {
             foreach (var equip in Masters.Heads)
@@ -124,7 +143,12 @@ namespace SimModel.Domain
             return;
         }
 
-        // 除外・固定の追加
+        /// <summary>
+        /// 除外・固定の追加
+        /// </summary>
+        /// <param name="name">防具名</param>
+        /// <param name="kind">除外or固定</param>
+        /// <returns>除外固定情報</returns>
         static private Clude? AddClude(string name, CludeKind kind)
         {
             Clude? ret = null;
@@ -158,7 +182,10 @@ namespace SimModel.Domain
             return ret;
         }
 
-        // 除外・固定設定の削除
+        /// <summary>
+        /// 除外・固定設定の削除
+        /// </summary>
+        /// <param name="name">防具名</param>
         static internal void DeleteClude(string name)
         {
             foreach (var clude in Masters.Cludes)
@@ -175,7 +202,9 @@ namespace SimModel.Domain
             CsvOperation.SaveCludeCSV();
         }
 
-        // 除外・固定設定の全削除
+        /// <summary>
+        /// 除外・固定設定の全削除
+        /// </summary>
         static internal void DeleteAllClude()
         {
             Masters.Cludes.Clear();
@@ -184,7 +213,14 @@ namespace SimModel.Domain
             CsvOperation.SaveCludeCSV();
         }
 
-        // 護石の追加
+        /// <summary>
+        /// 護石の追加
+        /// </summary>
+        /// <param name="skills">スキル</param>
+        /// <param name="slot1">スロット1</param>
+        /// <param name="slot2">スロット2</param>
+        /// <param name="slot3">スロット3</param>
+        /// <returns>追加した護石</returns>
         static internal Equipment AddCharm(List<Skill> skills, int slot1, int slot2, int slot3)
         {
             Equipment equipment = new(EquipKind.charm);
@@ -204,7 +240,10 @@ namespace SimModel.Domain
             return equipment;
         }
 
-        // 護石の削除
+        /// <summary>
+        /// 護石の削除
+        /// </summary>
+        /// <param name="guid">護石のID</param>
         static internal void DeleteCharm(string guid)
         {
             foreach (var charm in Masters.Charms)
@@ -221,7 +260,11 @@ namespace SimModel.Domain
             CsvOperation.SaveCharmCSV();
         }
 
-        // マイセットの追加
+        /// <summary>
+        /// マイセットの追加
+        /// </summary>
+        /// <param name="set">マイセット</param>
+        /// <returns>追加したマイセット</returns>
         static internal EquipSet AddMySet(EquipSet set)
         {
             // 追加
@@ -233,7 +276,10 @@ namespace SimModel.Domain
             return set;
         }
 
-        // マイセットの削除
+        /// <summary>
+        /// マイセットの削除
+        /// </summary>
+        /// <param name="set">マイセット</param>
         static internal void DeleteMySet(EquipSet set)
         {
             // 削除
@@ -243,24 +289,28 @@ namespace SimModel.Domain
             CsvOperation.SaveMySetCSV();
         }
 
-        // マイセットの変更を保存
+        /// <summary>
+        /// マイセットの変更を保存
+        /// </summary>
         static internal void SaveMySet()
         {
             // マスタへ反映
             CsvOperation.SaveMySetCSV();
         }
 
-        // マイセットを再読み込み
+        /// <summary>
+        /// マイセットを再読み込み
+        /// </summary>
         static internal void LoadMySet()
         {
             // マスタへ反映
             CsvOperation.LoadMySetCSV();
         }
 
-
-
-
-        // 最近使ったスキルの更新
+        /// <summary>
+        /// 最近使ったスキルの更新
+        /// </summary>
+        /// <param name="skills">検索したスキル</param>
         internal static void UpdateRecentSkill(List<Skill> skills)
         {
             List<string> newNames = new List<string>();
@@ -302,8 +352,10 @@ namespace SimModel.Domain
             CsvOperation.SaveRecentSkillCSV();
         }
 
-
-        // 錬成装備の追加
+        /// <summary>
+        /// 錬成装備の追加
+        /// </summary>
+        /// <param name="aug">錬成装備</param>
         static internal void AddAugmentation(Augmentation aug)
         {
             // 追加
@@ -313,7 +365,10 @@ namespace SimModel.Domain
             CsvOperation.SaveAugmentationCSV();
         }
 
-        // 錬成装備の削除
+        /// <summary>
+        /// 錬成装備の削除
+        /// </summary>
+        /// <param name="aug">錬成装備</param>
         static internal void DeleteAugmentation(Augmentation aug)
         {
             // 削除
@@ -323,7 +378,10 @@ namespace SimModel.Domain
             CsvOperation.SaveAugmentationCSV();
         }
 
-        // 錬成装備の更新
+        /// <summary>
+        /// 錬成装備の更新
+        /// </summary>
+        /// <param name="newAugData">新データ</param>
         internal static void UpdateAugmentation(Augmentation newAugData)
         {
             foreach (var aug in Masters.Augmentations)
@@ -355,7 +413,10 @@ namespace SimModel.Domain
             AddAugmentation(newAugData);
         }
 
-        // 理想錬成の追加
+        /// <summary>
+        /// 理想錬成の追加
+        /// </summary>
+        /// <param name="ideal">理想錬成</param>
         internal static void AddIdealAugmentation(IdealAugmentation ideal)
         {
             // 追加
@@ -365,7 +426,10 @@ namespace SimModel.Domain
             CsvOperation.SaveIdealCSV();
         }
 
-        // 理想錬成の削除
+        /// <summary>
+        /// 理想錬成の削除
+        /// </summary>
+        /// <param name="ideal">理想錬成</param>
         internal static void DeleteIdealAugmentation(IdealAugmentation ideal)
         {
             // 削除
@@ -375,7 +439,10 @@ namespace SimModel.Domain
             CsvOperation.SaveIdealCSV();
         }
 
-        // 理想錬成の更新
+        /// <summary>
+        /// 理想錬成の更新
+        /// </summary>
+        /// <param name="newIdeal">新データ</param>
         internal static void UpdateIdealAugmentation(IdealAugmentation newIdeal)
         {
             foreach (var ideal in Masters.Ideals)
@@ -407,13 +474,18 @@ namespace SimModel.Domain
             AddIdealAugmentation(newIdeal);
         }
 
-        // 理想錬成保存
+        /// <summary>
+        /// 理想錬成保存
+        /// </summary>
         internal static void SaveIdeal()
         {
             CsvOperation.SaveIdealCSV();
         }
 
-        // マイ検索条件の追加
+        /// <summary>
+        /// マイ検索条件の追加
+        /// </summary>
+        /// <param name="condition">検索条件</param>
         internal static void AddMyCondition(SearchCondition condition)
         {
             // 追加
@@ -423,7 +495,10 @@ namespace SimModel.Domain
             CsvOperation.SaveMyConditionCSV();
         }
 
-        // マイ検索条件の削除
+        /// <summary>
+        /// マイ検索条件の削除
+        /// </summary>
+        /// <param name="condition">検索条件</param>
         internal static void DeleteMyCondition(SearchCondition condition)
         {
             // 削除
@@ -433,6 +508,10 @@ namespace SimModel.Domain
             CsvOperation.SaveMyConditionCSV();
         }
 
+        /// <summary>
+        /// マイ検索条件の更新
+        /// </summary>
+        /// <param name="newCondition">新データ</param>
         internal static void UpdateMyCondition(SearchCondition newCondition)
         {
             foreach (var condition in Masters.MyConditions)
