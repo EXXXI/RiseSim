@@ -24,7 +24,7 @@
         </StackPanel>
     <Expander
             HorizontalAlignment="Left" 
-            Height="Auto" 
+            Height="auto" 
             Header="詳細"
             IsExpanded="False"
             Margin="15,0,0,0" 
