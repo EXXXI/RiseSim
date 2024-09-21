@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace SimModel.Model
 {
     /// <summary>
@@ -38,7 +40,8 @@ namespace SimModel.Model
         /// <param name="level">レベル</param>
         /// <param name="isAdditional">追加スキルかどうかのフラグ</param>
         /// <param name="isFixed">固定検索フラグ</param>
-        public Skill(string name, int level, bool isAdditional = false, bool isFixed = false) : this(name, level, "", isAdditional, isFixed) { }
+        public Skill(string name, int level, bool isAdditional = false, bool isFixed = false) 
+            : this(name, level, Masters.Skills.Where(s => s.Name == name).FirstOrDefault()?.Category, isAdditional, isFixed) { }
 
         /// <summary>
         /// コンストラクタ
@@ -48,7 +51,7 @@ namespace SimModel.Model
         /// <param name="category">カテゴリ</param>
         /// <param name="isAdditional">追加スキルかどうかのフラグ</param>
         /// <param name="isFixed">固定検索フラグ</param>
-        public Skill(string name, int level, string category, bool isAdditional = false, bool isFixed = false)
+        public Skill(string name, int level, string? category, bool isAdditional = false, bool isFixed = false)
         {
             Name = name;
             Level = level;

@@ -185,8 +185,6 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         internal void LoadCludes()
         {
-            // TODO: 旧データのDispose
-
             // 除外固定画面用のVMの設定
             ObservableCollection<CludeRowViewModel> cludeList = new();
             foreach (var clude in Masters.Cludes)

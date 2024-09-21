@@ -94,7 +94,6 @@ namespace RiseSim.ViewModels.BindableWrapper
         /// </summary>
         public string DispName { get; set; }
 
-        // TODO:仮実装
         /// <summary>
         /// 一覧での詳細表示用
         /// </summary>
