@@ -1,4 +1,5 @@
 ﻿using Reactive.Bindings;
+using RiseSim.Util;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
 using SimModel.Service;
@@ -176,7 +177,7 @@ namespace RiseSim.ViewModels.SubViews
             equipList.Add(new EquipSelectRowViewModel(EquipKind.leg.StrWithColon(), Masters.Legs));
             equipList.Add(new EquipSelectRowViewModel(EquipKind.charm.StrWithColon(), Masters.Charms));
             equipList.Add(new EquipSelectRowViewModel(EquipKind.deco.StrWithColon(), Masters.Decos));
-            EquipSelectRowVMs.Value = equipList;
+            EquipSelectRowVMs.ChangeCollection(equipList);
         }
 
         /// <summary>
@@ -184,13 +185,15 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         internal void LoadCludes()
         {
+            // TODO: 旧データのDispose
+
             // 除外固定画面用のVMの設定
             ObservableCollection<CludeRowViewModel> cludeList = new();
             foreach (var clude in Masters.Cludes)
             {
                 cludeList.Add(new CludeRowViewModel(clude));
             }
-            CludeRowVMs.Value = cludeList;
+            CludeRowVMs.ChangeCollection(cludeList);
         }
     }
 }

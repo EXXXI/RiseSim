@@ -34,7 +34,7 @@ namespace RiseSim.ViewModels.Controls
         {
             Name.Value = name;
             Range.Value = new ObservableCollection<int>(range);
-
+            
             // コマンドを設定
             AddCommand.Subscribe(level => AddSkill(level as int?));
         }

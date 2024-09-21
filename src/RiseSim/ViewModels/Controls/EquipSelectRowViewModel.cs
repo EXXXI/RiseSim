@@ -1,4 +1,6 @@
 ﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System;
@@ -60,11 +62,11 @@ namespace RiseSim.ViewModels.Controls
                 // 装飾品は固定できない
                 CanInclude.Value = false;
             }
-            Equips.Value = BindableEquipment.BeBindableList(equips);
+            Equips.ChangeCollection(BindableEquipment.BeBindableList(equips));
 
             // コマンドを設定
             ExcludeCommand.Subscribe(_ => Exclude());
-            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include()).AddTo(Disposable);
         }
 
         /// <summary>

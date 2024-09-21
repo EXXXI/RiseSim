@@ -1,5 +1,6 @@
 ﻿using Reactive.Bindings;
 using RiseSim.Config;
+using RiseSim.Util;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
 using SimModel.Model;
@@ -62,7 +63,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 charmSelectorVMs.Add(new SkillSelectorViewModel());
             }
-            CharmSkillSelectorVMs.Value = charmSelectorVMs;
+            CharmSkillSelectorVMs.ChangeCollection(charmSelectorVMs);
 
             // スロットの選択肢を生成し、画面に反映
             ObservableCollection<string> slots = new();
@@ -187,7 +188,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 charmList.Add(new CharmRowViewModel(charm));
             }
-            CharmRowVMs.Value = charmList;
+            CharmRowVMs.ChangeCollection(charmList);
         }
     }
 }

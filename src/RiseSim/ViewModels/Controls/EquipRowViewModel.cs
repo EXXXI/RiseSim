@@ -1,4 +1,5 @@
 ﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System.Collections.ObjectModel;
@@ -77,8 +78,8 @@ namespace RiseSim.ViewModels.Controls
             DispKind.Value = TrueKind.StrWithColon();
 
             // コマンドを設定
-            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude());
-            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
+            ExcludeCommand = CanExclude.ToReactiveCommand().WithSubscribe(() => Exclude()).AddTo(Disposable);
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include()).AddTo(Disposable);
         }
 
         /// <summary>

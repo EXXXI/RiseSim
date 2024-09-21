@@ -1,4 +1,6 @@
 ﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
@@ -158,7 +160,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.IdealAugmentation));
             }
-            SkillSelectorVMs.Value = selectorVMs;
+            SkillSelectorVMs.ChangeCollection(selectorVMs);
 
             // 削除スキル選択部品準備
             ObservableCollection<MinusSelectorViewModel> minusVMs = new();
@@ -166,7 +168,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 minusVMs.Add(new MinusSelectorViewModel());
             }
-            MinusSelectorVMs.Value = minusVMs;
+            MinusSelectorVMs.ChangeCollection(minusVMs);
 
             // スロットの選択肢を生成
             TableMaster.Value = new() { 1, 2, 3, 4, 5, 6, 13 };
@@ -177,8 +179,8 @@ namespace RiseSim.ViewModels.SubViews
             Slot.Value = 0;
 
             // コマンドを設定
-            IsNotIncludeLower = IsIncludeLower.Select(x => !x).ToReadOnlyReactivePropertySlim();
-            IsNotOne = IsOne.Select(x => !x).ToReadOnlyReactivePropertySlim();
+            IsNotIncludeLower = IsIncludeLower.Select(x => !x).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+            IsNotOne = IsOne.Select(x => !x).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
             InputCommand.Subscribe(_ => InputIdeal());
             AddCommand.Subscribe(_ => AddIdeal());
             DeleteCommand.Subscribe(_ => DeleteIdeal());
@@ -436,7 +438,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void LoadIdealAugmentations()
         {
             // 錬成装備情報の設定
-            Ideals.Value = BindableIdealAugmentation.BeBindableList(Masters.Ideals);
+            Ideals.ChangeCollection(BindableIdealAugmentation.BeBindableList(Masters.Ideals));
         }
 
         /// <summary>

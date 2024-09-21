@@ -1,12 +1,9 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
+using Reactive.Bindings.Disposables;
 using RiseSim.ViewModels.SubViews;
 using SimModel.Service;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels
 {
@@ -14,7 +11,7 @@ namespace RiseSim.ViewModels
     /// MainViewModel以外のViewModelの基底クラス
     /// VM同士の接続の補助と、一部MainViewModelメンバの参照を共有する
     /// </summary>
-    internal class ChildViewModelBase : BindableBase
+    internal class ChildViewModelBase : BindableBase, IDisposable
     {
         /// <summary>
         /// MainViewModel
@@ -81,5 +78,49 @@ namespace RiseSim.ViewModels
         {
             MainVM.StatusBarText.Value = text;
         }
+
+        #region Dispose関連
+
+        protected CompositeDisposable Disposable { get; } = new CompositeDisposable();
+
+        /// <summary>
+        /// disposeフラグ
+        /// </summary>
+        private bool _disposed = false;
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing">disposeフラグ</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// ファイナライザ
+        /// </summary>
+        ~ChildViewModelBase()
+        {
+            Dispose(false);
+        }
+
+        #endregion
     }
 }

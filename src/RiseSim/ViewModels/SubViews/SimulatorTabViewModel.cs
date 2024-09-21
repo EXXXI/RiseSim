@@ -1,5 +1,7 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
@@ -79,14 +81,14 @@ namespace RiseSim.ViewModels.SubViews
         {
             // シミュ画面の検索結果と装備詳細を紐づけ
             DetailSet.Subscribe(set => {
-                EquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
+                EquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set));
             });
 
             // コマンドを設定
             ReadOnlyReactivePropertySlim<bool> isFree = MainVM.IsFree;
-            SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore());
-            SearchPatternCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchPattern());
-            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
+            SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore()).AddTo(Disposable);
+            SearchPatternCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchPattern()).AddTo(Disposable);
+            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel()).AddTo(Disposable);
             AddMySetCommand.Subscribe(() => AddMySet());
             ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
@@ -100,7 +102,7 @@ namespace RiseSim.ViewModels.SubViews
         /// <param name="limit">頑張り度</param>
         internal void ShowSearchResult(List<EquipSet> result, bool remain, int limit)
         {
-            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+            SearchResult.ChangeCollection(BindableEquipSet.BeBindableList(result));
             IsRemaining.Value = remain;
             Limit = limit;
         }
@@ -117,7 +119,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // もっと検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchMore(Limit));
-            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+            SearchResult.ChangeCollection(BindableEquipSet.BeBindableList(result));
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -211,7 +213,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // 錬成パターン検索
             List<EquipSet> result = await Task.Run(() => Simulator.SearchOtherGenericSkillPattern(DetailSet.Value.Original));
-            SearchResult.Value = BindableEquipSet.BeBindableList(result);
+            SearchResult.ChangeCollection(BindableEquipSet.BeBindableList(result));
 
             // ビジーフラグ解除
             IsBusy.Value = false;

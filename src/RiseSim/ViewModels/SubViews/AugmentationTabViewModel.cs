@@ -1,5 +1,6 @@
 ﻿using Reactive.Bindings;
 using RiseSim.Config;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
@@ -140,7 +141,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.Augmentation));
             }
-            SkillSelectorVMs.Value = selectorVMs;
+            SkillSelectorVMs.ChangeCollection(selectorVMs);
 
             // スロットの選択肢を生成
             ObservableCollection<string> slots = new();
@@ -416,23 +417,23 @@ namespace RiseSim.ViewModels.SubViews
             switch (Kind.Value)
             {
                 case "頭":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalHeads, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalHeads, null, 8));
                     break;
                 case "胴":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalBodys, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalBodys, null, 8));
                     break;
                 case "腕":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalArms, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalArms, null, 8));
                     break;
                 case "腰":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalWaists, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalWaists, null, 8));
                     break;
                 case "足":
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8));
                     break;
                 case "脚":
                     // 誤記
-                    Equips.Value = BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8);
+                    Equips.ChangeCollection(BindableEquipment.BeBindableList(Masters.OriginalLegs, null, 8));
                     break;
                 default:
                     break;
@@ -446,7 +447,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void LoadAugmentations()
         {
             // 錬成装備情報の設定
-            Augmentations.Value = BindableAugmentation.BeBindableList(Masters.Augmentations);
+            Augmentations.ChangeCollection(BindableAugmentation.BeBindableList(Masters.Augmentations));
         }
 
         /// <summary>

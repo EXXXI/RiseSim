@@ -1,4 +1,5 @@
 ﻿using Reactive.Bindings;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
@@ -67,7 +68,7 @@ namespace RiseSim.ViewModels.SubViews
         {
             // マイセット画面の一覧と装備詳細を紐づけ
             MyDetailSet.Subscribe(set => {
-                MyEquipRowVMs.Value = EquipRowViewModel.SetToEquipRows(set);
+                MyEquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set));
                 MyDetailName.Value = MyDetailSet.Value?.Name ?? String.Empty;
             });
 
@@ -161,7 +162,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void LoadMySets()
         {
             // マイセット画面用のVMの設定
-            MySetList.Value = BindableEquipSet.BeBindableList(Masters.MySets);
+            MySetList.ChangeCollection(BindableEquipSet.BeBindableList(Masters.MySets));
         }
 
         /// <summary>

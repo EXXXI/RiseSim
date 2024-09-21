@@ -175,7 +175,7 @@ namespace RiseSim.ViewModels
             // 錬成画面用のVM設定
             AugmentationTabVM.Value.LoadAugmentations();
 
-            // 錬成画面用のVM設定
+            // 理想錬成画面用のVM設定
             IdealAugmentationTabVM.Value.LoadIdealAugmentations();
 
             // 除外固定画面用のVMの設定

@@ -1,4 +1,5 @@
 ﻿using Reactive.Bindings;
+using RiseSim.Util;
 using System.Collections.ObjectModel;
 
 namespace RiseSim.ViewModels.Controls
@@ -23,7 +24,7 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         public MinusSelectorViewModel()
         {
-            ItemMaster.Value = MinusSelectorItem.MakeMinusSelectorItems();
+            ItemMaster.ChangeCollection(MinusSelectorItem.MakeMinusSelectorItems());
             SelectedItem.Value = ItemMaster.Value[0];
         }
 

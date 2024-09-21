@@ -1,6 +1,7 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using RiseSim.Config;
+using RiseSim.Util;
 using RiseSim.ViewModels.Controls;
 using SimModel.Domain;
 using SimModel.Model;
@@ -34,8 +35,6 @@ namespace RiseSim.ViewModels.SubViews
         /// デフォルトの頑張り度
         /// </summary>
         private string DefaultLimit { get; } = ViewConfig.Instance.DefaultLimit;
-
-        // TODO: この形式でいいのか？ReactiveCollectionは？
 
         /// <summary>
         /// 追加スキル検索結果用VM
@@ -164,11 +163,11 @@ namespace RiseSim.ViewModels.SubViews
         {
 
             // スキル選択部品を配置
-            SkillPickerContainerVMs.Value = new ObservableCollection<SkillPickerContainerViewModel>(
+            SkillPickerContainerVMs.ChangeCollection(new ObservableCollection<SkillPickerContainerViewModel>(
                 Masters.Skills
                     .GroupBy(s => s.Category)
                     .Select(g => new SkillPickerContainerViewModel(g.Key, g))
-            );
+            ));
 
             // スロットの選択肢を生成し、画面に反映
             ObservableCollection<string> slots = new();
@@ -203,9 +202,9 @@ namespace RiseSim.ViewModels.SubViews
 
             // コマンドを設定
             ReadOnlyReactivePropertySlim<bool> isFree = MainVM.IsFree;
-            SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search());
-            SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill());
-            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
+            SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search()).AddTo(Disposable);
+            SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill()).AddTo(Disposable);
+            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel()).AddTo(Disposable);
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddMyConditionCommand.Subscribe(_ => AddMyCondition());
             IsIncludeIdeal.Subscribe(x =>
@@ -280,8 +279,8 @@ namespace RiseSim.ViewModels.SubViews
 
             // 追加スキル表示用VMをセット
             var groups = result.GroupBy(skill => skill.Name);
-            ExtraSkillVMs.Value = new ObservableCollection<SkillAdderViewModel>(
-                groups.Select(group => new SkillAdderViewModel(group.Key, group.Select(skill => skill.Level))));
+            ExtraSkillVMs.ChangeCollection(new ObservableCollection<SkillAdderViewModel>(
+                groups.Select(group => new SkillAdderViewModel(group.Key, group.Select(skill => skill.Level)))));
 
             // ビジーフラグ解除
             IsBusy.Value = false;
@@ -325,9 +324,9 @@ namespace RiseSim.ViewModels.SubViews
         public void LoadMyCondition()
         {
             List<SearchCondition> conditions = Masters.MyConditions;
-            MyConditionVMs.Value = new ObservableCollection<MyConditionRowViewModel>(
+            MyConditionVMs.ChangeCollection(new ObservableCollection<MyConditionRowViewModel>(
                 Masters.MyConditions.Select(condition => new MyConditionRowViewModel(condition))
-            );
+            ));
         }
 
         /// <summary>
@@ -343,7 +342,8 @@ namespace RiseSim.ViewModels.SubViews
                     Range = Enumerable.Range(1, s.Level)
                 });
 
-            RecentSkillVMs.Value = new ObservableCollection<SkillAdderViewModel>(recentSkills.Select(skill => new SkillAdderViewModel(skill.Name,skill.Range)));
+            RecentSkillVMs.ChangeCollection(new ObservableCollection<SkillAdderViewModel>(
+                recentSkills.Select(skill => new SkillAdderViewModel(skill.Name,skill.Range))));
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System;
@@ -65,9 +66,9 @@ namespace RiseSim.ViewModels.Controls
             InputName.Value = Condition.DispName.Value;
 
             IsRenaming.Subscribe(_ => IsNotRenaming.Value = !IsRenaming.Value);
-            BeginRenameCommand = IsNotRenaming.ToReactiveCommand().WithSubscribe(() => IsRenaming.Value = true);
-            ApplyRenameCommand = IsRenaming.ToReactiveCommand().WithSubscribe(() => ApplyRename());
-            CancelRenameCommand = IsRenaming.ToReactiveCommand().WithSubscribe(() => CancelRename());
+            BeginRenameCommand = IsNotRenaming.ToReactiveCommand().WithSubscribe(() => IsRenaming.Value = true).AddTo(Disposable);
+            ApplyRenameCommand = IsRenaming.ToReactiveCommand().WithSubscribe(() => ApplyRename()).AddTo(Disposable);
+            CancelRenameCommand = IsRenaming.ToReactiveCommand().WithSubscribe(() => CancelRename()).AddTo(Disposable);
             ApplyConditionCommand.Subscribe(() => ApplyMyCondition());
             DeleteConditionCommand.Subscribe(() => DeleteCondition());
         }
