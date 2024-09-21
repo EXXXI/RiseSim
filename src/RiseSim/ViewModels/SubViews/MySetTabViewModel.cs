@@ -112,7 +112,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // ログ表示
-            SetStatusBar("マイセット名前変更：" + MyDetailName.Value);
+            SetStatusBar("マイセット名前変更完了：" + MyDetailName.Value);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadMySets();
 
             // ログ表示
-            SetStatusBar("マイセット解除：" + set.SimpleSetName);
+            SetStatusBar("マイセット削除完了：" + set.Name);
         }
 
         /// <summary>
@@ -152,8 +152,18 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         private void InputMySetCondition()
         {
-            SkillSelectTabVM.InputMySetCondition(MyDetailSet.Value?.Original);
+            EquipSet? set = MyDetailSet.Value?.Original;
+            if (set == null)
+            {
+                // 詳細画面が空の状態で実行したなら何もせず終了
+                return;
+            }
+
+            SkillSelectTabVM.InputMySetCondition(set);
             MainVM.ShowSkillSelectorTab();
+
+            // ログ表示
+            SetStatusBar("マイセット反映完了：" + set.Name);
         }
 
         /// <summary>

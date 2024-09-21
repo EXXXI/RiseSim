@@ -234,6 +234,9 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.AddIdealAugmentation(ideal);
 
             MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("理想錬成追加完了：" + ideal.DispName);
         }
 
         /// <summary>
@@ -267,6 +270,9 @@ namespace RiseSim.ViewModels.SubViews
             // マスタをリロード
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("理想錬成削除完了：" + ideal.DispName);
         }
 
         /// <summary>
@@ -337,6 +343,9 @@ namespace RiseSim.ViewModels.SubViews
                 }
             }
             IsOne.Value = ideal.IsOne;
+
+            // ログ
+            SetStatusBar("理想錬成反映完了：" + ideal.DispName);
         }
 
         /// <summary>
@@ -392,6 +401,9 @@ namespace RiseSim.ViewModels.SubViews
             // マイセット内容の更新
             Simulator.LoadMySet();
             MySetTabVM.LoadMySets();
+
+            // ログ
+            SetStatusBar("理想錬成上書き完了：" + ideal.DispName);
         }
 
         /// <summary>
@@ -409,6 +421,9 @@ namespace RiseSim.ViewModels.SubViews
         {
             SetAllIsEnabled(true);
             SaveIdeal();
+
+            // ログ
+            SetStatusBar("理想錬成の全有効化完了");
         }
 
         /// <summary>
@@ -418,6 +433,9 @@ namespace RiseSim.ViewModels.SubViews
         {
             SetAllIsEnabled(false);
             SaveIdeal();
+
+            // ログ
+            SetStatusBar("理想錬成の全無効化完了");
         }
 
         /// <summary>

@@ -230,7 +230,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchCondition condition = MakeCondition();
 
             // 開始ログ表示
-            SetStatusBar("検索中・・・");
+            SetStatusBar("検索開始・・・");
 
             // ビジーフラグ
             IsBusy.Value = true;
@@ -247,7 +247,14 @@ namespace RiseSim.ViewModels.SubViews
             LoadRecentSkills();
 
             // 完了ログ表示
-            SetStatusBar("検索完了");
+            if (Simulator.IsCanceling)
+            {
+                SetStatusBar("処理中断：中断時の検索状態を表示します");
+            }
+            else
+            {
+                SetStatusBar($"検索完了：{result.Count}件");
+            }
 
             // 検索結果画面に結果を表示
             SimulatorTabVM.ShowSearchResult(result, Simulator.IsCanceling || !Simulator.IsSearchedAll, searchLimit);
@@ -261,7 +268,7 @@ namespace RiseSim.ViewModels.SubViews
         private async Task SearchExtraSkill()
         {
             // 開始ログ表示
-            SetStatusBar("追加スキル検索中・・・");
+            SetStatusBar("追加スキル検索開始・・・");
 
             // ビジーフラグ
             IsBusy.Value = true;
@@ -280,7 +287,14 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = false;
 
             // ログ表示
-            SetStatusBar("追加スキル検索完了");
+            if (Simulator.IsCanceling)
+            {
+                SetStatusBar("処理中断：中断時の検索状態を表示します");
+            }
+            else
+            {
+                SetStatusBar("追加スキル検索完了");
+            }
 
             // サブタブを追加スキル検索結果に
             SelectedTabIndex.Value = ExSkillTabIndex;
@@ -365,9 +379,6 @@ namespace RiseSim.ViewModels.SubViews
 
             // スロット情報反映
             WeaponSlots.Value = mySet.WeaponSlotDisp;
-
-            // ログ表示
-            //StatusBarText.Value = "検索条件反映：" + sb.ToString();
         }
 
         /// <summary>
@@ -396,6 +407,9 @@ namespace RiseSim.ViewModels.SubViews
             Thunder.Value = condition.Thunder?.ToString() ?? string.Empty;
             Ice.Value = condition.Ice?.ToString() ?? string.Empty;
             Dragon.Value = condition.Dragon?.ToString() ?? string.Empty;
+
+            // ログ表示
+            SetStatusBar($"マイ検索条件反映完了：{condition.DispName}");
         }
 
         /// <summary>
@@ -414,6 +428,9 @@ namespace RiseSim.ViewModels.SubViews
             condition.DispName = condName;
             Simulator.AddMyCondition(condition);
             LoadMyCondition();
+
+            // ログ表示
+            SetStatusBar($"マイ検索条件登録完了：{condition.DispName}");
         }
 
         /// <summary>

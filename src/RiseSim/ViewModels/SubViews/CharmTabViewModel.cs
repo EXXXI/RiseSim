@@ -112,7 +112,7 @@ namespace RiseSim.ViewModels.SubViews
             MainVM.LoadEquips();
 
             // ログ表示
-            SetStatusBar("護石追加：" + added.DispName);
+            SetStatusBar("護石追加完了：" + added.DispName);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace RiseSim.ViewModels.SubViews
             MainVM.LoadEquips();
 
             // ログ表示
-            SetStatusBar("護石削除：" + dispName);
+            SetStatusBar("護石削除完了：" + dispName);
         }
 
         /// <summary>

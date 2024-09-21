@@ -246,6 +246,9 @@ namespace RiseSim.ViewModels.SubViews
             MainVM.LoadEquips();
             Simulator.LoadMySet();
             MySetTabVM.LoadMySets();
+
+            // ログ
+            SetStatusBar("錬成装備上書き完了：" + aug.DispName);
         }
 
         /// <summary>
@@ -290,6 +293,8 @@ namespace RiseSim.ViewModels.SubViews
                 }
             }
 
+            // ログ
+            SetStatusBar("錬成装備反映完了：" + aug.DispName);
         }
 
         /// <summary>
@@ -346,6 +351,9 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.AddAugmentation(aug);
 
             MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("錬成装備追加完了：" + aug.DispName);
         }
 
         /// <summary>
@@ -383,6 +391,9 @@ namespace RiseSim.ViewModels.SubViews
             CludeTabVM.LoadCludes();
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("錬成装備削除完了：" + aug.DispName);
         }
 
         /// <summary>

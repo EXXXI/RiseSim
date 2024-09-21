@@ -69,7 +69,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("除外：" + dispName);
+            SetStatusBar("除外登録完了：" + dispName);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("固定：" + dispName);
+            SetStatusBar("固定登録完了：" + dispName);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("解除：" + dispName);
+            SetStatusBar("除外・固定解除完了：" + dispName);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("固定・除外を全解除");
+            SetStatusBar("固定・除外の全解除完了");
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("錬成防具を全て除外");
+            SetStatusBar("錬成防具の全除外完了");
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace RiseSim.ViewModels.SubViews
             LoadCludes();
 
             // ログ表示
-            SetStatusBar("錬成防具を全て除外");
+            SetStatusBar("レア9以下防具の全除外完了");
         }
 
         /// <summary>

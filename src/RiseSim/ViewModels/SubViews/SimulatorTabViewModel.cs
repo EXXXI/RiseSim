@@ -107,6 +107,9 @@ namespace RiseSim.ViewModels.SubViews
         /// <returns></returns>
         async private Task SearchMore()
         {
+            // ステータスバー
+            SetStatusBar($"もっと検索開始・・・");
+
             // ビジーフラグ
             IsBusy.Value = true;
             MainVM.IsIndeterminate.Value = true;
@@ -122,8 +125,15 @@ namespace RiseSim.ViewModels.SubViews
             // もっと検索可否を設定
             IsRemaining.Value = Simulator.IsCanceling || !Simulator.IsSearchedAll;
 
-            // ステータスバー
-            SetStatusBar("もっと検索完了");
+            // ログ表示
+            if (Simulator.IsCanceling)
+            {
+                SetStatusBar("処理中断：中断時の検索状態を表示します");
+            }
+            else
+            {
+                SetStatusBar($"もっと検索完了：{result.Count}件");
+            }
         }
 
         /// <summary>
@@ -138,7 +148,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // 開始ログ表示
-            SetStatusBar("錬成パターン検索中・・・");
+            SetStatusBar("錬成パターン検索開始・・・");
 
             // ビジーフラグ
             IsBusy.Value = true;
@@ -214,7 +224,14 @@ namespace RiseSim.ViewModels.SubViews
             MainVM.IsIndeterminate.Value = false;
 
             // ログ表示
-            SetStatusBar("錬成パターン検索完了");
+            if (Simulator.IsCanceling)
+            {
+                SetStatusBar("処理中断：中断時の検索状態を表示します");
+            }
+            else
+            {
+                SetStatusBar($"錬成パターン検索完了：{result.Count}件");
+            }
         }
 
         /// <summary>
@@ -260,7 +277,7 @@ namespace RiseSim.ViewModels.SubViews
             MySetTabVM.LoadMySets();
 
             // ログ表示
-            SetStatusBar("マイセット登録：" + set.SimpleSetName);
+            SetStatusBar("マイセット登録完了：" + set.Name);
         }
     }
 }
