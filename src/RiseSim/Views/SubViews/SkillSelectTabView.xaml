@@ -101,37 +101,72 @@
                 <TabItem.Header>
                     <TextBlock Text="最近使ったスキル" Style="{StaticResource ResourceKey=subtabHeader}" />
                 </TabItem.Header>
-                <ScrollViewer VerticalAlignment="Stretch">
-                    <ItemsControl ItemsSource="{Binding RecentSkillVMs.Value, Mode=OneWay}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ctrl:SkillAdder Margin="0,0,0,5"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                                最近検索に使ったスキルがここに並びます。<LineBreak/>
+                                数字のついたボタンはレベルを表しており、ボタンを押すと左画面でそのレベルが選択されます。
+                        </TextBlock>
+                    </Expander>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding RecentSkillVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:SkillAdder Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="追加スキル検索結果" Style="{StaticResource ResourceKey=subtabHeader}" />
                 </TabItem.Header>
-                <ScrollViewer VerticalAlignment="Stretch">
-                    <ItemsControl ItemsSource="{Binding ExtraSkillVMs.Value, Mode=OneWay}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ctrl:SkillAdder Margin="0,0,0,5"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                                追加スキル検索の結果がここに並びます。<LineBreak/>
+                                数字のついたボタンはレベルを表しており、ボタンを押すと左画面でそのレベルが選択されます。
+                        </TextBlock>
+                    </Expander>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding ExtraSkillVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:SkillAdder Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem>
                 <TabItem.Header>
                     <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=subtabHeader}" />
                 </TabItem.Header>
-                <StackPanel>
-                    <Button Content="現在の検索条件を保存する" Command="{Binding AddMyConditionCommand}"/>
-                    <ScrollViewer VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                            よく使う検索条件をここに登録できます。<LineBreak/>
+                            登録した検索条件はこの下に並び、「適用」ボタンを押すことで左画面に適用できます。
+                        </TextBlock>
+                    </Expander>
+                    <Button Content="現在の検索条件を保存する" Command="{Binding AddMyConditionCommand}" Grid.Row="1"/>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="2">
                         <ItemsControl ItemsSource="{Binding MyConditionVMs.Value, Mode=OneWay}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -140,7 +175,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                </StackPanel>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

@@ -3,6 +3,7 @@ using Reactive.Bindings.Extensions;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System;
+using System.Windows;
 
 namespace RiseSim.ViewModels.Controls
 {
@@ -86,6 +87,16 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         private void DeleteCondition()
         {
+            MessageBoxResult result = MessageBox.Show(
+                $"マイ検索条件「{Condition.DispName}」を削除します。\nよろしいですか？",
+                "マイ検索条件削除",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
             Simulator.DeleteMyCondition(Condition.Original);
             SkillSelectTabVM.LoadMyCondition();
         }

@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -305,6 +306,16 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         private void ClearSearchCondition()
         {
+            MessageBoxResult result = MessageBox.Show(
+                $"選択中の検索条件を全てリセットします。\nよろしいですか？",
+                "検索条件リセット",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
             foreach (var vm in SkillContainerVMs.Value)
             {
                 vm.ClearAll();
