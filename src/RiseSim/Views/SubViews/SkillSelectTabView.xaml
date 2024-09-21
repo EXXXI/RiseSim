@@ -25,10 +25,10 @@
             </Grid.RowDefinitions>
             <ScrollViewer VerticalAlignment="Stretch">
                 <StackPanel>
-                    <ItemsControl ItemsSource="{Binding SkillPickerContainerVMs.Value, Mode=OneWay}">
+                    <ItemsControl ItemsSource="{Binding SkillContainerVMs.Value, Mode=OneWay}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ctrl:SkillPickerContainer/>
+                                <ctrl:SkillLevelSelectorContainer/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -80,7 +80,6 @@
                 <StackPanel Grid.Column="2">
                     <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
                     <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
-                    <Button Content="中断" Command="{Binding CancelCommand}" />
                     <Button Content="検索条件をリセット" Command="{Binding ClearAllCommand}" />
                 </StackPanel>
             </Grid>

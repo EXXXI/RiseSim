@@ -49,7 +49,7 @@ namespace RiseSim.ViewModels.SubViews
         /// <summary>
         /// スキルカテゴリ表示部品のVM
         /// </summary>
-        public ReactivePropertySlim<ObservableCollection<SkillPickerContainerViewModel>> SkillPickerContainerVMs { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<SkillLevelSelectorContainerViewModel>> SkillContainerVMs { get; } = new();
 
         /// <summary>
         /// マイ検索条件表示部品のVM
@@ -142,11 +142,6 @@ namespace RiseSim.ViewModels.SubViews
         public AsyncReactiveCommand SearchExtraSkillCommand { get; private set; }
 
         /// <summary>
-        /// 検索キャンセルコマンド
-        /// </summary>
-        public ReactiveCommand CancelCommand { get; private set; }
-
-        /// <summary>
         /// 検索条件クリアコマンド
         /// </summary>
         public ReactiveCommand ClearAllCommand { get; } = new ReactiveCommand();
@@ -163,10 +158,10 @@ namespace RiseSim.ViewModels.SubViews
         {
 
             // スキル選択部品を配置
-            SkillPickerContainerVMs.ChangeCollection(new ObservableCollection<SkillPickerContainerViewModel>(
+            SkillContainerVMs.ChangeCollection(new ObservableCollection<SkillLevelSelectorContainerViewModel>(
                 Masters.Skills
                     .GroupBy(s => s.Category)
-                    .Select(g => new SkillPickerContainerViewModel(g.Key, g))
+                    .Select(g => new SkillLevelSelectorContainerViewModel(g.Key, g))
             ));
 
             // スロットの選択肢を生成し、画面に反映
@@ -204,7 +199,6 @@ namespace RiseSim.ViewModels.SubViews
             ReadOnlyReactivePropertySlim<bool> isFree = MainVM.IsFree;
             SearchCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await Search()).AddTo(Disposable);
             SearchExtraSkillCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchExtraSkill()).AddTo(Disposable);
-            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel()).AddTo(Disposable);
             ClearAllCommand.Subscribe(_ => ClearSearchCondition());
             AddMyConditionCommand.Subscribe(_ => AddMyCondition());
             IsIncludeIdeal.Subscribe(x =>
@@ -293,19 +287,11 @@ namespace RiseSim.ViewModels.SubViews
         }
 
         /// <summary>
-        /// 中断
-        /// </summary>
-        private void Cancel()
-        {
-            Simulator.Cancel();
-        }
-
-        /// <summary>
         /// 検索条件リセット
         /// </summary>
         private void ClearSearchCondition()
         {
-            foreach (var vm in SkillPickerContainerVMs.Value)
+            foreach (var vm in SkillContainerVMs.Value)
             {
                 vm.ClearAll();
             }
@@ -353,7 +339,7 @@ namespace RiseSim.ViewModels.SubViews
         /// <param name="level">レベル</param>
         internal void AddSkill(string name, int level)
         {
-            var isSuccess = SkillPickerContainerVMs.Value
+            var isSuccess = SkillContainerVMs.Value
                 .Select(vm => vm.TryAddSkill(name, level))
                 .Contains(true);
         }
@@ -371,7 +357,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // 各スキル選択部品に適用を試みる
-            foreach (var vm in SkillPickerContainerVMs.Value)
+            foreach (var vm in SkillContainerVMs.Value)
             {
                 vm.ClearAll();
                 vm.TryAddSkill(mySet.Skills);
@@ -391,7 +377,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void ApplyMyCondition(SearchCondition condition)
         {
             // スキル
-            foreach (var vm in SkillPickerContainerVMs.Value)
+            foreach (var vm in SkillContainerVMs.Value)
             {
                 vm.ClearAll();
                 vm.TryAddSkill(condition.Skills);
@@ -439,7 +425,7 @@ namespace RiseSim.ViewModels.SubViews
             SearchCondition condition = new();
 
             // スキル条件を整理
-            condition.Skills = SkillPickerContainerVMs.Value
+            condition.Skills = SkillContainerVMs.Value
                 .SelectMany(vm => vm.SelectedSkills())
                 .ToList();
 

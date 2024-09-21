@@ -117,7 +117,7 @@ namespace RiseSim.ViewModels.BindableWrapper
             sb.AppendLine($"火:{Fire.Value},水:{Water.Value},雷:{Thunder.Value},氷:{Ice.Value},龍:{Dragon.Value}");
             foreach (var skill in Skills)
             {
-                sb.Append(skill.PickerSelectorDisplayName);
+                sb.Append(skill.LevelDisplayName);
                 sb.AppendLine(skill.IsFixed ? "(固定)" : string.Empty);
             }
 

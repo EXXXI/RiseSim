@@ -10,7 +10,7 @@ namespace RiseSim.ViewModels.Controls
     /// <summary>
     /// スキルレベル選択部品
     /// </summary>
-    internal class SkillPickerSelectorViewModel : ChildViewModelBase
+    internal class SkillLevelSelectorViewModel : ChildViewModelBase
     {
         /// <summary>
         /// 「固定」文字列
@@ -56,7 +56,7 @@ namespace RiseSim.ViewModels.Controls
         /// コンストラクタ
         /// </summary>
         /// <param name="skill">スキル情報</param>
-        public SkillPickerSelectorViewModel(Skill skill)
+        public SkillLevelSelectorViewModel(Skill skill)
         {
             // スキル値固定関連準備
             IsFixDisps.Value = new();

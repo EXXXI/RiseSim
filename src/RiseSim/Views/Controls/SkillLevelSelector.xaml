@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="RiseSim.Views.Controls.SkillPickerSelector"
+﻿<UserControl x:Class="RiseSim.Views.Controls.SkillLevelSelector"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
-             d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerSelectorViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewModels:SkillLevelSelectorViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="173">
 
@@ -25,7 +25,7 @@
         <StackPanel Orientation="Horizontal">
             <ComboBox VerticalAlignment="Center" HorizontalContentAlignment="Center"
                       ItemsSource="{Binding Path=Items, Mode=OneWay}" 
-                      DisplayMemberPath="PickerSelectorDisplayName"
+                      DisplayMemberPath="LevelDisplayName"
                       SelectedIndex="0"
                       SelectedItem="{Binding Path=SelectedSkill.Value}"
                       Height="22"

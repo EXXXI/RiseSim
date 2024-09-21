@@ -84,7 +84,6 @@
                     </TextBlock>
                 </StackPanel>
                 <Button Content="もっと検索する" Command="{Binding SearchMoreCommand}" Width="100"/>
-                <Button Content="中断" Command="{Binding CancelCommand}" Width="100"/>
             </StackPanel>
         </Grid>
         <!-- 右ペイン -->

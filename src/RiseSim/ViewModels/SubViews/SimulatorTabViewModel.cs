@@ -53,11 +53,6 @@ namespace RiseSim.ViewModels.SubViews
         /// 錬成パターン検索コマンド
         /// </summary>
         public AsyncReactiveCommand SearchPatternCommand { get; private set; }
-        
-        /// <summary>
-        /// 検索キャンセルコマンド
-        /// </summary>
-        public ReactiveCommand CancelCommand { get; private set; }
 
         /// <summary>
         /// マイセット追加コマンド
@@ -88,7 +83,6 @@ namespace RiseSim.ViewModels.SubViews
             ReadOnlyReactivePropertySlim<bool> isFree = MainVM.IsFree;
             SearchMoreCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchMore()).AddTo(Disposable);
             SearchPatternCommand = isFree.ToAsyncReactiveCommand().WithSubscribe(async () => await SearchPattern()).AddTo(Disposable);
-            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel()).AddTo(Disposable);
             AddMySetCommand.Subscribe(() => AddMySet());
             ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
             IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
@@ -221,14 +215,6 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             SetStatusBar("錬成パターン検索完了");
-        }
-
-        /// <summary>
-        /// 検索キャンセル
-        /// </summary>
-        private void Cancel()
-        {
-            Simulator.Cancel();
         }
 
         /// <summary>

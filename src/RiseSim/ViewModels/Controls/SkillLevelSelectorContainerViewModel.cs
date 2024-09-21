@@ -8,7 +8,7 @@ namespace RiseSim.ViewModels.Controls
     /// <summary>
     /// カテゴリごとにスキルレベル選択部品を表示するコンテナ
     /// </summary>
-    internal class SkillPickerContainerViewModel : ChildViewModelBase
+    internal class SkillLevelSelectorContainerViewModel : ChildViewModelBase
     {
         /// <summary>
         /// Expanderに設定するタイトル。スキルカテゴリを設定する想定
@@ -18,18 +18,18 @@ namespace RiseSim.ViewModels.Controls
         /// <summary>
         /// 格納するスキルレベル選択部品
         /// </summary>
-        public ObservableCollection<SkillPickerSelectorViewModel> SkillPickerSelectors { get; init; }
+        public ObservableCollection<SkillLevelSelectorViewModel> SkillLevelSelectors { get; init; }
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="categoryName">カテゴリ名</param>
         /// <param name="skills">スキル一覧</param>
-        public SkillPickerContainerViewModel(string categoryName, IEnumerable<Skill> skills)
+        public SkillLevelSelectorContainerViewModel(string categoryName, IEnumerable<Skill> skills)
         {
             Header = categoryName;
-            SkillPickerSelectors = new ObservableCollection<SkillPickerSelectorViewModel>(skills.Select(x =>
-                new SkillPickerSelectorViewModel(x)));
+            SkillLevelSelectors = new ObservableCollection<SkillLevelSelectorViewModel>(skills.Select(x =>
+                new SkillLevelSelectorViewModel(x)));
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         /// <returns>選択されているスキルの配列</returns>
         public IReadOnlyList<Skill> SelectedSkills() => 
-            SkillPickerSelectors
+            SkillLevelSelectors
                 .Where(s => s.Selected.Value)
                 .Select(s => new Skill(s.SelectedSkill.Value.Name, s.SelectedSkill.Value.Level, isFixed:s.IsFix))
                 .ToList();
@@ -47,7 +47,7 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         internal void ClearAll()
         {
-            foreach (var vm in SkillPickerSelectors)
+            foreach (var vm in SkillLevelSelectors)
             {
                 vm.Reset();
             }
@@ -62,7 +62,7 @@ namespace RiseSim.ViewModels.Controls
         /// <returns>適用があった場合true</returns>
         internal bool TryAddSkill(string name, int level, bool isFixed = false)
         {
-            foreach (var vm in SkillPickerSelectors)
+            foreach (var vm in SkillLevelSelectors)
             {
                 if (vm.SelectedSkill.Value.Name == name)
                 {

@@ -1,7 +1,9 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using RiseSim.ViewModels.SubViews;
 using SimModel.Service;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace RiseSim.ViewModels
@@ -104,6 +106,11 @@ namespace RiseSim.ViewModels
         /// </summary>
         public ReactivePropertySlim<int> SelectedTabIndex { get; set; } = new();
 
+        /// <summary>
+        /// 検索キャンセルコマンド
+        /// </summary>
+        public ReactiveCommand CancelCommand { get; private set; }
+
 
         /// <summary>
         /// コンストラクタ：起動時処理
@@ -132,6 +139,9 @@ namespace RiseSim.ViewModels
 
             // マスタファイル読み込み
             LoadMasters();
+
+            // 処理中断
+            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
 
             // ログ表示
             StatusBarText.Value = "モンハンライズスキルシミュレータ for Windows";
@@ -183,6 +193,14 @@ namespace RiseSim.ViewModels
 
             // 護石画面用のVMの設定
             CharmTabVM.Value.LoadEquipsForCharm();
+        }
+
+        /// <summary>
+        /// 処理中断
+        /// </summary>
+        private void Cancel()
+        {
+            Simulator.Cancel();
         }
     }
 }

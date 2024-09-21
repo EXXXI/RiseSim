@@ -69,9 +69,9 @@ namespace RiseSim.ViewModels.BindableWrapper
         }
 
         /// <summary>
-        /// SkillPickerSelectorViewでComboBoxの表示に使う文字列を返す
+        /// レベルを含めた表示に使う文字列を返す
         /// </summary>
-        public string PickerSelectorDisplayName => Level switch
+        public string LevelDisplayName => Level switch
         {
             0 => Name,
             _ => $"{Name}Lv{Level}"
