@@ -51,17 +51,6 @@ namespace RiseSim.ViewModels.SubViews
         public ReactiveCommand ChangeNameCommand { get; } = new ReactiveCommand();
 
         /// <summary>
-        /// 防具を除外するコマンド
-        /// </summary>
-        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
-
-        /// <summary>
-        /// 防具を固定するコマンド
-        /// </summary>
-        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
-
-
-        /// <summary>
         /// コンストラクタ
         /// </summary>
         public MySetTabViewModel()
@@ -76,8 +65,6 @@ namespace RiseSim.ViewModels.SubViews
             DeleteMySetCommand.Subscribe(_ => DeleteMySet());
             InputMySetConditionCommand.Subscribe(_ => InputMySetCondition());
             ChangeNameCommand.Subscribe(_ => ChangeName());
-            ExcludeCommand.Subscribe(x => Exclude(x as BindableEquipment));
-            IncludeCommand.Subscribe(x => Include(x as BindableEquipment));
         }
 
         /// <summary>
@@ -173,30 +160,6 @@ namespace RiseSim.ViewModels.SubViews
         {
             // マイセット画面用のVMの設定
             MySetList.ChangeCollection(BindableEquipSet.BeBindableList(Masters.MySets));
-        }
-
-        /// <summary>
-        /// 装備除外
-        /// </summary>
-        /// <param name="equip">対象装備</param>
-        private void Exclude(BindableEquipment? equip)
-        {
-            if (equip != null)
-            {
-                CludeTabVM.AddExclude(equip.Name, equip.DispName);
-            }
-        }
-
-        /// <summary>
-        /// 装備固定
-        /// </summary>
-        /// <param name="equip">対象装備</param>
-        private void Include(BindableEquipment? equip)
-        {
-            if (equip != null)
-            {
-                CludeTabVM.AddInclude(equip.Name, equip.DispName);
-            }
         }
     }
 }

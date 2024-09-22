@@ -1,4 +1,5 @@
-﻿using SimModel.Model;
+﻿using Reactive.Bindings;
+using SimModel.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -115,6 +116,16 @@ namespace RiseSim.ViewModels.BindableWrapper
         public Equipment Original { get; set; }
 
         /// <summary>
+        /// 防具を除外するコマンド
+        /// </summary>
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        /// <summary>
+        /// 防具を固定するコマンド
+        /// </summary>
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="equip">装備情報</param>
@@ -140,6 +151,27 @@ namespace RiseSim.ViewModels.BindableWrapper
             Description = equip.Description;
             SimpleDescription = equip.SimpleDescription;
             Original = equip;
+
+            ExcludeCommand.Subscribe(() => Exclude());
+            IncludeCommand.Subscribe(() => Include());
+        }
+
+        /// <summary>
+        /// 装備除外
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Exclude()
+        {
+            CludeTabVM.AddExclude(Name, DispName);
+        }
+
+        /// <summary>
+        /// 装備固定
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Include()
+        {
+            CludeTabVM.AddInclude(Name, DispName);
         }
 
         /// <summary>

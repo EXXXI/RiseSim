@@ -19,30 +19,30 @@
         <DataGrid x:Name="grid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Head.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Head.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Head}" Header="{Binding DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Body.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Body.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Body}" Header="{Binding DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Arm.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Arm.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Arm}" Header="{Binding DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Waist.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Waist.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Waist}" Header="{Binding DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Leg.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Leg.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Leg}" Header="{Binding DispName, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
                     <MenuItem Header="マイセットから削除" Command="{Binding DeleteMySetCommand}"/>
                 </ContextMenu>
