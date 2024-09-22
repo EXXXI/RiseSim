@@ -518,6 +518,24 @@ namespace SimModel.Service
         /// <param name="guid">削除対象</param>
         public void DeleteCharm(string guid)
         {
+            // 除外・固定設定があったら削除
+            DeleteClude(guid);
+
+            // この護石を使っているマイセットがあったら削除
+            List<EquipSet> delMySets = new();
+            foreach (var set in Masters.MySets)
+            {
+                if (set.Charm.Name != null && set.Charm.Name.Equals(guid))
+                {
+                    delMySets.Add(set);
+                }
+            }
+            foreach (var set in delMySets)
+            {
+                DeleteMySet(set);
+            }
+
+            // 削除
             DataManagement.DeleteCharm(guid);
         }
 
@@ -580,6 +598,27 @@ namespace SimModel.Service
         /// <param name="aug">削除対象</param>
         public void DeleteAugmentation(Augmentation aug)
         {
+            // 除外・固定設定があったら削除
+            DeleteClude(aug.Name);
+
+            // この装備を使っているマイセットがあったら削除
+                List<EquipSet> delMySets = new();
+                foreach (var set in Masters.MySets)
+                {
+                    if ((set.Head.Name != null && set.Head.Name.Equals(aug.Name)) ||
+                        (set.Body.Name != null && set.Body.Name.Equals(aug.Name)) ||
+                        (set.Arm.Name != null && set.Arm.Name.Equals(aug.Name)) ||
+                        (set.Waist.Name != null && set.Waist.Name.Equals(aug.Name)) ||
+                        (set.Leg.Name != null && set.Leg.Name.Equals(aug.Name)))
+                    {
+                        delMySets.Add(set);
+                    }
+                }
+                foreach (var set in delMySets)
+                {
+                    DeleteMySet(set);
+                }
+            
             DataManagement.DeleteAugmentation(aug);
         }
 
@@ -607,6 +646,25 @@ namespace SimModel.Service
         /// <param name="ideal">削除対象</param>
         public void DeleteIdealAugmentation(IdealAugmentation ideal)
         {
+            // 該当の理想錬成を使っているマイセットがある場合削除
+            List<EquipSet> delMySets = new();
+            foreach (var set in Masters.MySets)
+            {
+                if ((set.Head.Ideal?.Name != null && set.Head.Ideal?.Name == ideal.Name) ||
+                    (set.Body.Ideal?.Name != null && set.Body.Ideal?.Name == ideal.Name) ||
+                    (set.Arm.Ideal?.Name != null && set.Arm.Ideal?.Name == ideal.Name) ||
+                    (set.Waist.Ideal?.Name != null && set.Waist.Ideal?.Name == ideal.Name) ||
+                    (set.Leg.Ideal?.Name != null && set.Leg.Ideal?.Name == ideal.Name))
+                {
+                    delMySets.Add(set);
+                }
+            }
+            foreach (var set in delMySets)
+            {
+                DeleteMySet(set);
+            }
+
+            // 削除
             DataManagement.DeleteIdealAugmentation(ideal);
         }
 

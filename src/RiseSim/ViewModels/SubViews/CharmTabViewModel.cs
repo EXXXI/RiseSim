@@ -138,42 +138,17 @@ namespace RiseSim.ViewModels.SubViews
                 return;
             }
 
-            // 除外・固定設定があったら削除
-            Simulator.DeleteClude(trueName);
-
-            // この護石を使っているマイセットがあったら削除
-            DeleteMySetUsingCharm(trueName);
-
             // 護石削除
             Simulator.DeleteCharm(trueName);
 
             // マスタをリロード
+            // マイセットと除外固定が変更になる可能性があるためそちらもリロード
             CludeTabVM.LoadCludes();
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
 
             // ログ表示
             SetStatusBar("護石削除完了：" + dispName);
-        }
-
-        /// <summary>
-        /// 指定した護石を使っているマイセットがあったら削除
-        /// </summary>
-        /// <param name="name">護石名</param>
-        private void DeleteMySetUsingCharm(string name)
-        {
-            List<EquipSet> delMySets = new();
-            foreach (var set in Masters.MySets)
-            {
-                if (set.Charm.Name != null && set.Charm.Name.Equals(name))
-                {
-                    delMySets.Add(set);
-                }
-            }
-            foreach (var set in delMySets)
-            {
-                Simulator.DeleteMySet(set);
-            }
         }
 
         /// <summary>

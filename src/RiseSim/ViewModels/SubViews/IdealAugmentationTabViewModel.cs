@@ -261,42 +261,16 @@ namespace RiseSim.ViewModels.SubViews
                 return;
             }
 
-            // 該当の理想錬成を使っているマイセットがある場合削除
-            DeleteMySetUsingIdeal(ideal.Name);
-
             // 錬成情報を削除
             Simulator.DeleteIdealAugmentation(SelectedIdeal.Value.Original);
 
             // マスタをリロード
+            // マイセットが変更になる可能性があるためそちらもリロード
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
 
             // ログ
             SetStatusBar("理想錬成削除完了：" + ideal.DispName);
-        }
-
-        /// <summary>
-        /// 指定した理想錬成装備を使っているマイセットがあったら削除
-        /// </summary>
-        /// <param name="name">指定名</param>
-        private void DeleteMySetUsingIdeal(string name)
-        {
-            List<EquipSet> delMySets = new();
-            foreach (var set in Masters.MySets)
-            {
-                if ((set.Head.Ideal?.Name != null && set.Head.Ideal?.Name == name) ||
-                    (set.Body.Ideal?.Name != null && set.Body.Ideal?.Name == name) ||
-                    (set.Arm.Ideal?.Name != null && set.Arm.Ideal?.Name == name) ||
-                    (set.Waist.Ideal?.Name != null && set.Waist.Ideal?.Name == name) ||
-                    (set.Leg.Ideal?.Name != null && set.Leg.Ideal?.Name == name) )
-                {
-                    delMySets.Add(set);
-                }
-            }
-            foreach (var set in delMySets)
-            {
-                Simulator.DeleteMySet(set);
-            }
         }
 
         /// <summary>

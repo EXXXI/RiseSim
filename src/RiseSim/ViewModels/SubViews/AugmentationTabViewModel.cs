@@ -378,46 +378,17 @@ namespace RiseSim.ViewModels.SubViews
                 return;
             }
 
-            // 除外・固定設定があったら削除
-            Simulator.DeleteClude(aug.Name);
-
-            // この装備を使っているマイセットがあったら削除
-            DeleteMySetUsingAugmentation(aug.Name);
-
             // 錬成情報を削除
             Simulator.DeleteAugmentation(SelectedAugmentation.Value.Original);
 
             // マスタをリロード
+            // マイセット・除外固定が変更になる可能性があるためそちらもリロード
             CludeTabVM.LoadCludes();
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
 
             // ログ
             SetStatusBar("錬成装備削除完了：" + aug.DispName);
-        }
-
-        /// <summary>
-        /// 指定した錬成装備を使っているマイセットがあったら削除
-        /// </summary>
-        /// <param name="name">錬成装備名</param>
-        private void DeleteMySetUsingAugmentation(string name)
-        {
-            List<EquipSet> delMySets = new();
-            foreach (var set in Masters.MySets)
-            {
-                if ((set.Head.Name != null && set.Head.Name.Equals(name)) ||
-                    (set.Body.Name != null && set.Body.Name.Equals(name)) ||
-                    (set.Arm.Name != null && set.Arm.Name.Equals(name)) ||
-                    (set.Waist.Name != null && set.Waist.Name.Equals(name)) ||
-                    (set.Leg.Name != null && set.Leg.Name.Equals(name)))
-                {
-                    delMySets.Add(set);
-                }
-            }
-            foreach (var set in delMySets)
-            {
-                Simulator.DeleteMySet(set);
-            }
         }
 
         /// <summary>
