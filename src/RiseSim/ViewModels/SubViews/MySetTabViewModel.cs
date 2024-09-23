@@ -6,6 +6,7 @@ using SimModel.Model;
 using SimModel.Service;
 using System;
 using System.Collections.ObjectModel;
+using System.DirectoryServices;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
@@ -23,7 +24,7 @@ namespace RiseSim.ViewModels.SubViews
         /// <summary>
         /// マイセットの選択行データ
         /// </summary>
-        public ReactivePropertySlim<BindableEquipSet> MyDetailSet { get; } = new();
+        public ReactivePropertySlim<BindableEquipSet?> MyDetailSet { get; } = new();
 
         /// <summary>
         /// マイセット画面の装備詳細の各行のVM
@@ -163,6 +164,10 @@ namespace RiseSim.ViewModels.SubViews
         {
             // マイセット画面用のVMの設定
             MySetList.ChangeCollection(BindableEquipSet.BeBindableList(Masters.MySets));
+            if (!MySetList.Value.Contains(MyDetailSet.Value))
+            {
+                MyDetailSet.Value = MySetList.Value.Count > 0 ? MySetList.Value[0] : null;
+            }
         }
     }
 }

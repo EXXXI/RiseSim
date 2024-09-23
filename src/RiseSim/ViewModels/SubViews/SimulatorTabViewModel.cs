@@ -27,7 +27,7 @@ namespace RiseSim.ViewModels.SubViews
         /// <summary>
         /// 検索結果の選択行
         /// </summary>
-        public ReactivePropertySlim<BindableEquipSet> DetailSet { get; } = new();
+        public ReactivePropertySlim<BindableEquipSet?> DetailSet { get; } = new();
 
         /// <summary>
         /// 装備詳細の各行のVM
@@ -100,6 +100,7 @@ namespace RiseSim.ViewModels.SubViews
         internal void ShowSearchResult(List<EquipSet> result, bool remain, int limit)
         {
             SearchResult.ChangeCollection(BindableEquipSet.BeBindableList(result));
+            DetailSet.Value = SearchResult.Value.Count > 0 ? SearchResult.Value[0] : null;
             IsRemaining.Value = remain;
             Limit = limit;
         }
