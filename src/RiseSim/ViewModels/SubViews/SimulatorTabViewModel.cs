@@ -76,7 +76,10 @@ namespace RiseSim.ViewModels.SubViews
         {
             // シミュ画面の検索結果と装備詳細を紐づけ
             DetailSet.Subscribe(set => {
-                EquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set));
+                if (set != null)
+                {
+                    EquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set.Original));
+                }
             });
 
             // コマンドを設定
@@ -158,23 +161,23 @@ namespace RiseSim.ViewModels.SubViews
             int gskillCount = 0;
             for (int i = 0; i < 5; i++)
             {
-                gskillCount += DetailSet.Value.Head.Original.GenericSkills[i];
+                gskillCount += DetailSet.Value.Head.Value.Original.GenericSkills[i];
             }
             for (int i = 0; i < 5; i++)
             {
-                gskillCount += DetailSet.Value.Body.Original.GenericSkills[i];
+                gskillCount += DetailSet.Value.Body.Value.Original.GenericSkills[i];
             }
             for (int i = 0; i < 5; i++)
             {
-                gskillCount += DetailSet.Value.Arm.Original.GenericSkills[i];
+                gskillCount += DetailSet.Value.Arm.Value.Original.GenericSkills[i];
             }
             for (int i = 0; i < 5; i++)
             {
-                gskillCount += DetailSet.Value.Waist.Original.GenericSkills[i];
+                gskillCount += DetailSet.Value.Waist.Value.Original.GenericSkills[i];
             }
             for (int i = 0; i < 5; i++)
             {
-                gskillCount += DetailSet.Value.Leg.Original.GenericSkills[i];
+                gskillCount += DetailSet.Value.Leg.Value.Original.GenericSkills[i];
             }
 
             // 注意

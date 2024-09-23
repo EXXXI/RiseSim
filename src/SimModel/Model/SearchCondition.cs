@@ -142,6 +142,31 @@ namespace SimModel.Model
         }
 
         /// <summary>
+        /// 表示用説明
+        /// </summary>
+        public string Description
+        {
+            get
+            {
+                string none = "なし";
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"武器スロ:{WeaponSlot1}-{WeaponSlot2}-{WeaponSlot3}");
+                sb.AppendLine($"防御力:{Def?.ToString() ?? none}, 性別:{Sex.ToString()}");
+                sb.Append($"火:{Fire?.ToString() ?? none},");
+                sb.Append($"水:{Water?.ToString() ?? none},");
+                sb.Append($"雷:{Thunder?.ToString() ?? none},");
+                sb.Append($"氷:{Ice?.ToString() ?? none},");
+                sb.Append($"龍:{Dragon?.ToString() ?? none}");
+                foreach (var skill in Skills)
+                {
+                    sb.AppendLine();
+                    sb.Append($"{skill.Name}Lv{skill.Level}{(skill.IsFixed ? "(固定)" : string.Empty)}");
+                }
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
         /// デフォルトコンストラクタ
         /// </summary>
         public SearchCondition()

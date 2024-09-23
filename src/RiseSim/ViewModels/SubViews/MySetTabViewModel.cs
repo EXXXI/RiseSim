@@ -57,8 +57,11 @@ namespace RiseSim.ViewModels.SubViews
         {
             // マイセット画面の一覧と装備詳細を紐づけ
             MyDetailSet.Subscribe(set => {
-                MyEquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set));
-                MyDetailName.Value = MyDetailSet.Value?.Name ?? String.Empty;
+                if (set != null)
+                {
+                    MyEquipRowVMs.ChangeCollection(EquipRowViewModel.SetToEquipRows(set.Original));
+                    MyDetailName.Value = MyDetailSet.Value?.Name.Value ?? string.Empty;
+                }
             });
 
             // コマンドを設定
@@ -79,7 +82,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // TODO: これだけだと不安だからID欲しくない？
             // 選択状態復帰用
-            string description = MyDetailSet.Value.Description;
+            string description = MyDetailSet.Value.Description.Value;
             string name = MyDetailName.Value;
 
             // 変更
@@ -92,7 +95,7 @@ namespace RiseSim.ViewModels.SubViews
             // 選択状態が解除されてしまうのでDetailSetを再選択
             foreach (var mySet in MySetList.Value)
             {
-                if (mySet.Name == name && mySet.Description == description)
+                if (mySet.Name.Value == name && mySet.Description.Value == description)
                 {
                     MyDetailSet.Value = mySet;
                 }

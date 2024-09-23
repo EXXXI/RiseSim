@@ -1,6 +1,5 @@
 ﻿using Reactive.Bindings;
 using SimModel.Model;
-using System.Text;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
@@ -31,33 +30,8 @@ namespace RiseSim.ViewModels.BindableWrapper
         public BindableSearchCondition(SearchCondition condition)
         {
             Original = condition;
-            Description.Value = MakeDescription(condition);
+            Description.Value = condition.Description;
             DispName.Value = condition.DispName;
-        }
-
-        /// <summary>
-        /// 表示用説明
-        /// </summary>
-        /// <param name="condition">検索条件</param>
-        /// <returns>表示用説明文字列</returns>
-        private string MakeDescription(SearchCondition condition)
-        {
-            string none = "なし";
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"武器スロ:{condition.WeaponSlot1}-{condition.WeaponSlot2}-{condition.WeaponSlot3}");
-            sb.AppendLine($"防御力:{condition.Def?.ToString() ?? none}, 性別:{condition.Sex.ToString()}");
-            sb.Append($"火:{condition.Fire?.ToString() ?? none},");
-            sb.Append($"水:{condition.Water?.ToString() ?? none},");
-            sb.Append($"雷:{condition.Thunder?.ToString() ?? none},");
-            sb.Append($"氷:{condition.Ice?.ToString() ?? none},");
-            sb.Append($"龍:{condition.Dragon?.ToString() ?? none}");
-            foreach (var skill in condition.Skills)
-            {
-                sb.AppendLine();
-                sb.Append($"{skill.Name}Lv{skill.Level}{(skill.IsFixed ? "(固定)" : string.Empty)}");
-            }
-
-            return sb.ToString();
         }
     }
 }

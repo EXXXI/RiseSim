@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.OrTools.LinearSolver;
 using System.Threading;
+using System.Windows.Annotations;
 
 namespace SimModel.Domain
 {

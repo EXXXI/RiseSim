@@ -1,5 +1,6 @@
 ﻿using SimModel.Config;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SimModel.Model
@@ -516,9 +517,11 @@ namespace SimModel.Model
         {
             get
             {
+                List<Skill> existSkill = Skills.Where(s => s.Level > 0).ToList();
+
                 StringBuilder sb = new();
                 bool first = true;
-                foreach (var skill in Skills)
+                foreach (var skill in existSkill)
                 {
                     if (skill.Level > 0)
                     {
@@ -542,10 +545,12 @@ namespace SimModel.Model
         {
             get
             {
+                List<Skill> existSkill = Skills.Where(s => s.Level > 0).ToList();
+
                 StringBuilder sb = new();
-                int secondLineIdx = Skills.Count / 3;
-                int thirdLineIdx = Skills.Count * 2 / 3;
-                for (int i = 0; i < Skills.Count; i++)
+                int secondLineIdx = existSkill.Count / 3;
+                int thirdLineIdx = existSkill.Count * 2 / 3;
+                for (int i = 0; i < existSkill.Count; i++)
                 {
                     if (i == 0)
                     {
@@ -565,7 +570,7 @@ namespace SimModel.Model
                     {
                         sb.Append(',');
                     }
-                    sb.Append(Skills[i].Description);
+                    sb.Append(existSkill[i].Description);
                 }
                 return sb.ToString();
             }

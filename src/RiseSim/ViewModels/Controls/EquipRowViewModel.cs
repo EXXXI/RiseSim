@@ -60,7 +60,7 @@ namespace RiseSim.ViewModels.Controls
         /// コンストラクタ
         /// </summary>
         /// <param name="equip">装備</param>
-        public EquipRowViewModel(BindableEquipment equip)
+        public EquipRowViewModel(Equipment equip)
         {
             DispName.Value = equip.DispName;
             TrueKind = equip.Kind;
@@ -87,7 +87,7 @@ namespace RiseSim.ViewModels.Controls
         /// </summary>
         /// <param name="set">装備セット</param>
         /// <returns>装備表示部品VMのリスト</returns>
-        static public ObservableCollection<EquipRowViewModel> SetToEquipRows(BindableEquipSet set)
+        static public ObservableCollection<EquipRowViewModel> SetToEquipRows(EquipSet set)
         {
             ObservableCollection<EquipRowViewModel> list = new();
             if (set != null)
