@@ -205,15 +205,15 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             // ベースが変わっている場合は新規に回す
-            if (Kind.Value.ToEquipKind() != SelectedAugmentation.Value.Kind ||
-                SelectedEquip.Value.Name != SelectedAugmentation.Value.BaseName)
+            if (Kind.Value.ToEquipKind() != SelectedAugmentation.Value.Original.Kind ||
+                SelectedEquip.Value.Name != SelectedAugmentation.Value.Original.BaseName)
             {
                 AddAugmentation();
                 return;
             }
 
             Augmentation aug = new();
-            aug.Name = SelectedAugmentation.Value.Name;
+            aug.Name = SelectedAugmentation.Value.Original.Name;
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
@@ -261,7 +261,7 @@ namespace RiseSim.ViewModels.SubViews
                 return;
             }
 
-            BindableAugmentation aug = SelectedAugmentation.Value;
+            Augmentation aug = SelectedAugmentation.Value.Original;
             DispName.Value = aug.DispName;
             Kind.Value = aug.Kind.Str();
             foreach (var equip in Equips.Value)
