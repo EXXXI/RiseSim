@@ -33,8 +33,6 @@ namespace SimModel.Model
         /// </summary>
         public int SlotIncrement { get; set; }
 
-        // TODO: 防御・耐性は需要があれば
-
         /// <summary>
         /// 追加スキル
         /// </summary>

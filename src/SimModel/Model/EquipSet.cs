@@ -311,42 +311,7 @@ namespace SimModel.Model
             }
         }
 
-        /// <summary>
-        /// 表示用CSV表記
-        /// </summary>
-        public string SimpleSetName
-        {
-            get
-            {
-                StringBuilder sb = new();
-                sb.Append(Head.DispName);
-                sb.Append(',');
-                sb.Append(Body.DispName);
-                sb.Append(',');
-                sb.Append(Arm.DispName);
-                sb.Append(',');
-                sb.Append(Waist.DispName);
-                sb.Append(',');
-                sb.Append(Leg.DispName);
-                sb.Append(',');
-                sb.Append(Charm.DispName);
-
-                foreach (Equipment deco in Decos)
-                {
-                    sb.Append(',');
-                    sb.Append(deco.DispName);
-                }
-
-                foreach (Equipment gSkill in GenericSkills)
-                {
-                    sb.Append(',');
-                    sb.Append(gSkill.DispName);
-                }
-
-                return sb.ToString();
-            }
-        }
-
+        // TODO: 消して別の方法にしよう　変数のName()で判別したほうがまだ良い
         /// <summary>
         /// 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
         /// </summary>

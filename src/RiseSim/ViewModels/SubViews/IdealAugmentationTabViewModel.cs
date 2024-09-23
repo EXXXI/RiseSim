@@ -333,7 +333,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             IdealAugmentation ideal = new();
-            ideal.Name = SelectedIdeal.Value.Name;
+            ideal.Name = SelectedIdeal.Value.Original.Name;
             ideal.Table = Table.Value;
             ideal.IsIncludeLower = IsIncludeLower.Value;
             ideal.IsEnabled = SelectedIdeal.Value.IsEnabled.Value;

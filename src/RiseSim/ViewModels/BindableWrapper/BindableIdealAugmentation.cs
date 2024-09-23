@@ -13,64 +13,44 @@ namespace RiseSim.ViewModels.BindableWrapper
     internal class BindableIdealAugmentation : ChildViewModelBase
     {
         /// <summary>
-        /// 管理用装備名(GUID)
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
         /// 表示用装備名
         /// </summary>
-        public string DispName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// テーブル
-        /// </summary>
-        public int Table { get; set; }
-
-        /// <summary>
-        /// 下位テーブル含フラグ
-        /// </summary>
-        public bool IsIncludeLower { get; set; }
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
         /// <summary>
         /// 表示用テーブル
         /// </summary>
-        public string TableDisp { get; set; }
+        public ReactivePropertySlim<string> TableDisp { get; } = new();
 
         /// <summary>
         /// スロット追加数
         /// </summary>
-        public int SlotIncrement { get; set; }
+        public ReactivePropertySlim<int> SlotIncrement { get; } = new();
 
         /// <summary>
         /// 1部位だけか否か
         /// </summary>
-        public bool IsOne { get; set; }
-
-        /// <summary>
-        /// 1部位だけか否か
-        /// </summary>
-        public string IsOneDisp { get; set; }
+        public ReactivePropertySlim<string> IsOneDisp { get; } = new();
 
         /// <summary>
         /// 表示用スキル一覧
         /// </summary>
-        public string SimpleSkillDiscription { get; set; }
+        public ReactivePropertySlim<string> SimpleSkillDiscription { get; } = new();
 
         /// <summary>
         /// 表示用スキルマイナス一覧
         /// </summary>
-        public string SimpleSkillMinusDiscription { get; set; }
+        public ReactivePropertySlim<string> SimpleSkillMinusDiscription { get; } = new();
 
         /// <summary>
         /// 有効無効
         /// </summary>
-        public ReactivePropertySlim<bool> IsEnabled { get; set; } = new(true);
+        public ReactivePropertySlim<bool> IsEnabled { get; } = new(true);
 
         /// <summary>
         /// 必須
         /// </summary>
-        public ReactivePropertySlim<bool> IsRequired { get; set; } = new(false);
+        public ReactivePropertySlim<bool> IsRequired { get; } = new(false);
 
         /// <summary>
         /// オリジナル
@@ -83,18 +63,14 @@ namespace RiseSim.ViewModels.BindableWrapper
         /// <param name="ideal">理想錬成</param>
         public BindableIdealAugmentation(IdealAugmentation ideal)
         {
-            Name = ideal.Name;
-            DispName = ideal.DispName;
-            Table = ideal.Table;
-            SlotIncrement = ideal.SlotIncrement;
-            IsOne = ideal.IsOne;
-            IsOneDisp = IsOne ? "一部位のみ" : "全部位可";
-            IsIncludeLower = ideal.IsIncludeLower;
+            DispName.Value = ideal.DispName;
+            SlotIncrement.Value = ideal.SlotIncrement;
+            IsOneDisp.Value = ideal.IsOne ? "一部位のみ" : "全部位可";
             IsEnabled.Value = ideal.IsEnabled;
             IsRequired.Value = ideal.IsRequired;
-            TableDisp = ideal.Table + (IsIncludeLower ? "以下" : "のみ"); 
-            SimpleSkillDiscription = ideal.SimpleSkillDiscription;
-            SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
+            TableDisp.Value = ideal.Table + (ideal.IsIncludeLower ? "以下" : "のみ"); 
+            SimpleSkillDiscription.Value = ideal.SimpleSkillDiscription;
+            SimpleSkillMinusDiscription.Value = ideal.SimpleSkillMinusDiscription;
             Original = ideal;
             IsEnabled.Subscribe(x => ChangeIsEnabled(x));
             IsRequired.Subscribe(x => ChangeIsRequired(x));
