@@ -245,7 +245,7 @@ namespace RiseSim.ViewModels.SubViews
         {
             if (equip != null)
             {
-                CludeTabVM.AddExclude(equip.Name, equip.DispName);
+                CludeTabVM.AddExclude(equip.Original);
             }
         }
 
@@ -257,7 +257,7 @@ namespace RiseSim.ViewModels.SubViews
         {
             if (equip != null)
             {
-                CludeTabVM.AddInclude(equip.Name, equip.DispName);
+                CludeTabVM.AddInclude(equip.Original);
             }
         }
 

@@ -78,7 +78,7 @@ namespace RiseSim.ViewModels.Controls
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputEquipName.Value)
+                    if (equip.DispName.Value == InputEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -88,7 +88,7 @@ namespace RiseSim.ViewModels.Controls
 
             if (SelectedEquip.Value != null)
             {
-                CludeTabVM.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddExclude(SelectedEquip.Value.Original);
             }
         }
 
@@ -101,7 +101,7 @@ namespace RiseSim.ViewModels.Controls
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputEquipName.Value)
+                    if (equip.DispName.Value == InputEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -110,7 +110,7 @@ namespace RiseSim.ViewModels.Controls
             }
             if (SelectedEquip.Value != null)
             {
-                CludeTabVM.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddInclude(SelectedEquip.Value.Original);
             }
         }
     }

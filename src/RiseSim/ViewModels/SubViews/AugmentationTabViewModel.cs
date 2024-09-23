@@ -191,7 +191,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputBaseEquipName.Value)
+                    if (equip.DispName.Value == InputBaseEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -206,7 +206,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // ベースが変わっている場合は新規に回す
             if (Kind.Value.ToEquipKind() != SelectedAugmentation.Value.Original.Kind ||
-                SelectedEquip.Value.Name != SelectedAugmentation.Value.Original.BaseName)
+                SelectedEquip.Value.Original.Name != SelectedAugmentation.Value.Original.BaseName)
             {
                 AddAugmentation();
                 return;
@@ -217,11 +217,11 @@ namespace RiseSim.ViewModels.SubViews
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
-                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Name);
+                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Original.Name);
             }
             aug.DispName = dispName;
             aug.Kind = Kind.Value.ToEquipKind();
-            aug.BaseName = SelectedEquip.Value.Name;
+            aug.BaseName = SelectedEquip.Value.Original.Name;
             string[] slots = Slots.Value.Split('-');
             aug.Slot1 = ParseUtil.Parse(slots[0]);
             aug.Slot2 = ParseUtil.Parse(slots[1]);
@@ -266,7 +266,7 @@ namespace RiseSim.ViewModels.SubViews
             Kind.Value = aug.Kind.Str();
             foreach (var equip in Equips.Value)
             {
-                if (equip.Name == aug.BaseName)
+                if (equip.Original.Name == aug.BaseName)
                 {
                     SelectedEquip.Value = equip;
                 }
@@ -306,7 +306,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputBaseEquipName.Value)
+                    if (equip.DispName.Value == InputBaseEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -324,11 +324,11 @@ namespace RiseSim.ViewModels.SubViews
             string dispName = DispName.Value;
             if (string.IsNullOrWhiteSpace(dispName))
             {
-                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Name);
+                dispName = Masters.MakeAugmentaionDefaultDispName(SelectedEquip.Value.Original.Name);
             }
             aug.DispName = dispName;
             aug.Kind = Kind.Value.ToEquipKind();
-            aug.BaseName = SelectedEquip.Value.Name;
+            aug.BaseName = SelectedEquip.Value.Original.Name;
             string[] slots = Slots.Value.Split('-');
             aug.Slot1 = ParseUtil.Parse(slots[0]);
             aug.Slot2 = ParseUtil.Parse(slots[1]);
@@ -439,7 +439,8 @@ namespace RiseSim.ViewModels.SubViews
         {
             if (SelectedEquip?.Value != null)
             {
-                Slots.Value = SelectedEquip.Value.SlotStr;
+                Equipment equip = SelectedEquip.Value.Original;
+                Slots.Value = $"{equip.Slot1}-{equip.Slot2}-{equip.Slot3}";
             }
         }
     }

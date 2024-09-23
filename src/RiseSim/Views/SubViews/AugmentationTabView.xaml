@@ -26,10 +26,10 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具"/>
-                <controls:AutoCompleteComboBox TextSearch.TextPath="DispName" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Text="{Binding InputBaseEquipName.Value, UpdateSourceTrigger=PropertyChanged}"  Width="165" SelectedIndex="0">
+                <controls:AutoCompleteComboBox TextSearch.TextPath="DispName.Value" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Text="{Binding InputBaseEquipName.Value, UpdateSourceTrigger=PropertyChanged}"  Width="165" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding DispName, Mode=OneWay}" Margin="2.5"/>
+                            <TextBlock Text="{Binding DispName.Value, Mode=OneWay}" Margin="2.5"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </controls:AutoCompleteComboBox>

@@ -52,6 +52,15 @@ namespace RiseSim.ViewModels.SubViews
         /// <summary>
         /// 除外装備設定
         /// </summary>
+        /// <param name="equip">装備</param>
+        internal void AddExclude(Equipment equip)
+        {
+            AddExclude(equip.Name, equip.DispName);
+        }
+
+        /// <summary>
+        /// 除外装備設定
+        /// </summary>
         /// <param name="trueName">物理名</param>
         /// <param name="dispName">表示名</param>
         internal void AddExclude(string trueName, string dispName)
@@ -70,6 +79,15 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             SetStatusBar("除外登録完了：" + dispName);
+        }
+
+        /// <summary>
+        /// 固定装備設定
+        /// </summary>
+        /// <param name="equip">装備</param>
+        internal void AddInclude(Equipment equip)
+        {
+            AddInclude(equip.Name, equip.DispName);
         }
 
         /// <summary>

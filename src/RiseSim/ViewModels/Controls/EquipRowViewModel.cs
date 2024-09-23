@@ -1,6 +1,5 @@
 ﻿using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System.Collections.ObjectModel;
 

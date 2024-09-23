@@ -8,10 +8,10 @@
              d:DesignHeight="27" d:DesignWidth="250">
     <StackPanel Orientation="Horizontal">
         <TextBlock Width="60" Text="{Binding DispKind.Value, Mode=OneWay}" TextAlignment="Right" VerticalAlignment="Center"/>
-        <controls:AutoCompleteComboBox TextSearch.TextPath="DispName" Text="{Binding InputEquipName.Value, UpdateSourceTrigger=PropertyChanged}" x:Name="equipCombo" Height="27" Width="130" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}">
+        <controls:AutoCompleteComboBox TextSearch.TextPath="DispName.Value" Text="{Binding InputEquipName.Value, UpdateSourceTrigger=PropertyChanged}" x:Name="equipCombo" Height="27" Width="130" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DispName, Mode=OneWay}" Margin="2.5"/>
+                    <TextBlock Text="{Binding DispName.Value, Mode=OneWay}" Margin="2.5"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </controls:AutoCompleteComboBox>
