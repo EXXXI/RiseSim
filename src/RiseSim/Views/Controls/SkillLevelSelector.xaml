@@ -24,10 +24,10 @@
         </Border.Style>
         <StackPanel Orientation="Horizontal">
             <ComboBox VerticalAlignment="Center" HorizontalContentAlignment="Center"
-                      ItemsSource="{Binding Path=Items, Mode=OneWay}" 
-                      DisplayMemberPath="LevelDisplayName"
+                      ItemsSource="{Binding Path=Levels.Value, Mode=OneWay}" 
+                      DisplayMemberPath="Disp"
                       SelectedIndex="0"
-                      SelectedItem="{Binding Path=SelectedSkill.Value}"
+                      SelectedItem="{Binding Path=SelectedLevel.Value}"
                       Height="22"
                       Width="150"/>
             <ComboBox Width="50" ItemsSource="{Binding IsFixDisps.Value, Mode=OneWay}" SelectedItem="{Binding IsFixDisp.Value}" />

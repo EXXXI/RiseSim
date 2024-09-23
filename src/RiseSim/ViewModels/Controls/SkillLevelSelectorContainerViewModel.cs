@@ -29,7 +29,7 @@ namespace RiseSim.ViewModels.Controls
         {
             Header = categoryName;
             SkillLevelSelectors = new ObservableCollection<SkillLevelSelectorViewModel>(skills.Select(x =>
-                new SkillLevelSelectorViewModel(x)));
+                new SkillLevelSelectorViewModel(x.Name)));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace RiseSim.ViewModels.Controls
         public IReadOnlyList<Skill> SelectedSkills() => 
             SkillLevelSelectors
                 .Where(s => s.Selected.Value)
-                .Select(s => new Skill(s.SelectedSkill.Value.Name, s.SelectedSkill.Value.Level, isFixed:s.IsFix))
+                .Select(s => s.SelectedSkill)
                 .ToList();
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace RiseSim.ViewModels.Controls
         {
             foreach (var vm in SkillLevelSelectors)
             {
-                if (vm.SelectedSkill.Value.Name == name)
+                if (vm.SkillName == name)
                 {
                     vm.SelectLevel(level);
                     vm.SetIsFix(isFixed);

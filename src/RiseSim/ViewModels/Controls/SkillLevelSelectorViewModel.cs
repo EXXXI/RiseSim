@@ -25,12 +25,12 @@ namespace RiseSim.ViewModels.Controls
         /// <summary>
         /// ComboBox用のデータソース
         /// </summary>
-        public ObservableCollection<BindableSkill> Items { get; init; }
+        public ReactivePropertySlim<ObservableCollection<SkillLevelSelectorItem>> Levels { get; } = new();
 
         /// <summary>
-        /// 選択されているスキル
+        /// 選択されているレベル
         /// </summary>
-        public ReactivePropertySlim<BindableSkill> SelectedSkill { get; set; }
+        public ReactivePropertySlim<SkillLevelSelectorItem> SelectedLevel { get; } = new();
 
         /// <summary>
         /// スキル値固定有無の表示候補
@@ -43,21 +43,40 @@ namespace RiseSim.ViewModels.Controls
         public ReactivePropertySlim<string> IsFixDisp { get; } = new();
 
         /// <summary>
-        /// スキル値固定有無状態
-        /// </summary>
-        public bool IsFix { get; set; } = false;
-
-        /// <summary>
         /// 設定有無
         /// </summary>
         public ReactivePropertySlim<bool> Selected { get; } = new(false);
 
         /// <summary>
+        /// スキル名
+        /// </summary>
+        public string SkillName { get; set; }
+
+        /// <summary>
+        /// 選択されているスキルを返却
+        /// </summary>
+        internal Skill SelectedSkill
+        {
+            get
+            {
+                return new Skill(SkillName, SelectedLevel.Value.Level, isFixed: IsFixDisp.Value == FixStr);
+            }
+        }
+
+        /// <summary>
+        /// 固定有無
+        /// </summary>
+        private bool IsFixed { get => IsFixDisp.Value == FixStr; }
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="skill">スキル情報</param>
-        public SkillLevelSelectorViewModel(Skill skill)
+        public SkillLevelSelectorViewModel(string skillName)
         {
+            // スキル名保存
+            SkillName = skillName;
+
             // スキル値固定関連準備
             IsFixDisps.Value = new();
             IsFixDisps.Value.Add(NotFixStr);
@@ -65,21 +84,19 @@ namespace RiseSim.ViewModels.Controls
             IsFixDisp.Value = NotFixStr;
 
             // レベル分のBindableSkillを作成
-            Items = new ObservableCollection<BindableSkill>(Enumerable.Range(0, skill.Level + 1)
-                .Select(level => new BindableSkill(skill) { Level = level }));
+            Levels.Value = SkillLevelSelectorItem.MakeSkillLevelSelectorItems(skillName); 
 
             // 初期値
-            SelectedSkill = new ReactivePropertySlim<BindableSkill> { Value = Items.First() };
+            SelectedLevel.Value = Levels.Value.First();
 
             // 設定有無フラグのロジック
-            SelectedSkill.Subscribe(selected =>
+            SelectedLevel.Subscribe(selected =>
             {
-                Selected.Value = SelectedSkill.Value.Level != 0 || IsFix;
+                Selected.Value = SelectedLevel.Value.Level != 0 || IsFixed;
             });
             IsFixDisp.Subscribe(_ => 
             { 
-                IsFix = IsFixDisp.Value == FixStr;
-                Selected.Value = SelectedSkill.Value.Level != 0 || IsFix;
+                Selected.Value = SelectedLevel.Value.Level != 0 || IsFixed;
             });
         }
 
@@ -89,7 +106,7 @@ namespace RiseSim.ViewModels.Controls
         /// <param name="v">レベル</param>
         internal void SelectLevel(int v)
         {
-            SelectedSkill.Value = Items.Where(skill => skill.Level == v).First();
+            SelectedLevel.Value = Levels.Value.Where(skill => skill.Level == v).First();
         }
 
         /// <summary>
@@ -109,5 +126,6 @@ namespace RiseSim.ViewModels.Controls
         {
             IsFixDisp.Value = isFix ? FixStr : NotFixStr;
         }
+
     }
 }

@@ -151,7 +151,7 @@ namespace SimModel.Model
                 string none = "なし";
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine($"武器スロ:{WeaponSlot1}-{WeaponSlot2}-{WeaponSlot3}");
-                sb.AppendLine($"防御力:{Def?.ToString() ?? none}, 性別:{Sex.ToString()}");
+                sb.AppendLine($"防御力:{Def?.ToString() ?? none}, 性別:{Sex.Str()}");
                 sb.Append($"火:{Fire?.ToString() ?? none},");
                 sb.Append($"水:{Water?.ToString() ?? none},");
                 sb.Append($"雷:{Thunder?.ToString() ?? none},");
