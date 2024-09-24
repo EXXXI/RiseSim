@@ -13,29 +13,44 @@ namespace SimModel.Domain
 {
     internal class Searcher
     {
-        // 定数：各制約式のIndex
-        const int HeadRowIndex = 0;
-        const int BodyRowIndex = 1;
-        const int ArmRowIndex = 2;
-        const int WaistRowIndex = 3;
-        const int LegRowIndex = 4;
-        const int CharmRowIndex = 5;
-        const int Slot1RowIndex = 6;
-        const int Slot2RowIndex = 7;
-        const int Slot3RowIndex = 8;
-        const int Slot4RowIndex = 9;
-        const int SexRowIndex = 10;
-        const int DefRowIndex = 11;
-        const int FireRowIndex = 12;
-        const int WaterRowIndex = 13;
-        const int ThunderRowIndex = 14;
-        const int IceRowIndex = 15;
-        const int DragonRowIndex = 16;
-        const int c3RowIndex = 17;
-        const int c6RowIndex = 18;
-        const int c9RowIndex = 19;
-        const int c12RowIndex = 20;
-        const int c15RowIndex = 21;
+        /// <summary>
+        /// 制約式名や変数名の重複を防ぐための疑似特殊文字
+        /// 本来は入力不可文字を規定してそれを使うべきだが
+        /// </summary>
+        private string SeparateGUID { get; } = $"__{Guid.NewGuid().ToString()}__";
+        // 定数：各制約式の名称
+        const string HeadRowName = "head";
+        const string BodyRowName = "body";
+        const string ArmRowName = "arm";
+        const string WaistRowName = "waist";
+        const string LegRowName = "leg";
+        const string CharmRowName = "charm";
+        const string Slot1RowName = "slot1";
+        const string Slot2RowName = "slot2";
+        const string Slot3RowName = "slot3";
+        const string Slot4RowName = "slot4";
+        const string SexRowName = "sex";
+        const string DefRowName = "def";
+        const string FireRowName = "fire";
+        const string WaterRowName = "water";
+        const string ThunderRowName = "thunder";
+        const string IceRowName = "ice";
+        const string DragonRowName = "dragon";
+        const string C3RowName = "c3";
+        const string C6RowName = "c6";
+        const string C9RowName = "c9";
+        const string C12RowName = "c12";
+        const string C15RowName = "c15";
+        const string SkillRowPrefix = "skill_";
+        const string FuraiExistRowPrefix = "furaiExist_";
+        const string FuraiFlagRowPrefix = "furaiFlag_";
+        const string IdealRowPrefix = "ideal_";
+        const string SetRowPrefix = "set_";
+        const string CludeRowPrefix = "clude_";
+        const string AdditionalFixRowPrefix = "additionalFix_";
+        const string EquipColPrefix = "equip_";
+        const string Furai4ColPrefix = "furai4_";
+        const string Furai5ColPrefix = "furai5_";
 
         /// <summary>
         /// 検索条件
@@ -83,41 +98,6 @@ namespace SimModel.Domain
         private List<Equipment> Legs { get; set; }
 
         /// <summary>
-        /// スキル条件の制約式の開始Index
-        /// </summary>
-        private int FirstSkillRowIndex { get; set; }
-
-        /// <summary>
-        /// 検索結果除外条件の制約式の開始Index
-        /// </summary>
-        private int FirstResultExcludeRowIndex { get; set; }
-
-        /// <summary>
-        /// 除外・固定条件の制約式の開始Index
-        /// </summary>
-        private int FirstCludeRowIndex { get; set; }
-
-        /// <summary>
-        /// 風雷合一：スキル条件の制約式の開始Index
-        /// </summary>
-        private int FirstFuraiSkillRowIndex { get; set; }
-
-        /// <summary>
-        /// 風雷合一：フラグ条件の制約式の開始Index
-        /// </summary>
-        private int FirstFuraiFlagRowIndex { get; set; }
-
-        /// <summary>
-        /// 理想錬成：部位制限つきの理想編成の名前・Index
-        /// </summary>
-        private Dictionary<string, int> LimitedIdealAugmentationDictionary { get; set; }
-
-        /// <summary>
-        /// 除外・固定条件の制約式の開始Index
-        /// </summary>
-        private Dictionary<string, int> AdditionalFixRowIndexDictionary { get; set; }
-
-        /// <summary>
         /// コンストラクタ：検索条件を指定する
         /// </summary>
         /// <param name="condition"></param>
@@ -160,16 +140,16 @@ namespace SimModel.Domain
                 using Solver solver = Solver.CreateSolver("SCIP");
 
                 // 変数設定
-                Variable[] x = SetVariables(solver);
+                SetVariables(solver);
 
                 // 制約式設定
-                Constraint[] y = SetConstraints(solver);
+                SetConstraints(solver);
 
                 // 目的関数設定(防御力)
-                SetObjective(solver, x);
+                SetObjective(solver);
 
                 // 係数設定(防具データ)
-                SetDatas(solver, x, y);
+                SetDatas(solver);
 
                 // 計算
                 var result = solver.Solve();
@@ -180,7 +160,7 @@ namespace SimModel.Domain
                 }
 
                 // 計算結果整理
-                bool hasData = MakeSet(x);
+                bool hasData = MakeSet(solver);
                 if (!hasData)
                 {
                     // TODO: 計算結果の空データ、何故発生する？
@@ -201,96 +181,68 @@ namespace SimModel.Domain
         /// 制約式設定
         /// </summary>
         /// <param name="solver">ソルバ</param>
-        /// <returns>制約式の配列</returns>
-        private Constraint[] SetConstraints(Solver solver)
+        private void SetConstraints(Solver solver)
         {
-
-            int numConstraints = 0;
-            numConstraints += 5; // 防具5部位
-            numConstraints += 1; // 護石
-            numConstraints += 4; // スロットLv
-            numConstraints += 1; // 性別
-            numConstraints += 1; // 防御力
-            numConstraints += 5; // 耐性
-            numConstraints += 5; // 理想錬成スキルコスト
-            numConstraints += Condition.Skills.Count; // スキル数
-            numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
-            numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
-            numConstraints += Masters.Ideals.Count; // 理想錬成：部位制限
-            numConstraints += ResultSets.Count + FailureSets.Count; // 検索済み結果の除外
-            numConstraints += Masters.Cludes.Count; // 除外固定装備設定
-            if (Condition.AdditionalFixData != null)
-            {
-                numConstraints += Condition.AdditionalFixData.Count(); // 錬成パターン検索用、追加固定情報
-            }
-
-            Constraint[] y = new Constraint[numConstraints];
-
-            int index = 0;
             // 各部位に装着できる防具は1つまで
-            y[index++] = solver.MakeConstraint(0, 1, "head");
-            y[index++] = solver.MakeConstraint(0, 1, "body");
-            y[index++] = solver.MakeConstraint(0, 1, "arm");
-            y[index++] = solver.MakeConstraint(0, 1, "waist");
-            y[index++] = solver.MakeConstraint(0, 1, "leg");
-            y[index++] = solver.MakeConstraint(0, 1, "charm");
+            solver.MakeConstraint(0, 1, HeadRowName);
+            solver.MakeConstraint(0, 1, BodyRowName);
+            solver.MakeConstraint(0, 1, ArmRowName);
+            solver.MakeConstraint(0, 1, WaistRowName);
+            solver.MakeConstraint(0, 1, LegRowName);
+            solver.MakeConstraint(0, 1, CharmRowName);
 
             // 武器スロ計算
             int[] slotCond = SlotCalc(Condition.WeaponSlot1, Condition.WeaponSlot2, Condition.WeaponSlot3);
 
             // 残りスロット数は0以上
-            y[index++] = solver.MakeConstraint(0.0 - slotCond[0], double.PositiveInfinity, "Slot1");
-            y[index++] = solver.MakeConstraint(0.0 - slotCond[1], double.PositiveInfinity, "Slot2");
-            y[index++] = solver.MakeConstraint(0.0 - slotCond[2], double.PositiveInfinity, "Slot3");
-            y[index++] = solver.MakeConstraint(0.0 - slotCond[3], double.PositiveInfinity, "Slot4");
+            solver.MakeConstraint(0.0 - slotCond[0], double.PositiveInfinity, Slot1RowName);
+            solver.MakeConstraint(0.0 - slotCond[1], double.PositiveInfinity, Slot2RowName);
+            solver.MakeConstraint(0.0 - slotCond[2], double.PositiveInfinity, Slot3RowName);
+            solver.MakeConstraint(0.0 - slotCond[3], double.PositiveInfinity, Slot4RowName);
 
             // 性別(自分と違う方を除外する)
-            y[index++] = solver.MakeConstraint(0, 0, "Sex");
+            solver.MakeConstraint(0, 0, SexRowName);
 
             // 防御・耐性
-            y[index++] = solver.MakeConstraint(Condition.Def ?? 0.0, double.PositiveInfinity, "Def");
-            y[index++] = solver.MakeConstraint(Condition.Fire ?? double.NegativeInfinity, double.PositiveInfinity, "Fire");
-            y[index++] = solver.MakeConstraint(Condition.Water ?? double.NegativeInfinity, double.PositiveInfinity, "Water");
-            y[index++] = solver.MakeConstraint(Condition.Thunder ?? double.NegativeInfinity, double.PositiveInfinity, "Thunder");
-            y[index++] = solver.MakeConstraint(Condition.Ice ?? double.NegativeInfinity, double.PositiveInfinity, "Ice");
-            y[index++] = solver.MakeConstraint(Condition.Dragon ?? double.NegativeInfinity, double.PositiveInfinity, "Dragon");
+            solver.MakeConstraint(Condition.Def ?? 0.0, double.PositiveInfinity, DefRowName);
+            solver.MakeConstraint(Condition.Fire ?? double.NegativeInfinity, double.PositiveInfinity, FireRowName);
+            solver.MakeConstraint(Condition.Water ?? double.NegativeInfinity, double.PositiveInfinity, WaterRowName);
+            solver.MakeConstraint(Condition.Thunder ?? double.NegativeInfinity, double.PositiveInfinity, ThunderRowName);
+            solver.MakeConstraint(Condition.Ice ?? double.NegativeInfinity, double.PositiveInfinity, IceRowName);
+            solver.MakeConstraint(Condition.Dragon ?? double.NegativeInfinity, double.PositiveInfinity, DragonRowName);
 
             // 理想錬成スキルコスト
-            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c3");
-            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c6");
-            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c9");
-            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c12");
-            y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, "c15");
+            solver.MakeConstraint(0.0, double.PositiveInfinity, C3RowName);
+            solver.MakeConstraint(0.0, double.PositiveInfinity, C6RowName);
+            solver.MakeConstraint(0.0, double.PositiveInfinity, C9RowName);
+            solver.MakeConstraint(0.0, double.PositiveInfinity, C12RowName);
+            solver.MakeConstraint(0.0, double.PositiveInfinity, C15RowName);
 
             // スキル条件
-            FirstSkillRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
                 if (skill.IsFixed)
                 {
-                    y[index++] = solver.MakeConstraint(skill.Level, skill.Level, skill.Name);
+                    solver.MakeConstraint(skill.Level, skill.Level, SkillRowPrefix + skill.Name);
                 }
                 else
                 {
-                    y[index++] = solver.MakeConstraint(skill.Level, double.PositiveInfinity, skill.Name);
+                    solver.MakeConstraint(skill.Level, double.PositiveInfinity, SkillRowPrefix + skill.Name);
                 }
             }
 
             // 風雷合一：防具スキル存在条件
-            FirstFuraiSkillRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-                y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, skill.Name + "風雷スキル存在");
+                solver.MakeConstraint(0.0, double.PositiveInfinity, FuraiExistRowPrefix + skill.Name);
             }
 
             // 風雷合一：各スキル用フラグ条件
-            FirstFuraiFlagRowIndex = index;
             foreach (var skill in Condition.Skills)
             {
-                y[index++] = solver.MakeConstraint(0.0, double.PositiveInfinity, skill.Name + "風雷フラグ");
+                solver.MakeConstraint(0.0, double.PositiveInfinity, FuraiFlagRowPrefix + skill.Name);
             }
 
-            LimitedIdealAugmentationDictionary = new();
             // 理想錬成：部位制限や有効無効制限
             foreach (var ideal in Masters.Ideals)
             {
@@ -308,133 +260,113 @@ namespace SimModel.Domain
                 {
                     max = 0.0;
                 }
-                LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
-                y[index++] = solver.MakeConstraint(min, max, ideal.Name);
+                solver.MakeConstraint(min, max, IdealRowPrefix + ideal.Name);
             }
 
             // 検索済み結果の除外
-            FirstResultExcludeRowIndex = index;
             foreach (var set in ResultSets)
             {
-                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
+                int equipCount = 0;
+                equipCount += string.IsNullOrWhiteSpace(set.Head?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Body?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Arm?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Waist?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Leg?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Charm?.Name) ? 0 : 1;
+                solver.MakeConstraint(0.0, equipCount - 1, SetRowPrefix + set.GlpkRowName);
             }
             foreach (var set in FailureSets)
             {
-                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
+                int equipCount = 0;
+                equipCount += string.IsNullOrWhiteSpace(set.Head?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Body?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Arm?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Waist?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Leg?.Name) ? 0 : 1;
+                equipCount += string.IsNullOrWhiteSpace(set.Charm?.Name) ? 0 : 1;
+                solver.MakeConstraint(0.0, equipCount - 1, SetRowPrefix + set.GlpkRowName);
             }
 
             // 除外固定装備設定
-            FirstCludeRowIndex = index;
             foreach (var clude in Masters.Cludes)
             {
-                string nameSuffix = "_ex";
                 int fix = 0;
                 if (clude.Kind.Equals(CludeKind.include))
                 {
-                    nameSuffix = "_in";
                     fix = 1;
                 }
-                y[index++] = solver.MakeConstraint(fix, fix, clude.Name + nameSuffix);
+                solver.MakeConstraint(fix, fix, CludeRowPrefix + clude.Name);
             }
 
             // 錬成パターン検索用、追加固定情報
             if (Condition.AdditionalFixData != null)
             {
-                AdditionalFixRowIndexDictionary = new();
                 foreach (var fixData in Condition.AdditionalFixData)
                 {
-                    string nameSuffix = "_ex_additional";
                     int fix = fixData.Value;
-                    AdditionalFixRowIndexDictionary.Add(fixData.Key, index);
-                    y[index++] = solver.MakeConstraint(fix, fix, fixData.Key + nameSuffix);
+                    solver.MakeConstraint(fix, fix, AdditionalFixRowPrefix + fixData.Key);
                 }
             }
-
-
-            return y;
         }
 
         /// <summary>
         /// 変数設定
         /// </summary>
         /// <param name="solver">ソルバ</param>
-        /// <returns>変数の配列</returns>
-        private Variable[] SetVariables(Solver solver)
+        private void SetVariables(Solver solver)
         {
-            // 変数の数
-            int numVars = 0;
-            numVars += Heads.Count;
-            numVars += Bodys.Count;
-            numVars += Arms.Count;
-            numVars += Waists.Count;
-            numVars += Legs.Count;
-            numVars += Masters.Charms.Count;
-            numVars += Masters.Decos.Count;
-            numVars += Masters.GenericSkills.Count;
-            numVars += Condition.Skills.Count;
-            numVars += Condition.Skills.Count;
-
-            Variable[] x = new Variable[numVars];
-
             // 各装備は0個以上で整数
-            int index = 0;
             foreach (var equip in Heads)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Bodys)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Arms)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Waists)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Legs)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Masters.Charms)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Masters.Decos)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
             foreach (var equip in Masters.GenericSkills)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, equip.Name);
+                solver.MakeIntVar(0.0, double.PositiveInfinity, EquipColPrefix + equip.Name);
             }
 
             // 風雷合一：Lv4
             foreach (var skill in Condition.Skills)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, skill.Name + "風雷4");
+                solver.MakeIntVar(0.0, double.PositiveInfinity, Furai4ColPrefix + skill.Name);
             }
 
             // 風雷合一：Lv5
             foreach (var skill in Condition.Skills)
             {
-                x[index++] = solver.MakeIntVar(0.0, double.PositiveInfinity, skill.Name + "風雷5");
+                solver.MakeIntVar(0.0, double.PositiveInfinity, Furai5ColPrefix + skill.Name);
             }
-
-            return x;
         }
 
-        // TODO: 目的関数、防御力以外も対応する？
         /// <summary>
         /// 目的関数設定(防御力)
         /// </summary>
         /// <param name="solver">ソルバ</param>
-        /// <param name="x">変数の配列</param>
-        private void SetObjective(Solver solver, Variable[] x)
+        private void SetObjective(Solver solver)
         {
             Objective objective = solver.Objective();
 
@@ -442,35 +374,43 @@ namespace SimModel.Domain
             int index = 0;
             foreach (var equip in Heads)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Bodys)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Arms)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Waists)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Legs)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Masters.Charms)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Masters.Decos)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             foreach (var equip in Masters.GenericSkills)
             {
-                objective.SetCoefficient(x[index++], Score(equip));
+                var v = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+                objective.SetCoefficient(v, Score(equip));
             }
             objective.SetMaximization();
         }
@@ -536,51 +476,40 @@ namespace SimModel.Domain
         /// 係数設定(防具データ)
         /// </summary>
         /// <param name="solver">ソルバ</param>
-        /// <param name="x">変数の配列</param>
-        /// <param name="y">制約式の配列</param>
-        private void SetDatas(Solver solver, Variable[] x, Constraint[] y)
+        private void SetDatas(Solver solver)
         {
             // 防具データ
-            int columnIndex = 0;
             foreach (var equip in Heads)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Bodys)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Arms)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Waists)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Legs)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Masters.Charms)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Masters.Decos)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
             foreach (var equip in Masters.GenericSkills)
             {
-                SetEquipData(x[columnIndex], y, equip);
-                columnIndex++;
+                SetEquipData(solver, equip);
             }
 
             // 風雷合一：各スキルLv4
@@ -588,16 +517,17 @@ namespace SimModel.Domain
             {
                 if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
                 {
+                    var v = solver.variables().First(v => v.Name() == (Furai4ColPrefix + skill.Name));
+
                     // スキル値追加
-                    y[FirstSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], 1);
+                    solver.constraints().First(c => c.Name() == (SkillRowPrefix + skill.Name)).SetCoefficient(v, 1);
 
                     // スキル存在値減少
-                    y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -1);
+                    solver.constraints().First(c => c.Name() == (FuraiExistRowPrefix + skill.Name)).SetCoefficient(v, -1);
 
                     // スキルフラグ値減少
-                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -4);
+                    solver.constraints().First(c => c.Name() == (FuraiFlagRowPrefix + skill.Name)).SetCoefficient(v, -4);
                 }
-                columnIndex++;
             }
 
             // 風雷合一：各スキルLv5
@@ -605,95 +535,134 @@ namespace SimModel.Domain
             {
                 if (!LogicConfig.Instance.FuraiName.Equals(skill.Name))
                 {
+                    var v = solver.variables().First(v => v.Name() == (Furai5ColPrefix + skill.Name));
+
                     // スキル値追加
-                    y[FirstSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], 2);
+                    solver.constraints().First(c => c.Name() == (SkillRowPrefix + skill.Name)).SetCoefficient(v, 2);
 
                     // スキル存在値減少
-                    y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -1);
+                    solver.constraints().First(c => c.Name() == (FuraiExistRowPrefix + skill.Name)).SetCoefficient(v, -1);
 
                     // スキルフラグ値減少
-                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(skill)].SetCoefficient(x[columnIndex], -5);
-
+                    solver.constraints().First(c => c.Name() == (FuraiFlagRowPrefix + skill.Name)).SetCoefficient(v, -5);
                 }
-                columnIndex++;
             }
 
             // 検索済みデータ
-            int resultExcludeRowIndex = FirstResultExcludeRowIndex;
             foreach (var set in ResultSets)
             {
-                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                foreach (var index in indexList)
+                var y = solver.constraints().First(c => c.Name() == (SetRowPrefix + set.GlpkRowName));
+
+                // 各装備に対応する係数を1とする
+                if (!string.IsNullOrWhiteSpace(set.Head?.Name))
                 {
-                    // 各装備に対応する係数を1とする
-                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Head.Name)), 1);
                 }
-                resultExcludeRowIndex++;
+                if (!string.IsNullOrWhiteSpace(set.Body?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Body.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Arm?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Arm.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Waist?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Waist.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Leg?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Leg.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Charm?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Charm.Name)), 1);
+                }
             }
             foreach (var set in FailureSets)
             {
-                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                foreach (var index in indexList)
+                var y = solver.constraints().First(c => c.Name() == (SetRowPrefix + set.GlpkRowName));
+
+                // 各装備に対応する係数を1とする
+                if (!string.IsNullOrWhiteSpace(set.Head?.Name))
                 {
-                    // 各装備に対応する係数を1とする
-                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Head.Name)), 1);
                 }
-                resultExcludeRowIndex++;
+                if (!string.IsNullOrWhiteSpace(set.Body?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Body.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Arm?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Arm.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Waist?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Waist.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Leg?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Leg.Name)), 1);
+                }
+                if (!string.IsNullOrWhiteSpace(set.Charm?.Name))
+                {
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + set.Charm.Name)), 1);
+                }
             }
 
             // 除外固定データ
-            int cludeRowIndex = FirstCludeRowIndex;
             foreach (var clude in Masters.Cludes)
             {
+                var y = solver.constraints().First(c => c.Name() == (CludeRowPrefix + clude.Name));
+
                 // 装備に対応する係数を1とする
-                List<int> indexs = Masters.GetCludeIndexsByName(clude.Name, Condition.IncludeIdealAugmentation);
-                foreach (var index in indexs)
+                List<Equipment> equips = Masters.GetCludeEquipsByName(clude.Name, Condition.IncludeIdealAugmentation);
+                foreach (var equip in equips)
                 {
-                    y[cludeRowIndex].SetCoefficient(x[index], 1);
+                    y.SetCoefficient(solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name)), 1);
                 }
-                cludeRowIndex++;
             }
         }
 
         /// <summary>
         /// 装備のデータを係数として登録
         /// </summary>
-        /// <param name="xvar">変数</param>
-        /// <param name="y">制約式の配列</param>
+        /// <param name="solver">ソルバ</param>
         /// <param name="equip">装備</param>
-        private void SetEquipData(Variable xvar, Constraint[] y, Equipment equip)
+        private void SetEquipData(Solver solver, Equipment equip)
         {
+            var xvar = solver.variables().First(v => v.Name() == (EquipColPrefix + equip.Name));
+
             // 部位情報
-            int kindIndex = 0;
+            string kindRowName = string.Empty;
             bool isDecoOrGSkill = false;
             switch (equip.Kind)
             {
                 case EquipKind.head:
-                    kindIndex = HeadRowIndex;
+                    kindRowName = HeadRowName;
                     break;
                 case EquipKind.body:
-                    kindIndex = BodyRowIndex;
+                    kindRowName = BodyRowName;
                     break;
                 case EquipKind.arm:
-                    kindIndex = ArmRowIndex;
+                    kindRowName = ArmRowName;
                     break;
                 case EquipKind.waist:
-                    kindIndex = WaistRowIndex;
+                    kindRowName = WaistRowName;
                     break;
                 case EquipKind.leg:
-                    kindIndex = LegRowIndex;
+                    kindRowName = LegRowName;
                     break;
                 case EquipKind.charm:
-                    kindIndex = CharmRowIndex;
+                    kindRowName = CharmRowName;
                     break;
                 default:
-                    isDecoOrGSkill
-                        = true;
+                    isDecoOrGSkill = true;
                     break;
             }
             if (!isDecoOrGSkill)
             {
-                y[kindIndex].SetCoefficient(xvar, 1);
+                solver.constraints().First(c => c.Name() == kindRowName).SetCoefficient(xvar, 1);
             }
 
             // スロット情報
@@ -705,24 +674,24 @@ namespace SimModel.Domain
                     slotCond[i] = slotCond[i] * -1;
                 }
             }
-            y[Slot1RowIndex].SetCoefficient(xvar, slotCond[0]);
-            y[Slot2RowIndex].SetCoefficient(xvar, slotCond[1]);
-            y[Slot3RowIndex].SetCoefficient(xvar, slotCond[2]);
-            y[Slot4RowIndex].SetCoefficient(xvar, slotCond[3]);
+            solver.constraints().First(c => c.Name() == Slot1RowName).SetCoefficient(xvar, slotCond[0]);
+            solver.constraints().First(c => c.Name() == Slot2RowName).SetCoefficient(xvar, slotCond[1]);
+            solver.constraints().First(c => c.Name() == Slot3RowName).SetCoefficient(xvar, slotCond[2]);
+            solver.constraints().First(c => c.Name() == Slot4RowName).SetCoefficient(xvar, slotCond[3]);
 
             // 性別情報(自分と違う方を除外する)
             if (!equip.Sex.Equals(Sex.all) && !equip.Sex.Equals(Condition.Sex))
             {
-                y[SexRowIndex].SetCoefficient(xvar, 1);
+                solver.constraints().First(c => c.Name() == SexRowName).SetCoefficient(xvar, 1);
             }
 
             // 防御・耐性情報
-            y[DefRowIndex].SetCoefficient(xvar, equip.Maxdef);
-            y[FireRowIndex].SetCoefficient(xvar, equip.Fire);
-            y[WaterRowIndex].SetCoefficient(xvar, equip.Water);
-            y[ThunderRowIndex].SetCoefficient(xvar, equip.Thunder);
-            y[IceRowIndex].SetCoefficient(xvar, equip.Ice);
-            y[DragonRowIndex].SetCoefficient(xvar, equip.Dragon);
+            solver.constraints().First(c => c.Name() == DefRowName).SetCoefficient(xvar, equip.Maxdef);
+            solver.constraints().First(c => c.Name() == FireRowName).SetCoefficient(xvar, equip.Fire);
+            solver.constraints().First(c => c.Name() == WaterRowName).SetCoefficient(xvar, equip.Water);
+            solver.constraints().First(c => c.Name() == ThunderRowName).SetCoefficient(xvar, equip.Thunder);
+            solver.constraints().First(c => c.Name() == IceRowName).SetCoefficient(xvar, equip.Ice);
+            solver.constraints().First(c => c.Name() == DragonRowName).SetCoefficient(xvar, equip.Dragon);
 
             // 理想錬成スキルコスト情報
 
@@ -734,11 +703,11 @@ namespace SimModel.Domain
                     costCond[i] = costCond[i] * -1;
                 }
             }
-            y[c3RowIndex].SetCoefficient(xvar, costCond[0]);
-            y[c6RowIndex].SetCoefficient(xvar, costCond[1]);
-            y[c9RowIndex].SetCoefficient(xvar, costCond[2]);
-            y[c12RowIndex].SetCoefficient(xvar, costCond[3]);
-            y[c15RowIndex].SetCoefficient(xvar, costCond[4]);
+            solver.constraints().First(c => c.Name() == C3RowName).SetCoefficient(xvar, costCond[0]);
+            solver.constraints().First(c => c.Name() == C6RowName).SetCoefficient(xvar, costCond[1]);
+            solver.constraints().First(c => c.Name() == C9RowName).SetCoefficient(xvar, costCond[2]);
+            solver.constraints().First(c => c.Name() == C12RowName).SetCoefficient(xvar, costCond[3]);
+            solver.constraints().First(c => c.Name() == C15RowName).SetCoefficient(xvar, costCond[4]);
 
             // スキル情報
             foreach (var condSkill in Condition.Skills)
@@ -747,7 +716,7 @@ namespace SimModel.Domain
                 {
                     if (equipSkill.Name.Equals(condSkill.Name))
                     {
-                        y[FirstSkillRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, equipSkill.Level);
+                        solver.constraints().First(c => c.Name() == (SkillRowPrefix + condSkill.Name)).SetCoefficient(xvar, equipSkill.Level);
                     }
                 }
             }
@@ -762,7 +731,7 @@ namespace SimModel.Domain
                         // 錬成分は除外
                         if (equipSkill.Name.Equals(condSkill.Name) && !equipSkill.IsAdditional)
                         {
-                            y[FirstFuraiSkillRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, 1);
+                            solver.constraints().First(c => c.Name() == (FuraiExistRowPrefix + condSkill.Name)).SetCoefficient(xvar, 1);
                         }
                     }
                 }
@@ -782,90 +751,85 @@ namespace SimModel.Domain
             {
                 foreach (var condSkill in Condition.Skills)
                 {
-                    y[FirstFuraiFlagRowIndex + Condition.Skills.IndexOf(condSkill)].SetCoefficient(xvar, 1);
+                    solver.constraints().First(c => c.Name() == (FuraiFlagRowPrefix + condSkill.Name)).SetCoefficient(xvar, 1);
                 }
             }
 
             // 理想錬成：部位制限・有効無効制限
             if (equip.Ideal != null)
             {
-                int index = LimitedIdealAugmentationDictionary[equip.Ideal.Name];
-                y[index].SetCoefficient(xvar, 1);
+                solver.constraints().First(c => c.Name() == (IdealRowPrefix + equip.Ideal.Name)).SetCoefficient(xvar, 1);
             }
 
 
             // 錬成パターン検索用、追加固定情報
             if (Condition.AdditionalFixData != null && Condition.AdditionalFixData.ContainsKey(equip.Name))
             {
-                int index = AdditionalFixRowIndexDictionary[equip.Name];
-                y[index].SetCoefficient(xvar, 1);
+                solver.constraints().First(c => c.Name() == (AdditionalFixRowPrefix + equip.Name)).SetCoefficient(xvar, 1);
             }
         }
 
         /// <summary>
         /// 計算結果整理
         /// </summary>
-        /// <param name="x">変数の配列</param>
+        /// <param name="solver">ソルバ</param>
         /// <returns>成功でtrue</returns>
-        private bool MakeSet(Variable[] x)
+        private bool MakeSet(Solver solver)
         {
             EquipSet equipSet = new();
             bool hasData = false;
-            for (int i = 0; i < x.Length; i++)
+            var hittedVal = solver.variables().Where(v => v.SolutionValue() > 0);
+            foreach (var val in hittedVal)
             {
-                if (x[i].SolutionValue() > 0)
+                // 装備名
+                string name = val.Name().Replace(EquipColPrefix, string.Empty);
+
+                // 存在チェック
+                Equipment? equip = Masters.GetEquipByName(name);
+                if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
                 {
-                    // 装備名
-                    string name = x[i].Name();
+                    // 存在しない装備名の場合無視
+                    continue;
+                }
+                hasData = true;
 
-                    // 存在チェック
-                    Equipment? equip = Masters.GetEquipByName(name);
-                    if (equip == null || string.IsNullOrWhiteSpace(equip.Name))
-                    {
-                        // 存在しない装備名の場合無視
-                        // 護石削除関係でバグっていた場合の対策
-                        continue;
-                    }
-                    hasData = true;
-
-                    // 装備種類確認
-                    switch (equip.Kind)
-                    {
-                        case EquipKind.head:
-                            equipSet.Head = equip;
-                            break;
-                        case EquipKind.body:
-                            equipSet.Body = equip;
-                            break;
-                        case EquipKind.arm:
-                            equipSet.Arm = equip;
-                            break;
-                        case EquipKind.waist:
-                            equipSet.Waist = equip;
-                            break;
-                        case EquipKind.leg:
-                            equipSet.Leg = equip;
-                            break;
-                        case EquipKind.deco:
-                            for (int j = 0; j < x[i].SolutionValue(); j++)
-                            {
-                                // 装飾品は個数を確認し、その数追加
-                                equipSet.Decos.Add(equip);
-                            }
-                            break;
-                        case EquipKind.charm:
-                            equipSet.Charm = equip;
-                            break;
-                        case EquipKind.gskill:
-                            for (int j = 0; j < x[i].SolutionValue(); j++)
-                            {
-                                // 錬成スキルは個数を確認し、その数追加
-                                equipSet.GenericSkills.Add(equip);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                // 装備種類確認
+                switch (equip.Kind)
+                {
+                    case EquipKind.head:
+                        equipSet.Head = equip;
+                        break;
+                    case EquipKind.body:
+                        equipSet.Body = equip;
+                        break;
+                    case EquipKind.arm:
+                        equipSet.Arm = equip;
+                        break;
+                    case EquipKind.waist:
+                        equipSet.Waist = equip;
+                        break;
+                    case EquipKind.leg:
+                        equipSet.Leg = equip;
+                        break;
+                    case EquipKind.deco:
+                        for (int i = 0; i < val.SolutionValue(); i++)
+                        {
+                            // 装飾品は個数を確認し、その数追加
+                            equipSet.Decos.Add(equip);
+                        }
+                        break;
+                    case EquipKind.charm:
+                        equipSet.Charm = equip;
+                        break;
+                    case EquipKind.gskill:
+                        for (int i = 0; i < val.SolutionValue(); i++)
+                        {
+                            // 錬成スキルは個数を確認し、その数追加
+                            equipSet.GenericSkills.Add(equip);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
 

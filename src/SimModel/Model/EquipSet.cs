@@ -311,43 +311,6 @@ namespace SimModel.Model
             }
         }
 
-        // TODO: 消して別の方法にしよう　変数のName()で判別したほうがまだ良い
-        /// <summary>
-        /// 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
-        /// </summary>
-        /// <param name="includeIdealAugmentation">理想錬成を検索する場合true</param>
-        /// <returns>リスト</returns>
-        public List<int> EquipIndexsWithOutDecos(bool includeIdealAugmentation)
-        {
-            List<int> list = new();
-            if (!string.IsNullOrWhiteSpace(Head.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Head.Name, includeIdealAugmentation));
-            }
-            if (!string.IsNullOrWhiteSpace(Body.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Body.Name, includeIdealAugmentation));
-            }
-            if (!string.IsNullOrWhiteSpace(Arm.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Arm.Name, includeIdealAugmentation));
-            }
-            if (!string.IsNullOrWhiteSpace(Waist.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Waist.Name, includeIdealAugmentation));
-            }
-            if (!string.IsNullOrWhiteSpace(Leg.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Leg.Name, includeIdealAugmentation));
-            }
-            if (!string.IsNullOrWhiteSpace(Charm.Name))
-            {
-                list.Add(Masters.GetEquipIndexByName(Charm.Name, includeIdealAugmentation));
-            }
-            return list;
-        }
-
-
         /// <summary>
         /// 装飾品のCSV表記 Set可能
         /// </summary>

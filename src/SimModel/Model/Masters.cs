@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SimModel.Model
 {
@@ -482,7 +483,7 @@ namespace SimModel.Model
         }
 
         /// <summary>
-        /// 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
+        /// 装備名から装備を取得
         /// 理想錬成の除外固定検索用
         /// 装備そのものとその理想錬成を全て返す
         /// </summary>
@@ -490,7 +491,7 @@ namespace SimModel.Model
         /// <param name="includeIdealAugmentation">理想錬成を検索対象にする場合true</param>
         /// <returns>取得結果</returns>
 
-        public static List<int> GetCludeIndexsByName(string name, bool includeIdealAugmentation)
+        public static List<Equipment> GetCludeEquipsByName(string name, bool includeIdealAugmentation)
         {
             List<int> result = new();
             List<Equipment> heads, bodys, arms, waists, legs;
@@ -511,175 +512,11 @@ namespace SimModel.Model
                 legs = Legs;
             }
 
-            int index = 0;
-            foreach (var equip in heads)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in bodys)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in arms)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in waists)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in legs)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in Charms)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in Decos)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            foreach (var equip in GenericSkills)
-            {
-                if (equip.Name == name ||
-                    (equip.Ideal != null && equip.BaseEquipment?.Name == name))
-                {
-                    result.Add(index);
-                }
-                index++;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
-        /// </summary>
-        /// <param name="name">装備名</param>
-        /// <param name="includeIdealAugmentation">理想錬成を検索対象にする場合true</param>
-        /// <returns>取得結果</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public static int GetEquipIndexByName(string name, bool includeIdealAugmentation)
-        {
-            List<Equipment> heads, bodys, arms, waists, legs;
-            if (includeIdealAugmentation)
-            {
-                heads = IdealHeads;
-                bodys = IdealBodys;
-                arms = IdealArms;
-                waists = IdealWaists;
-                legs = IdealLegs;
-            }
-            else
-            {
-                heads = Heads;
-                bodys = Bodys;
-                arms = Arms;
-                waists = Waists;
-                legs = Legs;
-            }
-
-            int index = 0;
-            foreach (var equip in heads)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in bodys)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in arms)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in waists)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in legs)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in Charms)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in Decos)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            foreach (var equip in GenericSkills)
-            {
-                if (equip.Name == name)
-                {
-                    return index;
-                }
-                index++;
-            }
-            throw new ArgumentException();
+            var equips = heads.Union(bodys).Union(Arms).Union(Waists).Union(Legs);
+            return equips.Where(
+                    equip => equip.Name == name ||
+                    (equip.Ideal != null && equip.BaseEquipment?.Name == name)
+                ).ToList();
         }
 
         /// <summary>
