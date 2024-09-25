@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:RiseSim.Views" xmlns:controls="clr-namespace:RiseSim.Views.Controls" xmlns:dotnetkit="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
+             xmlns:local="clr-namespace:RiseSim.Views" xmlns:controls="clr-namespace:RiseSim.Views.Controls" xmlns:dotnetkit="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox" xmlns:controls1="clr-namespace:RiseSim.ViewModels.Controls" d:DataContext="{d:DesignInstance Type=controls1:SkillSelectorViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="22" d:DesignWidth="215">
     <UserControl.Resources>

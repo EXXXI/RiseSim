@@ -1,54 +1,120 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using RiseSim.ViewModels.SubViews;
-using SimModel.Model;
 using SimModel.Service;
-using System;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace RiseSim.ViewModels
 {
+    /// <summary>
+    /// MainViewのViewModel
+    /// 各タブのVMの設定を行う
+    /// </summary>
     internal class MainViewModel : BindableBase
     {
-        // MainViewインスタンス：子VMからの参照用
-        static public MainViewModel Instance { get; set; }
+        // TODO: 名称指定か何かにしたい
 
-        // シミュ本体
-        public Simulator Simulator { get; set; }
+        /// <summary>
+        /// スキル選択画面のタブIndex
+        /// </summary>
+        private const int SkillSelectorTabIndex = 0;
 
-        // シミュ画面のVM
-        public ReactivePropertySlim<SimulatorTabViewModel> SimulatorTabVM { get; } = new();
+        /// <summary>
+        /// 検索結果画面のタブIndex
+        /// </summary>
+        private const int SimulatorTabIndex = 1;
 
-        // 除外・固定画面のVM
-        public ReactivePropertySlim<CludeTabViewModel> CludeTabVM { get; } = new();
+        /// <summary>
+        /// MainViewインスタンス：子VMからの参照用
+        /// </summary>
+        static internal MainViewModel Instance { get; set; }
 
-        // 護石画面のVM
-        public ReactivePropertySlim<CharmTabViewModel> CharmTabVM { get; } = new();
-
-        // 傀異錬成画面のVM
-        public ReactivePropertySlim<AugmentationTabViewModel> AugmentationTabVM { get; } = new();
-
-        // 理想錬成画面のVM
-        public ReactivePropertySlim<IdealAugmentationTabViewModel> IdealAugmentationTabVM { get; } = new();
-
-        // マイセット画面のVM
-        public ReactivePropertySlim<MySetTabViewModel> MySetTabVM { get; } = new();
-
-        // ライセンス画面のVM
-        public ReactivePropertySlim<LicenseTabViewModel> LicenseTabVM { get; } = new();
- 
-        // マイ検索条件画面のVM
-        public ReactivePropertySlim<MyConditionTabViewModel> MyConditionTabVM { get; } = new();
-
-        // ビジー判定
+        /// <summary>
+        /// ビジー判定
+        /// </summary>
         public ReactivePropertySlim<bool> IsBusy { get; } = new(false);
+
+        /// <summary>
+        /// ビジー判定の反転
+        /// </summary>
         public ReadOnlyReactivePropertySlim<bool> IsFree { get; private set; }
 
-        // ステータスバー表示
+        /// <summary>
+        /// プログレスバー進捗
+        /// </summary>
+        public ReactivePropertySlim<double> Progress { get; } = new();
+
+        /// <summary>
+        /// プログレスバー無限動作フラグ
+        /// </summary>
+        public ReactivePropertySlim<bool> IsIndeterminate { get; } = new();
+
+        /// <summary>
+        /// ステータスバー表示
+        /// </summary>
         public ReactivePropertySlim<string> StatusBarText { get; } = new();
 
+        /// <summary>
+        /// シミュ本体
+        /// </summary>
+        internal Simulator Simulator { get; set; }
 
-        // コンストラクタ：起動時処理
+        /// <summary>
+        /// スキル選択画面のVM
+        /// </summary>
+        public ReactivePropertySlim<SkillSelectTabViewModel> SkillSelectTabVM { get; } = new();
+
+        /// <summary>
+        /// 検索結果画面のVM
+        /// </summary>
+        public ReactivePropertySlim<SimulatorTabViewModel> SimulatorTabVM { get; } = new();
+
+        /// <summary>
+        /// 除外・固定画面のVM
+        /// </summary>
+        public ReactivePropertySlim<CludeTabViewModel> CludeTabVM { get; } = new();
+
+        /// <summary>
+        /// 護石画面のVM
+        /// </summary>
+        public ReactivePropertySlim<CharmTabViewModel> CharmTabVM { get; } = new();
+
+        /// <summary>
+        /// 傀異錬成画面のVM
+        /// </summary>
+        public ReactivePropertySlim<AugmentationTabViewModel> AugmentationTabVM { get; } = new();
+
+        /// <summary>
+        /// 理想錬成画面のVM
+        /// </summary>
+        public ReactivePropertySlim<IdealAugmentationTabViewModel> IdealAugmentationTabVM { get; } = new();
+
+        /// <summary>
+        /// マイセット画面のVM
+        /// </summary>
+        public ReactivePropertySlim<MySetTabViewModel> MySetTabVM { get; } = new();
+
+        /// <summary>
+        /// ライセンス画面のVM
+        /// </summary>
+        public ReactivePropertySlim<LicenseTabViewModel> LicenseTabVM { get; } = new();
+
+        /// <summary>
+        /// 選択しているタブのIndex
+        /// </summary>
+        public ReactivePropertySlim<int> SelectedTabIndex { get; set; } = new();
+
+        /// <summary>
+        /// 検索キャンセルコマンド
+        /// </summary>
+        public ReactiveCommand CancelCommand { get; private set; }
+
+
+        /// <summary>
+        /// コンストラクタ：起動時処理
+        /// </summary>
         public MainViewModel()
         {
             // 子VMからの参照用にstaticにインスタンスを登録
@@ -62,6 +128,7 @@ namespace RiseSim.ViewModels
             IsFree = IsBusy.Select(x => !x).ToReadOnlyReactivePropertySlim();
 
             // 各タブのVMを設定
+            SkillSelectTabVM.Value = new SkillSelectTabViewModel();
             SimulatorTabVM.Value = new SimulatorTabViewModel();
             CludeTabVM.Value = new CludeTabViewModel();
             CharmTabVM.Value = new CharmTabViewModel();
@@ -69,73 +136,47 @@ namespace RiseSim.ViewModels
             IdealAugmentationTabVM.Value = new IdealAugmentationTabViewModel();
             MySetTabVM.Value = new MySetTabViewModel();
             LicenseTabVM.Value = new LicenseTabViewModel();
-            MyConditionTabVM.Value = new MyConditionTabViewModel();
 
             // マスタファイル読み込み
             LoadMasters();
+
+            // 処理中断
+            CancelCommand = IsBusy.ToReactiveCommand().WithSubscribe(() => Cancel());
 
             // ログ表示
             StatusBarText.Value = "モンハンライズスキルシミュレータ for Windows";
         }
 
-        // 理想錬成更新 処理本体は理想錬成VM
-        internal void SaveIdeal()
+        /// <summary>
+        /// 検索結果画面を表示
+        /// </summary>
+        internal void ShowSimulatorTab()
         {
-            IdealAugmentationTabVM.Value.SaveIdeal();
+            SelectedTabIndex.Value = SimulatorTabIndex;
         }
 
-        // 除外装備設定　処理本体は除外・固定画面VM
-        internal void AddExclude(string trueName, string dispName)
+        /// <summary>
+        /// スキル選択画面を表示
+        /// </summary>
+        internal void ShowSkillSelectorTab()
         {
-            CludeTabVM.Value.AddExclude(trueName, dispName);
+            SelectedTabIndex.Value = SkillSelectorTabIndex;
         }
 
-        // 固定装備設定　処理本体は除外・固定画面VM
-        internal void AddInclude(string trueName, string dispName)
-        {
-            CludeTabVM.Value.AddInclude(trueName, dispName);
-        }
 
-        // 除外・固定の解除　処理本体は除外・固定画面VM
-        internal void DeleteClude(string trueName, string dispName)
-        {
-            CludeTabVM.Value.DeleteClude(trueName, dispName);
-        }
-
-        // 護石削除　処理本体は護石画面VM
-        internal void DeleteCharm(string trueName, string dispName)
-        {
-            CharmTabVM.Value.DeleteCharm(trueName, dispName);
-        }
-
-        // マイセットのスキルをシミュ画面の検索条件に反映　処理本体はシミュ画面VM
-        internal void InputMySetCondition(EquipSet? set)
-        {
-            SimulatorTabVM.Value.InputMySetCondition(set);
-        }
-
-        // マイ検索条件をシミュ画面の検索条件に反映　処理本体はシミュ画面VM
-        internal void InputMyCondition(SearchCondition condition)
-        {
-            SimulatorTabVM.Value.InputMyCondition(condition);
-        }
-
-        // シミュ画面の検索条件をマイ検索条件に反映　処理本体はマイ検索条件画面VM
-
-        internal void AddMyCondition(SearchCondition searchCondition)
-        {
-            MyConditionTabVM.Value.AddSearchCondition(searchCondition);
-        }
-
-        // マスタ情報を全てVMにロード
+        /// <summary>
+        /// マスタ情報を全てVMにロード
+        /// </summary>
         internal void LoadMasters()
         {
             LoadEquips();
-            LoadCludes();
-            LoadMySets();
+            CludeTabVM.Value.LoadCludes();
+            MySetTabVM.Value.LoadMySets();
         }
 
-        // 装備関係のマスタ情報をVMにロード
+        /// <summary>
+        /// 装備関係のマスタ情報をVMにロード
+        /// </summary>
         internal void LoadEquips()
         {
             // 錬成情報を反映
@@ -144,7 +185,7 @@ namespace RiseSim.ViewModels
             // 錬成画面用のVM設定
             AugmentationTabVM.Value.LoadAugmentations();
 
-            // 錬成画面用のVM設定
+            // 理想錬成画面用のVM設定
             IdealAugmentationTabVM.Value.LoadIdealAugmentations();
 
             // 除外固定画面用のVMの設定
@@ -154,18 +195,12 @@ namespace RiseSim.ViewModels
             CharmTabVM.Value.LoadEquipsForCharm();
         }
 
-        // 除外固定のマスタ情報をVMにロード
-        internal void LoadCludes()
+        /// <summary>
+        /// 処理中断
+        /// </summary>
+        private void Cancel()
         {
-            // 除外固定画面用のVMの設定
-            CludeTabVM.Value.LoadCludes();
-        }
-
-        // マイセットのマスタ情報をVMにロード
-        internal void LoadMySets()
-        {
-            // マイセット画面用のVMの設定
-            MySetTabVM.Value.LoadMySets();
+            Simulator.Cancel();
         }
     }
 }

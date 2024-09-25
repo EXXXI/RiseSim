@@ -16,13 +16,20 @@
         <!-- グリッド設定 -->
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="15"/>
+            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
-        
-        <TabControl>
+
+        <TabControl SelectedIndex="{Binding SelectedTabIndex.Value}">
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="シミュレータ" Style="{StaticResource ResourceKey=tabHeader}" />
+                    <TextBlock Text="スキル選択" Style="{StaticResource ResourceKey=tabHeader}" />
+                </TabItem.Header>
+                <subviews:SkillSelectTabView x:Name="skillselect" DataContext="{Binding SkillSelectTabVM.Value, Mode=OneWay}"/>
+            </TabItem>
+            
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="検索結果" Style="{StaticResource ResourceKey=tabHeader}" />
                 </TabItem.Header>
                 <subviews:SimulatorTabView x:Name="simulator" DataContext="{Binding SimulatorTabVM.Value, Mode=OneWay}"/>
             </TabItem>
@@ -64,13 +71,6 @@
 
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=tabHeader}" />
-                </TabItem.Header>
-                <subviews:MyConditionTabView DataContext="{Binding MyConditionTabVM.Value, Mode=OneWay}"/>
-            </TabItem>
-
-            <TabItem>
-                <TabItem.Header>
                     <TextBlock Text="ライセンス・謝辞" Style="{StaticResource ResourceKey=tabHeader}" />
                 </TabItem.Header>
                 <subviews:LicenseTabView DataContext="{Binding LicenseTabVM.Value, Mode=OneWay}"/>
@@ -81,11 +81,13 @@
         <Grid Grid.Row="1" Background="LightGray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="{Binding StatusBarText.Value, Mode=OneWay}"/>
-            <ProgressBar Grid.Column="1" IsIndeterminate="{Binding IsBusy.Value, Mode=OneWay}"/>
+            <Button Grid.Column="1" FontSize="10" Content="処理中断" Command="{Binding CancelCommand}"/>
+            <ProgressBar Grid.Column="2" IsIndeterminate="{Binding IsIndeterminate.Value, Mode=OneWay}" Minimum="0" Maximum="1" Value="{Binding Progress.Value, Mode=OneWay}"/>
         </Grid>
     </Grid>
 </Window>

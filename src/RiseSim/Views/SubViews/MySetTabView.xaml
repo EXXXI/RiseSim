@@ -19,52 +19,52 @@
         <DataGrid x:Name="grid" Grid.Column="0" ItemsSource="{Binding MySetList.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding MyDetailSet.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Head.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Head.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Head, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Head.Value}" Header="{Binding DispName.Value, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description.Value, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Body.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Body.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Body, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Body.Value}" Header="{Binding DispName.Value, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description.Value, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Arm.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Arm.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Arm, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Arm.Value}" Header="{Binding DispName.Value, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description.Value, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Waist.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Waist.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Waist, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Waist.Value}" Header="{Binding DispName.Value, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description.Value, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{Binding MyDetailSet.Value.Leg.DispName, Mode=OneWay}">
-                        <MenuItem Header="{Binding MyDetailSet.Value.Leg.Description, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
-                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}" CommandParameter="{Binding MyDetailSet.Value.Leg, Mode=OneWay}"/>
+                    <MenuItem DataContext="{Binding MyDetailSet.Value.Leg.Value}" Header="{Binding DispName.Value, Mode=OneWay}">
+                        <MenuItem Header="{Binding Description.Value, Mode=OneWay}"/>
+                        <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
+                        <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
                     <MenuItem Header="マイセットから削除" Command="{Binding DeleteMySetCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="防御" Binding="{Binding Maxdef, Mode=OneWay}" />
-                <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="名前" Binding="{Binding Name, Mode=OneWay}" />
-                <DataGridTextColumn Header="空きスロ(目安)" Binding="{Binding EmptySlotNum, Mode=OneWay}" />
-                <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDispMultiLine, Mode=OneWay}" />
-                <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
-                <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
-                <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
-                <DataGridTextColumn Header="氷" Binding="{Binding Ice, Mode=OneWay}" />
-                <DataGridTextColumn Header="龍" Binding="{Binding Dragon, Mode=OneWay}" />
-                <DataGridTextColumn Header="頭" Binding="{Binding Head.DetailDispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="胴" Binding="{Binding Body.DetailDispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="腕" Binding="{Binding Arm.DetailDispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="腰" Binding="{Binding Waist.DetailDispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="足" Binding="{Binding Leg.DetailDispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="護石" Binding="{Binding Charm.DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSVMultiLine, Mode=OneWay}" />
+                <DataGridTextColumn Header="防御" Binding="{Binding Maxdef.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="武器スロ" Binding="{Binding WeaponSlotDisp.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="名前" Binding="{Binding Name.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="空きスロ(目安)" Binding="{Binding EmptySlotNum.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="発動スキル" Binding="{Binding SkillsDisp.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="火" Binding="{Binding Fire.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="水" Binding="{Binding Water.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="雷" Binding="{Binding Thunder.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="氷" Binding="{Binding Ice.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="龍" Binding="{Binding Dragon.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="頭" Binding="{Binding Head.Value.DetailDispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="胴" Binding="{Binding Body.Value.DetailDispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="腕" Binding="{Binding Arm.Value.DetailDispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="腰" Binding="{Binding Waist.Value.DetailDispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="足" Binding="{Binding Leg.Value.DetailDispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="護石" Binding="{Binding Charm.Value.DispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="装飾品" Binding="{Binding DecoNameCSV.Value, Mode=OneWay}" />
             </DataGrid.Columns>
         </DataGrid>
         
@@ -87,7 +87,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Width="60" Text="武器スロ：" TextAlignment="Right"/>
-                    <TextBlock Width="100" Text="{Binding MyDetailSet.Value.WeaponSlotDisp, Mode=OneWay}"/>
+                    <TextBlock Width="100" Text="{Binding MyDetailSet.Value.WeaponSlotDisp.Value, Mode=OneWay}"/>
                 </StackPanel>
                 <StackPanel>
                     <ItemsControl ItemsSource="{Binding MyEquipRowVMs.Value, Mode=OneWay}">

@@ -1,16 +1,18 @@
 ﻿using Csv;
-using SimModel.Model;
+using NLog;
 using SimModel.Config;
+using SimModel.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NLog;
 
 namespace SimModel.Domain
 {
+    /// <summary>
+    /// CSV操作クラス
+    /// </summary>
     static internal class CsvOperation
     {
         // 定数：ファイルパス
@@ -33,10 +35,13 @@ namespace SimModel.Domain
         private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
         private const string SkillMasterHeaderCategory = @"カテゴリ";
         private const string SkillMasterHeaderCost = @"コスト";
+        private const string SkillMasterHeaderSpecificName = @"発動スキル";
 
         static Logger logger = LogManager.GetCurrentClassLogger();
 
-        // スキルマスタ読み込み
+        /// <summary>
+        /// スキルマスタ読み込み
+        /// </summary>
         static internal void LoadSkillCSV()
         {
             string csv = ReadAllText(SkillCsv);
@@ -53,6 +58,20 @@ namespace SimModel.Domain
                 .Select(group => new Skill(group.Key.Name, group.Max(x => x.Level), group.Key.Category))
                 .ToList();
 
+            // 特殊な名称のデータを保持
+            var hasSpecificNames = CsvReader.ReadFromText(csv)
+                .Select(line => new
+                {
+                    Name = line[SkillMasterHeaderName],
+                    Level = ParseUtil.Parse(line[SkillMasterHeaderRequiredPoints]),
+                    Specific = line[SkillMasterHeaderSpecificName]
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Specific));
+            foreach (var item in hasSpecificNames)
+            {
+                Skill skill = Masters.Skills.First(s => s.Name == item.Name);
+                skill.SpecificNames.Add(item.Level, item.Specific);
+            }
 
             // 理想錬成用スキル
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
@@ -100,7 +119,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 頭防具マスタ読み込み
+        /// <summary>
+        /// 頭防具マスタ読み込み
+        /// </summary>
         static internal void LoadHeadCSV()
         {
             Masters.OriginalHeads = new();
@@ -108,7 +129,9 @@ namespace SimModel.Domain
             Masters.Heads = Masters.OriginalHeads;
         }
 
-        // 胴防具マスタ読み込み
+        /// <summary>
+        /// 胴防具マスタ読み込み
+        /// </summary>
         static internal void LoadBodyCSV()
         {
             Masters.OriginalBodys = new();
@@ -116,7 +139,9 @@ namespace SimModel.Domain
             Masters.Bodys = Masters.OriginalBodys;
         }
 
-        // 腕防具マスタ読み込み
+        /// <summary>
+        /// 腕防具マスタ読み込み
+        /// </summary>
         static internal void LoadArmCSV()
         {
             Masters.OriginalArms = new();
@@ -124,7 +149,9 @@ namespace SimModel.Domain
             Masters.Arms = Masters.OriginalArms;
         }
 
-        // 腰防具マスタ読み込み
+        /// <summary>
+        /// 腰防具マスタ読み込み
+        /// </summary>
         static internal void LoadWaistCSV()
         {
             Masters.OriginalWaists = new();
@@ -132,7 +159,9 @@ namespace SimModel.Domain
             Masters.Waists = Masters.OriginalWaists;
         }
 
-        // 足防具マスタ読み込み
+        /// <summary>
+        /// 足防具マスタ読み込み
+        /// </summary>
         static internal void LoadLegCSV()
         {
             Masters.OriginalLegs = new();
@@ -140,7 +169,12 @@ namespace SimModel.Domain
             Masters.Legs = Masters.OriginalLegs;
         }
 
-        // 防具マスタ読み込み
+        /// <summary>
+        /// 防具マスタ読み込み
+        /// </summary>
+        /// <param name="fileName">CSVファイル名</param>
+        /// <param name="equipments">格納先</param>
+        /// <param name="kind">部位</param>
         static private void LoadEquipCSV(string fileName, List<Equipment> equipments, EquipKind kind)
         {
 
@@ -180,7 +214,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 装飾品マスタ読み込み
+        /// <summary>
+        /// 装飾品マスタ読み込み
+        /// </summary>
         static internal void LoadDecoCSV()
         {
             Masters.Decos = new();
@@ -220,7 +256,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 除外固定マスタ書き込み
+        /// <summary>
+        /// 除外固定マスタ書き込み
+        /// </summary>
         static internal void SaveCludeCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -239,7 +277,9 @@ namespace SimModel.Domain
 
         }
 
-        // 除外固定マスタ読み込み
+        /// <summary>
+        /// 除外固定マスタ読み込み
+        /// </summary>
         static internal void LoadCludeCSV()
         {
             Masters.Cludes = new();
@@ -258,7 +298,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 護石マスタ書き込み
+        /// <summary>
+        /// 護石マスタ書き込み
+        /// </summary>
         static internal void SaveCharmCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -291,7 +333,9 @@ namespace SimModel.Domain
             File.WriteAllText(CharmCsv, export);
         }
 
-        // 護石マスタ読み込み
+        /// <summary>
+        /// 護石マスタ読み込み
+        /// </summary>
         static internal void LoadCharmCSV()
         {
             Masters.Charms = new();
@@ -336,7 +380,9 @@ namespace SimModel.Domain
             SaveCharmCSV();
         }
 
-        // マイセットマスタ書き込み
+        /// <summary>
+        /// マイセットマスタ書き込み
+        /// </summary>
         static internal void SaveMySetCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -352,7 +398,9 @@ namespace SimModel.Domain
             File.WriteAllText(MySetCsv, export);
         }
 
-        // マイセットマスタ読み込み
+        /// <summary>
+        /// マイセットマスタ読み込み
+        /// </summary>
         static internal void LoadMySetCSV()
         {
             Masters.MySets = new();
@@ -397,7 +445,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 最近使ったスキル書き込み
+        /// <summary>
+        /// 最近使ったスキル書き込み
+        /// </summary>
         internal static void SaveRecentSkillCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -417,7 +467,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 最近使ったスキル読み込み
+        /// <summary>
+        /// 最近使ったスキル読み込み
+        /// </summary>
         internal static void LoadRecentSkillCSV()
         {
             Masters.RecentSkillNames = new();
@@ -430,7 +482,9 @@ namespace SimModel.Domain
             }
         }
 
-        // 錬成装備マスタ読み込み
+        /// <summary>
+        /// 錬成装備マスタ読み込み
+        /// </summary>
         static internal void LoadAugmentationCSV()
         {
 
@@ -554,7 +608,9 @@ namespace SimModel.Domain
             SaveAugmentationCSV();
         }
 
-        // 錬成装備マスタ書き込み
+        /// <summary>
+        /// 錬成装備マスタ書き込み
+        /// </summary>
         static internal void SaveAugmentationCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -600,7 +656,9 @@ namespace SimModel.Domain
             File.WriteAllText(AugmentationCsv, export);
         }
 
-        // 理想錬成装備マスタ読み込み
+        /// <summary>
+        /// 理想錬成装備マスタ読み込み
+        /// </summary>
         static internal void LoadIdealCSV()
         {
 
@@ -734,7 +792,9 @@ namespace SimModel.Domain
             SaveIdealCSV();
         }
 
-        // 理想錬成装備マスタ書き込み
+        /// <summary>
+        /// 理想錬成装備マスタ書き込み
+        /// </summary>
         static internal void SaveIdealCSV()
         {
             List<string[]> body = new List<string[]>();
@@ -784,7 +844,9 @@ namespace SimModel.Domain
             File.WriteAllText(IdealCsv, export);
         }
 
-        // マイ検索条件書き込み
+        /// <summary>
+        /// マイ検索条件書き込み
+        /// </summary>
         internal static void SaveMyConditionCSV()
         {
             List<string[]> body = new();
@@ -812,7 +874,9 @@ namespace SimModel.Domain
             File.WriteAllText(ConditionCsv, export);
         }
 
-        // マイ検索条件読み込み
+        /// <summary>
+        /// マイ検索条件読み込み
+        /// </summary>
         internal static void LoadMyConditionCSV()
         {
             Masters.MyConditions = new();
@@ -841,7 +905,11 @@ namespace SimModel.Domain
             }
         }
 
-        // ファイル読み込み
+        /// <summary>
+        /// ファイル読み込み
+        /// </summary>
+        /// <param name="fileName">CSVファイル名</param>
+        /// <returns>CSVの内容</returns>
         static private string ReadAllText(string fileName)
         {
             try

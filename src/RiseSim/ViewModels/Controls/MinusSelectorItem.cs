@@ -1,30 +1,37 @@
-﻿using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
 namespace RiseSim.ViewModels.Controls
 {
-    // 理想錬成のスキル削除の選択肢
-    internal class MinusSelectorItem : BindableBase
+    /// <summary>
+    /// 理想錬成のスキル削除の選択肢
+    /// </summary>
+    internal class MinusSelectorItem : ChildViewModelBase
     {
-        // 表示
+        /// <summary>
+        /// 表示
+        /// </summary>
         public string Disp { get; set; }
 
-        // 内部で使う値
+        /// <summary>
+        /// 内部で使う値
+        /// </summary>
         public int Value { get; set; }
 
-        // コンストラクタ
-        MinusSelectorItem(string disp, int value)
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="disp">表示</param>
+        /// <param name="value">内部で使う値</param>
+        public MinusSelectorItem(string disp, int value)
         {
             Disp = disp;
             Value = value;
         }
 
-        // 選択肢一覧の作成
+        /// <summary>
+        /// 選択肢一覧の作成
+        /// </summary>
+        /// <returns></returns>
         public static ObservableCollection<MinusSelectorItem> MakeMinusSelectorItems()
         {
             ObservableCollection<MinusSelectorItem> items = new();

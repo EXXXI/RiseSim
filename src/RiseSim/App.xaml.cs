@@ -11,8 +11,16 @@ namespace RiseSim
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// ロガー
+        /// </summary>
         static Logger logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// 開始時処理
+        /// MainViewModelをバインドしたMainViewを開く
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
        {
             base.OnStartup(e);
@@ -27,6 +35,11 @@ namespace RiseSim
             w.Show();
         }
 
+        /// <summary>
+        /// 予期せぬエラー時の処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         static void MyUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
         {
             Exception e = (Exception)args.ExceptionObject;

@@ -53,9 +53,9 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetKit.Wpf.AutoCompleteComboBox" Version="1.6.0" />
-    <PackageReference Include="NLog" Version="5.0.5" />
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
-    <PackageReference Include="ReactiveProperty" Version="8.0.3" />
+    <PackageReference Include="NLog" Version="5.3.4" />
+    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
+    <PackageReference Include="ReactiveProperty" Version="9.6.0" />
   </ItemGroup>
 
   <ItemGroup>

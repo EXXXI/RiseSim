@@ -24,16 +24,12 @@
                 <ComboBox ItemsSource="{Binding KindMaster.Value, Mode=OneWay}" SelectedItem="{Binding Kind.Value}" Width="165" SelectedIndex="0">
                 </ComboBox>
             </StackPanel>
-            <!--StackPanel Orientation="Horizontal">
-                <TextBlock Width="85" Text="ベース防具絞込"/>
-                <ctrl:FocusTextBox Width="165" Text="{Binding FilterInput.Value, UpdateSourceTrigger=PropertyChanged}"></ctrl:FocusTextBox>
-            </StackPanel-->
             <StackPanel Orientation="Horizontal">
                 <TextBlock Width="85" Text="ベース防具"/>
-                <controls:AutoCompleteComboBox TextSearch.TextPath="DispName" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Text="{Binding InputBaseEquipName.Value, UpdateSourceTrigger=PropertyChanged}"  Width="165" SelectedIndex="0">
+                <controls:AutoCompleteComboBox TextSearch.TextPath="DispName.Value" ItemsSource="{Binding Equips.Value, Mode=OneWay}" SelectedItem="{Binding SelectedEquip.Value}" Text="{Binding InputBaseEquipName.Value, UpdateSourceTrigger=PropertyChanged}"  Width="165" SelectedIndex="0">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding DispName, Mode=OneWay}" Margin="2.5"/>
+                            <TextBlock Text="{Binding DispName.Value, Mode=OneWay}" Margin="2.5"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </controls:AutoCompleteComboBox>
@@ -85,22 +81,22 @@
         <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Augmentations.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAugmentation.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="{Binding SelectedAugmentation.Value.Equip.Description}"/>
+                    <MenuItem Header="{Binding SelectedAugmentation.Value.EquipDescription.Value}"/>
                     <MenuItem Header="この装備を削除" Command="{Binding DeleteCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="部位" Binding="{Binding KindStr, Mode=OneWay}" />
-                <DataGridTextColumn Header="ベース防具" Binding="{Binding BaseName, Mode=OneWay}" />
-                <DataGridTextColumn Header="名前" Binding="{Binding DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="防御" Binding="{Binding Def, Mode=OneWay}" />
-                <DataGridTextColumn Header="スロット" Binding="{Binding SlotDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="火" Binding="{Binding Fire, Mode=OneWay}" />
-                <DataGridTextColumn Header="水" Binding="{Binding Water, Mode=OneWay}" />
-                <DataGridTextColumn Header="雷" Binding="{Binding Thunder, Mode=OneWay}" />
-                <DataGridTextColumn Header="氷" Binding="{Binding Ice, Mode=OneWay}" />
-                <DataGridTextColumn Header="龍" Binding="{Binding Dragon, Mode=OneWay}" />
-                <DataGridTextColumn Header="追加スキル" Binding="{Binding SkillsDisp, Mode=OneWay}" />
+                <DataGridTextColumn Header="部位" Binding="{Binding KindStr.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="ベース防具" Binding="{Binding BaseName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="名前" Binding="{Binding DispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="防御" Binding="{Binding Def.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="スロット" Binding="{Binding SlotDisp.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="火" Binding="{Binding Fire.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="水" Binding="{Binding Water.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="雷" Binding="{Binding Thunder.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="氷" Binding="{Binding Ice.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="龍" Binding="{Binding Dragon.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="追加スキル" Binding="{Binding SkillsDisp.Value, Mode=OneWay}" />
             </DataGrid.Columns>
         </DataGrid>
 

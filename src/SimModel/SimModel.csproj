@@ -17,9 +17,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Csv" Version="2.0.62" />
-	<PackageReference Include="Google.OrTools" Version="9.3.*" />
-	<PackageReference Include="NLog" Version="5.0.5" />
+    <Compile Remove="lib\**" />
+    <EmbeddedResource Remove="lib\**" />
+    <None Remove="lib\**" />
+    <Page Remove="lib\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csv" Version="2.0.93" />
+    <PackageReference Include="Google.OrTools" Version="9.11.4210" />
+	<PackageReference Include="NLog" Version="5.3.4" />
+	<PackageReference Include="ReactiveProperty" Version="9.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,12 +76,6 @@
     <None Update="save\recentSkill.csv">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="libglpk-cli">
-      <HintPath>libglpk-cli.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 	<PropertyGroup>

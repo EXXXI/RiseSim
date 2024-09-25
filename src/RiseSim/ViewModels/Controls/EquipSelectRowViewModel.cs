@@ -1,47 +1,59 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.Controls
 {
-    internal class EquipSelectRowViewModel : BindableBase
+    /// <summary>
+    /// 装備選択部品
+    /// </summary>
+    internal class EquipSelectRowViewModel : ChildViewModelBase
     {
-        // 表示用装備種類
+        /// <summary>
+        /// 表示用装備種類
+        /// </summary>
         public ReactivePropertySlim<string> DispKind { get; } = new();
 
-        // 装備一覧
+        /// <summary>
+        /// 装備一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<BindableEquipment>> Equips { get; } = new();
 
-        // 選択中の装備
+        /// <summary>
+        /// 選択中の装備
+        /// </summary>
         public ReactivePropertySlim<BindableEquipment> SelectedEquip { get; } = new();
 
-        // 入力中の装備名
+        /// <summary>
+        /// 入力中の装備名
+        /// </summary>
         public ReactivePropertySlim<string> InputEquipName { get; } = new();
 
-        // 固定可能フラグ
+        /// <summary>
+        /// 固定可能フラグ
+        /// </summary>
         public ReactivePropertySlim<bool> CanInclude { get; } = new(true);
 
-        // 除外コマンド
+        /// <summary>
+        /// 除外コマンド
+        /// </summary>
         public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
 
-        // 固定コマンド
+        /// <summary>
+        /// 固定コマンド
+        /// </summary>
         public ReactiveCommand IncludeCommand { get; private set; }
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            ExcludeCommand.Subscribe(_ => Exclude());
-            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include());
-        }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="dispKind">種類</param>
+        /// <param name="equips">装備リスト</param>
         public EquipSelectRowViewModel(string dispKind, List<Equipment> equips)
         {
             DispKind.Value = dispKind;
@@ -50,19 +62,23 @@ namespace RiseSim.ViewModels.Controls
                 // 装飾品は固定できない
                 CanInclude.Value = false;
             }
-            Equips.Value = BindableEquipment.BeBindableList(equips);
+            Equips.ChangeCollection(BindableEquipment.BeBindableList(equips));
 
-            SetCommand();
+            // コマンドを設定
+            ExcludeCommand.Subscribe(_ => Exclude());
+            IncludeCommand = CanInclude.ToReactiveCommand().WithSubscribe(() => Include()).AddTo(Disposable);
         }
 
-        // 装備を除外
-        internal void Exclude()
+        /// <summary>
+        /// 装備を除外
+        /// </summary>
+        private void Exclude()
         {
             if (SelectedEquip.Value == null)
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputEquipName.Value)
+                    if (equip.DispName.Value == InputEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -72,18 +88,20 @@ namespace RiseSim.ViewModels.Controls
 
             if (SelectedEquip.Value != null)
             {
-                MainViewModel.Instance.AddExclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddExclude(SelectedEquip.Value.Original);
             }
         }
 
-        // 装備を固定
-        internal void Include()
+        /// <summary>
+        /// 装備を固定
+        /// </summary>
+        private void Include()
         {
             if (SelectedEquip.Value == null)
             {
                 foreach (var equip in Equips.Value)
                 {
-                    if (equip.DispName == InputEquipName.Value)
+                    if (equip.DispName.Value == InputEquipName.Value)
                     {
                         SelectedEquip.Value = equip;
                         break;
@@ -92,7 +110,7 @@ namespace RiseSim.ViewModels.Controls
             }
             if (SelectedEquip.Value != null)
             {
-                MainViewModel.Instance.AddInclude(SelectedEquip.Value.Name, SelectedEquip.Value.DispName);
+                CludeTabVM.AddInclude(SelectedEquip.Value.Original);
             }
         }
     }

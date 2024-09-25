@@ -1,102 +1,107 @@
-﻿using Prism.Mvvm;
+﻿using Reactive.Bindings;
 using SimModel.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableAugmentation : BindableBase
+    /// <summary>
+    /// バインド用錬成
+    /// </summary>
+    internal class BindableAugmentation : ChildViewModelBase
     {
-        // 管理用装備名(GUID)
-        public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 表示用装備名
-        public string DispName { get; set; } = string.Empty;
+        /// <summary>
+        /// 装備種類
+        /// </summary>
+        public ReactivePropertySlim<string> KindStr { get; } = new();
 
-        // 装備種類
-        public EquipKind Kind { get; set; }
+        /// <summary>
+        /// ベース装備名
+        /// </summary>
+        public ReactivePropertySlim<string> BaseName { get; } = new();
 
-        // 装備種類(文字列)
-        public string KindStr { get; set; }
+        /// <summary>
+        /// スロット表示
+        /// </summary>
+        public ReactivePropertySlim<string> SlotDisp { get; } = new();
 
-        // ベース装備名
-        public string BaseName { get; set; } = string.Empty;
+        /// <summary>
+        /// 防御力増減
+        /// </summary>
+        public ReactivePropertySlim<int> Def { get; } = new();
 
-        // スロット1つ目
-        public int Slot1 { get; set; }
+        /// <summary>
+        /// 火耐性増減
+        /// </summary>
+        public ReactivePropertySlim<int> Fire { get; } = new();
 
-        // スロット2つ目
-        public int Slot2 { get; set; }
+        /// <summary>
+        /// 水耐性増減
+        /// </summary>
+        public ReactivePropertySlim<int> Water { get; } = new ();
 
-        // スロット3つ目
-        public int Slot3 { get; set; }
+        /// <summary>
+        /// 雷耐性増減
+        /// </summary>
+        public ReactivePropertySlim<int> Thunder { get; } = new();
 
-        // スロット表示
-        public string SlotDisp { get; set; }
+        /// <summary>
+        /// 氷耐性増減
+        /// </summary>
+        public ReactivePropertySlim<int> Ice { get; } = new();
 
-        // 防御力増減
-        public int Def { get; set; }
+        /// <summary>
+        /// 龍耐性増減
+        /// </summary>
+        public ReactivePropertySlim<int> Dragon { get; } = new();
 
-        // 火耐性増減
-        public int Fire { get; set; }
+        /// <summary>
+        /// スキルのCSV形式
+        /// </summary>
+        public ReactivePropertySlim<string> SkillsDisp { get; } = new();
 
-        // 水耐性増減
-        public int Water { get; set; }
+        /// <summary>
+        /// 装備としての説明
+        /// </summary>
+        public ReactivePropertySlim<string> EquipDescription { get; } = new();
 
-        // 雷耐性増減
-        public int Thunder { get; set; }
-
-        // 氷耐性増減
-        public int Ice { get; set; }
-
-        // 龍耐性増減
-        public int Dragon { get; set; }
-
-        // 追加スキル
-        public ObservableCollection<BindableSkill> Skills { get; set; } = new();
-
-        // スキルのCSV形式
-        public string SkillsDisp { get; set; }
-
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public Augmentation Original { get; set; }
 
-        // 防具データ(ベース含)
-        public BindableEquipment Equip { 
-            get
-            {
-                return new BindableEquipment(Masters.GetEquipByName(Name, false));
-            }
-        }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="aug">元の錬成クラス</param>
         public BindableAugmentation(Augmentation aug)
         {
-            Name = aug.Name;
-            DispName = aug.DispName;
-            Kind = aug.Kind;
-            KindStr = aug.KindStr;
-            BaseName = aug.BaseName;
-            Slot1 = aug.Slot1;
-            Slot2 = aug.Slot2;
-            Slot3 = aug.Slot3;
-            SlotDisp = aug.SlotDisp;
-            Def = aug.Def;
-            Fire = aug.Fire;
-            Water = aug.Water;
-            Thunder = aug.Thunder;
-            Ice = aug.Ice;
-            Dragon = aug.Dragon;
-            Skills = BindableSkill.BeBindableList(aug.Skills);
-            SkillsDisp = aug.SkillsDisp;
+            DispName.Value = aug.DispName;
+            KindStr.Value = aug.KindStr;
+            BaseName.Value = aug.BaseName;
+            SlotDisp.Value = aug.SlotDisp;
+            Def.Value = aug.Def;
+            Fire.Value = aug.Fire;
+            Water.Value = aug.Water;
+            Thunder.Value = aug.Thunder;
+            Ice.Value = aug.Ice;
+            Dragon.Value = aug.Dragon;
+            SkillsDisp.Value = aug.SkillsDisp;
+            EquipDescription.Value = Masters.GetEquipByName(aug.Name, false)?.Description ?? string.Empty;
             Original = aug;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableAugmentation> BeBindableList(List<Augmentation> list)
         {
             ObservableCollection<BindableAugmentation> bindableList = new ObservableCollection<BindableAugmentation>();

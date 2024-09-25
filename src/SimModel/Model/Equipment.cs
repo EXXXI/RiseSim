@@ -1,57 +1,86 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimModel.Model
 {
-    // 装備
+    /// <summary>
+    /// 装備
+    /// </summary>
     public class Equipment
     {
-        // 管理用装備名
+        /// <summary>
+        /// 管理用装備名
+        /// </summary>
         public string Name { get; set; } = string.Empty;
 
-        // 性別制限
+        /// <summary>
+        /// 性別制限
+        /// </summary>
         public Sex Sex { get; set; }
 
-        // レア度
+        /// <summary>
+        /// レア度
+        /// </summary>
         public int Rare { get; set; }
 
-        // スロット1つ目
+        /// <summary>
+        /// スロット1つ目
+        /// </summary>
         public int Slot1 { get; set; }
 
-        // スロット2つ目
+        /// <summary>
+        /// スロット2つ目
+        /// </summary>
         public int Slot2 { get; set; }
 
-        // スロット3つ目
+        /// <summary>
+        /// スロット3つ目
+        /// </summary>
         public int Slot3 { get; set; }
 
-        // 初期防御力
+        /// <summary>
+        /// 初期防御力
+        /// </summary>
         public int Mindef { get; set; }
 
-        // 最大防御力
+        /// <summary>
+        /// 最大防御力
+        /// </summary>
         public int Maxdef { get; set; }
 
-        // 火耐性
+        /// <summary>
+        /// 火耐性
+        /// </summary>
         public int Fire { get; set; }
 
-        // 水耐性
+        /// <summary>
+        /// 水耐性
+        /// </summary>
         public int Water { get; set; }
 
-        // 雷耐性
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
         public int Thunder { get; set; }
 
-        // 氷耐性
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
         public int Ice { get; set; }
 
-        // 龍耐性
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
         public int Dragon { get; set; }
 
-        // スキル(錬成スキルを別個に扱う)
+        /// <summary>
+        /// スキル(錬成スキルを別個に扱う)
+        /// </summary>
         public List<Skill> Skills { get; set; } = new();
 
-        // スキル(錬成スキルを合算して扱う)
+        /// <summary>
+        /// スキル(錬成スキルを合算して扱う)
+        /// </summary>
         public List<Skill> MargedSkills {
             get
             {
@@ -76,34 +105,52 @@ namespace SimModel.Model
             }
         }
 
-        // 装備種類
+        /// <summary>
+        /// 装備種類
+        /// </summary>
         public EquipKind Kind { get; set; }
 
-        // ベース防具(非錬成防具の場合null)
+        /// <summary>
+        /// ベース防具(非錬成防具の場合null)
+        /// </summary>
         public Equipment? BaseEquipment { get; set; } = null;
 
-        // 錬成テーブル
+        /// <summary>
+        /// 錬成テーブル
+        /// </summary>
         public int AugmentationTable { get; set; }
 
-        // 各コストごとの追加可能スキル数(理想錬成用)
+        /// <summary>
+        /// 各コストごとの追加可能スキル数(理想錬成用)
+        /// </summary>
         public int[] GenericSkills { get; set; } = new int[5];
 
-        // 理想錬成データ
+        /// <summary>
+        /// 理想錬成データ
+        /// </summary>
         public IdealAugmentation Ideal { get; set; }
 
-        // デフォルトコンストラクタ
+        /// <summary>
+        /// デフォルトコンストラクタ
+        /// </summary>
         public Equipment()
         {
 
         }
 
-        // 装備種類指定コンストラクタ
+        /// <summary>
+        /// 装備種類指定コンストラクタ
+        /// </summary>
+        /// <param name="kind"></param>
         public Equipment(EquipKind kind)
         {
             Kind = kind;
         }
 
-        // コピーコンストラクタ
+        /// <summary>
+        /// コピーコンストラクタ
+        /// </summary>
+        /// <param name="equip"></param>
         public Equipment(Equipment equip)
         {
             Name = equip.Name;
@@ -126,8 +173,13 @@ namespace SimModel.Model
             }
         }
 
-        // 表示用装備名(護石は特殊処理、錬成で名前付けした場合はそれを優先)
+        /// <summary>
+        /// 表示用装備名の本体
+        /// </summary>
         private string? dispName = null;
+        /// <summary>
+        /// 表示用装備名(護石は特殊処理、錬成で名前付けした場合はそれを優先)
+        /// </summary>
         public string DispName { 
             get
             {
@@ -172,8 +224,9 @@ namespace SimModel.Model
             }
         }
 
-        // TODO:仮実装
-        // 一覧での詳細表示用
+        /// <summary>
+        /// 一覧での詳細表示用
+        /// </summary>
         public string DetailDispName
         {
             get
@@ -230,7 +283,9 @@ namespace SimModel.Model
             }
         }
 
-        // 装備の説明
+        /// <summary>
+        /// 装備の説明
+        /// </summary>
         public string Description
         {
             get
@@ -362,7 +417,9 @@ namespace SimModel.Model
             }
         }
 
-        // 装備の簡易説明(名前とスロットのみ)
+        /// <summary>
+        /// 装備の簡易説明(名前とスロットのみ)
+        /// </summary>
         public string SimpleDescription
         {
             get
