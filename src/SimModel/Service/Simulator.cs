@@ -116,6 +116,22 @@ namespace SimModel.Service
                 progress.Value = 0.0;
             }
 
+            // 実験
+            SearchCondition exCondition = new(condition);
+            exCondition.PrioritizeNoIdeal = false;
+            exCondition.ExcludeAbstract = false;
+            foreach (var skill in Masters.Skills)
+            {
+                exCondition.AddSkill(new Skill(skill.Name, 0));
+            }
+            using Searcher exSearcher = new Searcher(exCondition);
+            var resulttt = exSearcher.ExecExSearch(progress);
+            // プログレスバー
+            if (progress != null)
+            {
+                progress.Value = 0.0;
+            }
+
             // 全スキル全レベルを走査
             Parallel.ForEach(Masters.Skills,
                 new ParallelOptions { 

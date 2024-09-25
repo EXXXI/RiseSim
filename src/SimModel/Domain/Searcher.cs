@@ -1,4 +1,5 @@
 ﻿using Google.OrTools.LinearSolver;
+using Google.Protobuf.Reflection;
 using SimModel.Config;
 using SimModel.Model;
 using System;
@@ -165,7 +166,7 @@ namespace SimModel.Domain
         /// </summary>
         /// <param name="limit">頑張り度</param>
         /// <returns>全件検索完了した場合true</returns>
-        public bool ExecSearch(int limit)
+        public bool ExecSearch(int limit, bool isForExSearch = false)
         {
             // 目標検索件数
             int target = ResultSets.Count + limit;
@@ -189,16 +190,19 @@ namespace SimModel.Domain
                     return true;
                 }
 
-                // 次回検索時用
-                // 検索済み結果の除外
-                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                var ny = SimSolver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
-                // 検索済みデータ
-                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                foreach (var index in indexList)
+                if (!isForExSearch) 
                 {
-                    // 各装備に対応する係数を1とする
-                    ny.SetCoefficient(SimSolver.variables()[index], 1);
+                    // 次回検索時用
+                    // 検索済み結果の除外
+                    var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                    var ny = SimSolver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
+                    // 検索済みデータ
+                    List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                    foreach (var index in indexList)
+                    {
+                        // 各装備に対応する係数を1とする
+                        ny.SetCoefficient(SimSolver.variables()[index], 1);
+                    }
                 }
 
                 // 中断確認
@@ -208,6 +212,74 @@ namespace SimModel.Domain
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// 検索
+        /// </summary>
+        /// <param name="limit">頑張り度</param>
+        /// <returns>全件検索完了した場合true</returns>
+        public List<Skill> ExecExSearch(Reactive.Bindings.ReactivePropertySlim<double>? progress = null)
+        {
+            List<Skill> result = new List<Skill>();
+
+            // まず素の計算
+            ExecSearch(1, true);
+            if (ResultSets.Count < 1)
+            {
+                return result;
+            }
+
+            // TODO: 保持すべき？
+            // 制約式
+            var constraints = SimSolver.constraints();
+
+            // 追加スキル検索
+            foreach (var exSkill in Condition.Skills)
+            {
+                // 固定されているスキルは追加スキル検索しない
+                if (exSkill.IsFixed)
+                {
+                    continue;
+                }
+
+                // 必要な情報を取得
+                int originalLevel = exSkill.Level;
+                int maxLevel = Masters.SkillMaxLevel(exSkill.Name);
+                var y = constraints[FirstSkillRowIndex + Condition.Skills.IndexOf(exSkill)];
+
+                // 追加スキル検索
+                for (int level = originalLevel + 1; level <= maxLevel; level++)
+                {
+                    y.SetLb(level);
+                    ResultSets.Clear();
+                    FailureSets.Clear();
+                    ExecSearch(1, true);
+                    if (ResultSets.Count > 0)
+                    {
+                        result.Add(new Skill(exSkill.Name, level));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                // 制約式を元に戻す
+                y.SetLb(originalLevel);
+
+                // TODO: プログレスバーここじゃない 
+                if (progress != null)
+                {
+                    lock (progress)
+                    {
+                        progress.Value += 1.0 / Masters.Skills.Count;
+                    }
+
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
