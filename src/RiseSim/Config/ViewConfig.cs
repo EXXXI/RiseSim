@@ -10,41 +10,56 @@ using System.Threading.Tasks;
 
 namespace RiseSim.Config
 {
+    /// <summary>
+    /// View関連の設定
+    /// </summary>
     internal class ViewConfig
     {
-        // インスタンス
+        /// <summary>
+        /// インスタンス
+        /// </summary>
         static private ViewConfig instance;
 
-        // 画面設定ファイル
+        /// <summary>
+        /// 画面設定ファイル
+        /// </summary>
         private const string ConfCsv = "conf/viewConfig.csv";
 
-        // スキル選択部品の個数
-        public int SkillSelectorCount { get; set; }
-
-        // スロットの最大の大きさ
+        /// <summary>
+        /// スロットの最大の大きさ
+        /// </summary>
         public int MaxSlotSize { get; set; }
 
-        // デフォルトの頑張り度
+        /// <summary>
+        /// デフォルトの頑張り度
+        /// </summary>
         public string DefaultLimit { get; set; }
 
-        // スキル未選択時の表示
+        /// <summary>
+        /// スキル未選択時の表示
+        /// </summary>
         public string NoSkillName { get; set; }
 
-        // 性別の初期値
+        /// <summary>
+        /// 性別の初期値
+        /// </summary>
         public Sex DefaultSex { get; set; }
 
-        // グリッドの列順保存有無
+        /// <summary>
+        /// グリッドの列順保存有無
+        /// </summary>
         public bool UseSavedColumnIndexes { get; set; }
 
 
-        // プライベートコンストラクタ
+        /// <summary>
+        /// プライベートコンストラクタ
+        /// </summary>
         private ViewConfig()
         {
             string csv = File.ReadAllText(ConfCsv);
 
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))
             {
-                SkillSelectorCount = ParseUtil.LoadConfigItem(line, @"スキル選択部品の個数", 15);
                 MaxSlotSize = ParseUtil.LoadConfigItem(line, @"スロットの最大の大きさ", 4);
                 DefaultLimit = ParseUtil.LoadConfigItem(line, @"デフォルトの頑張り度", 100).ToString();
                 NoSkillName = ParseUtil.LoadConfigItem(line, @"スキル未選択時の表示", @"スキル選択");
@@ -59,7 +74,9 @@ namespace RiseSim.Config
             }
         }
 
-        // インスタンス
+        /// <summary>
+        /// インスタンス
+        /// </summary>
         static public ViewConfig Instance
         {
             get

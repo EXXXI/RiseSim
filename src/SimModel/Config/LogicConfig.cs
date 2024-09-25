@@ -1,54 +1,78 @@
 ﻿using Csv;
 using SimModel.Domain;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimModel.Config
 {
+    /// <summary>
+    /// SimModel側の設定
+    /// </summary>
     public class LogicConfig
     {
-        // インスタンス
+        /// <summary>
+        /// インスタンス
+        /// </summary>
         static private LogicConfig instance;
 
-        // ロジック設定ファイル
+        /// <summary>
+        /// ロジック設定ファイル
+        /// </summary>
         private const string ConfCsv = "conf/logicConfig.csv";
 
-        // 傀異錬成防具のスキル数の設定下限(泣シミュとの連携用)
+        /// <summary>
+        /// 傀異錬成防具のスキル数の設定下限(泣シミュとの連携用)
+        /// </summary>
         private const int MinAugmentationSkillCount = 5;
 
-        // 最近使ったスキルの記憶容量
+        /// <summary>
+        /// 最近使ったスキルの記憶容量
+        /// </summary>
         public int MaxRecentSkillCount { get; set; }
 
-        // 防具のスキル最大個数
+        /// <summary>
+        /// 防具のスキル最大個数
+        /// </summary>
         public int MaxEquipSkillCount { get; set; }
 
-        // 装飾品のスキル最大個数
+        /// <summary>
+        /// 装飾品のスキル最大個数
+        /// </summary>
         public int MaxDecoSkillCount { get; set; }
 
-        // 護石のスキル最大個数
+        /// <summary>
+        /// 護石のスキル最大個数
+        /// </summary>
         public int MaxCharmSkillCount { get; set; }
 
-        // 傀異錬成防具のスキル最大個数(設定値)
+        /// <summary>
+        /// 傀異錬成防具のスキル最大個数(設定値)
+        /// </summary>
         public int MaxAugmentationSkillCount { get; set; }
 
-        // 傀異錬成防具のスキル最大個数(実際の値)
-        // 設定値を超える数のスキル情報がCSVにあった場合にそれに合わせて変更される
+        /// <summary>
+        /// 傀異錬成防具のスキル最大個数(実際の値)
+        /// 設定値を超える数のスキル情報がCSVにあった場合にそれに合わせて変更される
+        /// </summary>
         public int MaxAugmentationSkillCountActual { get; set; }
 
-        // 最大並列処理数
+        /// <summary>
+        /// 最大並列処理数
+        /// </summary>
         public int MaxDegreeOfParallelism { get; set; }
 
-        // 風雷合一
+        /// <summary>
+        /// 風雷合一
+        /// </summary>
         public string FuraiName { get; } = "風雷合一";
 
-        // マイセットのデフォルト名
+        /// <summary>
+        /// マイセットのデフォルト名
+        /// </summary>
         public string DefaultMySetName { get; } = "マイセット";
 
-        // プライベートコンストラクタ
+        /// <summary>
+        /// プライベートコンストラクタ
+        /// </summary>
         private LogicConfig()
         {
             string csv = File.ReadAllText(ConfCsv);
@@ -69,7 +93,9 @@ namespace SimModel.Config
             }
         }
 
-        // インスタンス
+        /// <summary>
+        /// インスタンス
+        /// </summary>
         static public LogicConfig Instance
         {
             get

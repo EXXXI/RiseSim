@@ -103,17 +103,16 @@
         <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Ideals.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedIdeal.Value}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <!--<MenuItem Header="{Binding SelectedIdeal.Value.Description}"/>-->
                     <MenuItem Header="この理想錬成を削除" Command="{Binding DeleteCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="テーブル" Binding="{Binding TableDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="名前" Binding="{Binding DispName, Mode=OneWay}" />
-                <DataGridTextColumn Header="スロット" Binding="{Binding SlotIncrement, Mode=OneWay}" />
-                <DataGridTextColumn Header="部位制限" Binding="{Binding IsOneDisp, Mode=OneWay}" />
-                <DataGridTextColumn Header="追加スキル" Binding="{Binding SimpleSkillDiscription, Mode=OneWay}" />
-                <DataGridTextColumn Header="削除スキル" Binding="{Binding SimpleSkillMinusDiscription, Mode=OneWay}" />
+                <DataGridTextColumn Header="テーブル" Binding="{Binding TableDisp.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="名前" Binding="{Binding DispName.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="スロット" Binding="{Binding SlotIncrement.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="部位制限" Binding="{Binding IsOneDisp.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="追加スキル" Binding="{Binding SimpleSkillDiscription.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="削除スキル" Binding="{Binding SimpleSkillMinusDiscription.Value, Mode=OneWay}" />
                 <DataGridTemplateColumn IsReadOnly="True" Header="有効化">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

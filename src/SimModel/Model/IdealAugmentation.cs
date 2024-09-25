@@ -1,72 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimModel.Model
 {
-    // 理想錬成装備
+    /// <summary>
+    /// 理想錬成装備
+    /// </summary>
     public class IdealAugmentation
     {
-        // 管理用装備名(GUID)
+        /// <summary>
+        /// 管理用装備名(GUID)
+        /// </summary>
         public string Name { get; set; } = string.Empty;
 
-        // 表示用装備名
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
         public string DispName { get; set; } = string.Empty;
 
-        // テーブル
+        /// <summary>
+        /// テーブル
+        /// </summary>
         public int Table { get; set; }
 
-        // 下位テーブル含フラグ
+        /// <summary>
+        /// 下位テーブル含フラグ
+        /// </summary>
         public bool IsIncludeLower { get; set; }
 
-        // スロット追加数
+        /// <summary>
+        /// スロット追加数
+        /// </summary>
         public int SlotIncrement { get; set; }
 
-        // TODO: 防御・耐性は需要があれば
-        /* 
-        // 防御力増減
-        public int Def { get; set; }
-
-        // 火耐性増減
-        public int Fire { get; set; }
-
-        // 水耐性増減
-        public int Water { get; set; }
-
-        // 雷耐性増減
-        public int Thunder { get; set; }
-
-        // 氷耐性増減
-        public int Ice { get; set; }
-
-        // 龍耐性増減
-        public int Dragon { get; set; }
-        */
-
-        // 追加スキル
+        /// <summary>
+        /// 追加スキル
+        /// </summary>
         public List<Skill> Skills { get; set; } = new();
 
-        // 各コストごとの追加可能スキル数
+        /// <summary>
+        /// 各コストごとの追加可能スキル数
+        /// </summary>
         public int[] GenericSkills { get; set; } = new int[5];
 
-        // スキルマイナス位置(2Lvマイナスしたい場合は複数登録する)
-        // 0:どこかがマイナス
-        // n(n>0):n番目のスキルがマイナス
+        /// <summary>
+        /// スキルマイナス位置(2Lvマイナスしたい場合は複数登録する)
+        /// 0:どこかがマイナス
+        /// n(n>0):n番目のスキルがマイナス
+        /// </summary>
         public List<int> SkillMinuses { get; set; } = new();
 
-        // 1部位だけか否か
-        // true: 1部位のみ、false: 全部位可能
+        /// <summary>
+        /// 1部位だけか否か
+        /// true: 1部位のみ、false: 全部位可能
+        /// </summary>
         public bool IsOne { get; set; }
 
-        // 検索時に有効か無効か
+        /// <summary>
+        /// 検索時に有効か無効か
+        /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        // 検索時に必須か
+        /// <summary>
+        /// 検索時に必須か
+        /// </summary>
         public bool IsRequired { get; set; } = false;
 
-        // 表示用スキル一覧
+        /// <summary>
+        /// 表示用スキル一覧
+        /// </summary>
         public string SimpleSkillDiscription
         {
             get
@@ -99,7 +101,9 @@ namespace SimModel.Model
             }
         }
 
-        // 表示用スキルマイナス一覧
+        /// <summary>
+        /// 表示用スキルマイナス一覧
+        /// </summary>
         public string SimpleSkillMinusDiscription
         {
             get

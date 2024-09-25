@@ -1,106 +1,85 @@
-﻿using Prism.Mvvm;
+﻿using Reactive.Bindings;
 using SimModel.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableEquipment : BindableBase
+    /// <summary>
+    /// バインド用装備
+    /// </summary>
+    internal class BindableEquipment : ChildViewModelBase
     {
-        // 管理用装備名
-        public string Name { get; set; }
+        /// <summary>
+        /// 表示用装備名(護石のみ特殊処理)
+        /// </summary>
+        public ReactiveProperty<string> DispName { get; } = new();
 
-        // 性別制限
-        public Sex Sex { get; set; }
+        /// <summary>
+        /// 一覧での詳細表示用
+        /// </summary>
+        public ReactiveProperty<string> DetailDispName { get; } = new();
 
-        // レア度
-        public int Rare { get; set; }
+        /// <summary>
+        /// 装備の説明
+        /// </summary>
+        public ReactiveProperty<string> Description { get; } = new();
 
-        // スロット1つ目
-        public int Slot1 { get; set; }
-
-        // スロット2つ目
-        public int Slot2 { get; set; }
-
-        // スロット3つ目
-        public int Slot3 { get; set; }
-
-        // スロットの文字列表現
-        public string SlotStr { get { return Slot1 + "-" + Slot2 + "-" + Slot3; } }
-
-        // 初期防御力
-        public int Mindef { get; set; }
-
-        // 最大防御力
-        public int Maxdef { get; set; }
-
-        // 火耐性
-        public int Fire { get; set; }
-
-        // 水耐性
-        public int Water { get; set; }
-
-        // 雷耐性
-        public int Thunder { get; set; }
-
-        // 氷耐性
-        public int Ice { get; set; }
-
-        // 龍耐性
-        public int Dragon { get; set; }
-
-        // スキル
-        public ObservableCollection<BindableSkill> Skills { get; set; } = new();
-
-        // 装備種類
-        public EquipKind Kind { get; set; }
-
-        // 表示用装備名(護石のみ特殊処理)
-        public string DispName { get; set; }
-
-        // TODO:仮実装
-        // 一覧での詳細表示用
-        public string DetailDispName { get; set; }
-
-        // 装備の説明
-        public string Description { get; set; }
-
-        // 装備の簡易説明(名前とスロットのみ)
-        public string SimpleDescription { get; set; }
-
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public Equipment Original { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// 防具を除外するコマンド
+        /// </summary>
+        public ReactiveCommand ExcludeCommand { get; } = new ReactiveCommand();
+
+        /// <summary>
+        /// 防具を固定するコマンド
+        /// </summary>
+        public ReactiveCommand IncludeCommand { get; } = new ReactiveCommand();
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="equip">装備情報</param>
         public BindableEquipment(Equipment equip)
         {
-            Name = equip.Name;
-            Sex = equip.Sex;
-            Rare = equip.Rare;
-            Slot1 = equip.Slot1;
-            Slot2 = equip.Slot2;
-            Slot3 = equip.Slot3;
-            Mindef = equip.Mindef;
-            Maxdef = equip.Maxdef;
-            Fire = equip.Fire;
-            Water = equip.Water;
-            Thunder = equip.Thunder;
-            Ice = equip.Ice;
-            Dragon = equip.Dragon;
-            Skills = BindableSkill.BeBindableList(equip.Skills);
-            Kind = equip.Kind;
-            DispName = equip.DispName;
-            DetailDispName = equip.DetailDispName;
-            Description = equip.Description;
-            SimpleDescription = equip.SimpleDescription;
+            DispName.Value = equip.DispName;
+            DetailDispName.Value = equip.DetailDispName;
+            Description.Value = equip.Description;
             Original = equip;
+
+            ExcludeCommand.Subscribe(() => Exclude());
+            IncludeCommand.Subscribe(() => Include());
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// 装備除外
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Exclude()
+        {
+            CludeTabVM.AddExclude(Original);
+        }
+
+        /// <summary>
+        /// 装備固定
+        /// </summary>
+        /// <param name="equip">対象装備</param>
+        private void Include()
+        {
+            CludeTabVM.AddInclude(Original);
+        }
+
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <param name="filter">フィルタ文字列</param>
+        /// <param name="minRare">最低レア度</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter, int minRare)
         {
             ObservableCollection<BindableEquipment> bindableList = new ObservableCollection<BindableEquipment>();
@@ -123,13 +102,22 @@ namespace RiseSim.ViewModels.BindableWrapper
             return bindableList;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <param name="filter">フィルタ文字列</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list, string? filter)
         {
             return BeBindableList(list, null, 0);
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipment> BeBindableList(List<Equipment> list)
         {
             return BeBindableList(list, null);

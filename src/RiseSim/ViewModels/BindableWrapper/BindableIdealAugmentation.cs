@@ -1,95 +1,112 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
+﻿using Reactive.Bindings;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableIdealAugmentation : BindableBase
+    /// <summary>
+    /// バインド用理想錬成
+    /// </summary>
+    internal class BindableIdealAugmentation : ChildViewModelBase
     {
-        // 管理用装備名(GUID)
-        public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// 表示用装備名
+        /// </summary>
+        public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // 表示用装備名
-        public string DispName { get; set; } = string.Empty;
+        /// <summary>
+        /// 表示用テーブル
+        /// </summary>
+        public ReactivePropertySlim<string> TableDisp { get; } = new();
 
-        // テーブル
-        public int Table { get; set; }
+        /// <summary>
+        /// スロット追加数
+        /// </summary>
+        public ReactivePropertySlim<int> SlotIncrement { get; } = new();
 
-        // 下位テーブル含フラグ
-        public bool IsIncludeLower { get; set; }
+        /// <summary>
+        /// 1部位だけか否か
+        /// </summary>
+        public ReactivePropertySlim<string> IsOneDisp { get; } = new();
 
-        // 表示用テーブル
-        public string TableDisp { get; set; }
+        /// <summary>
+        /// 表示用スキル一覧
+        /// </summary>
+        public ReactivePropertySlim<string> SimpleSkillDiscription { get; } = new();
 
-        // スロット追加数
-        public int SlotIncrement { get; set; }
+        /// <summary>
+        /// 表示用スキルマイナス一覧
+        /// </summary>
+        public ReactivePropertySlim<string> SimpleSkillMinusDiscription { get; } = new();
 
-        // 1部位だけか否か
-        public bool IsOne { get; set; }
+        /// <summary>
+        /// 有効無効
+        /// </summary>
+        public ReactivePropertySlim<bool> IsEnabled { get; } = new(true);
 
-        // 1部位だけか否か
-        public string IsOneDisp { get; set; }
+        /// <summary>
+        /// 必須
+        /// </summary>
+        public ReactivePropertySlim<bool> IsRequired { get; } = new(false);
 
-        // 表示用スキル一覧
-        public string SimpleSkillDiscription { get; set; }
-
-        // 表示用スキルマイナス一覧
-        public string SimpleSkillMinusDiscription { get; set; }
-
-        // 有効無効
-        public ReactivePropertySlim<bool> IsEnabled { get; set; } = new(true);
-
-        // 必須
-        public ReactivePropertySlim<bool> IsRequired { get; set; } = new(false);
-
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public IdealAugmentation Original { get; set; }
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="ideal">理想錬成</param>
         public BindableIdealAugmentation(IdealAugmentation ideal)
         {
-            Name = ideal.Name;
-            DispName = ideal.DispName;
-            Table = ideal.Table;
-            SlotIncrement = ideal.SlotIncrement;
-            IsOne = ideal.IsOne;
-            IsOneDisp = IsOne ? "一部位のみ" : "全部位可";
-            IsIncludeLower = ideal.IsIncludeLower;
+            DispName.Value = ideal.DispName;
+            SlotIncrement.Value = ideal.SlotIncrement;
+            IsOneDisp.Value = ideal.IsOne ? "一部位のみ" : "全部位可";
             IsEnabled.Value = ideal.IsEnabled;
             IsRequired.Value = ideal.IsRequired;
-            TableDisp = ideal.Table + (IsIncludeLower ? "以下" : "のみ"); 
-            SimpleSkillDiscription = ideal.SimpleSkillDiscription;
-            SimpleSkillMinusDiscription = ideal.SimpleSkillMinusDiscription;
+            TableDisp.Value = ideal.Table + (ideal.IsIncludeLower ? "以下" : "のみ"); 
+            SimpleSkillDiscription.Value = ideal.SimpleSkillDiscription;
+            SimpleSkillMinusDiscription.Value = ideal.SimpleSkillMinusDiscription;
             Original = ideal;
             IsEnabled.Subscribe(x => ChangeIsEnabled(x));
             IsRequired.Subscribe(x => ChangeIsRequired(x));
         }
 
+        /// <summary>
+        /// 有効無効切り替え
+        /// </summary>
+        /// <param name="x">有効の場合true</param>
         private void ChangeIsEnabled(bool x)
         {
             if (Original.IsEnabled != x)
             {
                 Original.IsEnabled = x;
-                MainViewModel.Instance.SaveIdeal();
+                IdealAugmentationTabVM.SaveIdeal();
             }
         }
 
+        /// <summary>
+        /// 必須切り替え
+        /// </summary>
+        /// <param name="x">必須の場合true</param>
         private void ChangeIsRequired(bool x)
         {
             if (Original.IsRequired != x)
             {
                 Original.IsRequired = x;
-                MainViewModel.Instance.SaveIdeal();
+                IdealAugmentationTabVM.SaveIdeal();
             }
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableIdealAugmentation> BeBindableList(List<IdealAugmentation> list)
         {
             ObservableCollection<BindableIdealAugmentation> bindableList = new ObservableCollection<BindableIdealAugmentation>();

@@ -1,6 +1,6 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
-using RiseSim.Config;
+﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
+using RiseSim.Util;
 using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
@@ -13,146 +13,154 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    internal class IdealAugmentationTabViewModel : BindableBase
+    /// <summary>
+    /// 理想錬成タブのVM
+    /// </summary>
+    internal class IdealAugmentationTabViewModel : ChildViewModelBase
     {
-        // MainViewModelから参照を取得
-        private Simulator Simulator { get; }
-        private ReactivePropertySlim<string> StatusBarText { get; }
-
-
-        // 理想装備一覧
+        /// <summary>
+        /// 理想装備一覧
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<BindableIdealAugmentation>> Ideals { get; } = new();
 
-        // 選択中の理想装備
+        /// <summary>
+        /// 選択中の理想装備
+        /// </summary>
         public ReactivePropertySlim<BindableIdealAugmentation> SelectedIdeal { get; } = new();
 
-        // テーブル選択の選択肢
+        /// <summary>
+        /// テーブル選択の選択肢
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<int>> TableMaster { get; } = new();
 
-        // 選択されたテーブル
+        /// <summary>
+        /// 選択されたテーブル
+        /// </summary>
         public ReactivePropertySlim<int> Table { get; } = new();
 
-        // 下位テーブルを含むか否か
+        /// <summary>
+        /// 下位テーブルを含むか否か
+        /// </summary>
         public ReactivePropertySlim<bool> IsIncludeLower { get; } = new(false);
 
-        // 下位テーブルを含むか否か(ラジオボタン表示用の反転したプロパティ)
+        /// <summary>
+        /// 下位テーブルを含むか否か(ラジオボタン表示用の反転したプロパティ)
+        /// </summary>
         public ReadOnlyReactivePropertySlim<bool> IsNotIncludeLower { get; set; }
 
-        // 表示名
+        /// <summary>
+        /// 表示名
+        /// </summary>
         public ReactivePropertySlim<string> DispName { get; } = new();
 
-        // スロット選択の選択肢
+        /// <summary>
+        /// スロット選択の選択肢
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<int>> SlotMaster { get; } = new();
 
-        // 選択されたスロット
+        /// <summary>
+        /// 選択されたスロット
+        /// </summary>
         public ReactivePropertySlim<int> Slot { get; } = new();
 
-        // c3スキル追加数
+        /// <summary>
+        /// c3スキル追加数
+        /// </summary>
         public ReactivePropertySlim<string> C3 { get; } = new("0");
 
-        // c6スキル追加数
+        /// <summary>
+        /// c6スキル追加数
+        /// </summary>
         public ReactivePropertySlim<string> C6 { get; } = new("0");
 
-        // c9スキル追加数
+        /// <summary>
+        /// c9スキル追加数
+        /// </summary>
         public ReactivePropertySlim<string> C9 { get; } = new("0");
 
-        // c12スキル追加数
+        /// <summary>
+        /// c12スキル追加数
+        /// </summary>
         public ReactivePropertySlim<string> C12 { get; } = new("0");
 
-        // c15スキル追加数
+        /// <summary>
+        /// c15スキル追加数
+        /// </summary>
         public ReactivePropertySlim<string> C15 { get; } = new("0");
 
-        // 部位制限の有無
+        /// <summary>
+        /// 部位制限の有無
+        /// </summary>
         public ReactivePropertySlim<bool> IsOne { get; } = new(false);
 
-        // 部位制限の有無(ラジオボタン表示用の反転したプロパティ)
+        /// <summary>
+        /// 部位制限の有無(ラジオボタン表示用の反転したプロパティ)
+        /// </summary>
         public ReadOnlyReactivePropertySlim<bool> IsNotOne { get; set; }
 
-        // スキル選択部品のVM
+        /// <summary>
+        /// スキル選択部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> SkillSelectorVMs { get; } = new();
 
-        // 削除スキル選択部品のVM
+        /// <summary>
+        /// 削除スキル選択部品のVM
+        /// </summary>
         public ReactivePropertySlim<ObservableCollection<MinusSelectorViewModel>> MinusSelectorVMs { get; } = new();
 
-        // 説明
+        /// <summary>
+        /// 説明
+        /// </summary>
         public ReactivePropertySlim<string> HowToUse { get; } = new();
 
 
-        // 追加コマンド
+        /// <summary>
+        /// 追加コマンド
+        /// </summary>
         public ReactiveCommand AddCommand { get; private set; } = new();
 
-        // 削除コマンド
+        /// <summary>
+        /// 削除コマンド
+        /// </summary>
         public ReactiveCommand DeleteCommand { get; private set; } = new();
 
-        // 反映コマンド
+        /// <summary>
+        /// 反映コマンド
+        /// </summary>
         public ReactiveCommand InputCommand { get; private set; } = new();
 
-        // 上書きコマンド
+        /// <summary>
+        /// 上書きコマンド
+        /// </summary>
         public ReactiveCommand UpdateCommand { get; private set; } = new();
 
-        // 全無効化コマンド
+        /// <summary>
+        /// 全無効化コマンド
+        /// </summary>
         public ReactiveCommand AllDisableCommand { get; private set; } = new();
 
-        // 全有効化コマンド
+        /// <summary>
+        /// 全有効化コマンド
+        /// </summary>
         public ReactiveCommand AllEnableCommand { get; private set; } = new();
 
 
-        // コマンドを設定
-        private void SetCommand()
-        {
-            IsNotIncludeLower = IsIncludeLower.Select(x => !x).ToReadOnlyReactivePropertySlim();
-            IsNotOne = IsOne.Select(x => !x).ToReadOnlyReactivePropertySlim();
-            InputCommand.Subscribe(_ => InputIdeal());
-            AddCommand.Subscribe(_ => AddIdeal());
-            DeleteCommand.Subscribe(_ => DeleteIdeal());
-            UpdateCommand.Subscribe(_ => UpdateIdeal());
-            AllDisableCommand.Subscribe(_ => AllDisable());
-            AllEnableCommand.Subscribe(_ => AllEnable());
-        }
-
-        // 全有効化
-        private void AllEnable()
-        {
-            SetAllIsEnabled(true);
-            SaveIdeal();
-        }
-
-        // 全無効化
-        private void AllDisable()
-        {
-            SetAllIsEnabled(false);
-            SaveIdeal();
-        }
-
-        // 全ての理想錬成に有効無効を設定
-        private void SetAllIsEnabled(bool isEnabled)
-        {
-            foreach (var bindableIdeal in Ideals.Value)
-            {
-                bindableIdeal.IsEnabled.Value = isEnabled;
-            }
-        } 
-
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public IdealAugmentationTabViewModel()
         {
-            // MainViewModelから参照を取得
-            Simulator = MainViewModel.Instance.Simulator;
-            StatusBarText = MainViewModel.Instance.StatusBarText;
-
             // スキル選択部品準備
             ObservableCollection<SkillSelectorViewModel> selectorVMs = new();
             for (int i = 0; i < LogicConfig.Instance.MaxAugmentationSkillCountActual; i++)
             {
                 selectorVMs.Add(new SkillSelectorViewModel(SkillSelectorKind.IdealAugmentation));
             }
-            SkillSelectorVMs.Value = selectorVMs;
+            SkillSelectorVMs.ChangeCollection(selectorVMs);
 
             // 削除スキル選択部品準備
             ObservableCollection<MinusSelectorViewModel> minusVMs = new();
@@ -160,7 +168,7 @@ namespace RiseSim.ViewModels.SubViews
             {
                 minusVMs.Add(new MinusSelectorViewModel());
             }
-            MinusSelectorVMs.Value = minusVMs;
+            MinusSelectorVMs.ChangeCollection(minusVMs);
 
             // スロットの選択肢を生成
             TableMaster.Value = new() { 1, 2, 3, 4, 5, 6, 13 };
@@ -171,13 +179,22 @@ namespace RiseSim.ViewModels.SubViews
             Slot.Value = 0;
 
             // コマンドを設定
-            SetCommand();
+            IsNotIncludeLower = IsIncludeLower.Select(x => !x).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+            IsNotOne = IsOne.Select(x => !x).ToReadOnlyReactivePropertySlim().AddTo(Disposable);
+            InputCommand.Subscribe(_ => InputIdeal());
+            AddCommand.Subscribe(_ => AddIdeal());
+            DeleteCommand.Subscribe(_ => DeleteIdeal());
+            UpdateCommand.Subscribe(_ => UpdateIdeal());
+            AllDisableCommand.Subscribe(_ => AllDisable());
+            AllEnableCommand.Subscribe(_ => AllEnable());
 
             // 説明
             WriteHowToUse();
         }
 
-        // 理想錬成情報を追加
+        /// <summary>
+        /// 理想錬成情報を追加
+        /// </summary>
         private void AddIdeal()
         {
             IdealAugmentation ideal = new();
@@ -216,10 +233,15 @@ namespace RiseSim.ViewModels.SubViews
 
             Simulator.AddIdealAugmentation(ideal);
 
-            MainViewModel.Instance.LoadEquips();
+            MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("理想錬成追加完了：" + ideal.DispName);
         }
 
-        // 理想錬成情報を削除
+        /// <summary>
+        /// 理想錬成情報を削除
+        /// </summary>
         private void DeleteIdeal()
         {
             BindableIdealAugmentation ideal = SelectedIdeal.Value;
@@ -239,40 +261,21 @@ namespace RiseSim.ViewModels.SubViews
                 return;
             }
 
-            // 該当の理想錬成を使っているマイセットがある場合削除
-            DeleteMySetUsingIdeal(ideal.Name);
-
             // 錬成情報を削除
             Simulator.DeleteIdealAugmentation(SelectedIdeal.Value.Original);
 
             // マスタをリロード
-            // MainViewModel.Instance.LoadCludes();
-            MainViewModel.Instance.LoadMySets();
-            MainViewModel.Instance.LoadEquips();
+            // マイセットが変更になる可能性があるためそちらもリロード
+            MySetTabVM.LoadMySets();
+            MainVM.LoadEquips();
+
+            // ログ
+            SetStatusBar("理想錬成削除完了：" + ideal.DispName);
         }
 
-        // 指定した理想錬成装備を使っているマイセットがあったら削除
-        private void DeleteMySetUsingIdeal(string name)
-        {
-            List<EquipSet> delMySets = new();
-            foreach (var set in Masters.MySets)
-            {
-                if ((set.Head.Ideal?.Name != null && set.Head.Ideal?.Name == name) ||
-                    (set.Body.Ideal?.Name != null && set.Body.Ideal?.Name == name) ||
-                    (set.Arm.Ideal?.Name != null && set.Arm.Ideal?.Name == name) ||
-                    (set.Waist.Ideal?.Name != null && set.Waist.Ideal?.Name == name) ||
-                    (set.Leg.Ideal?.Name != null && set.Leg.Ideal?.Name == name) )
-                {
-                    delMySets.Add(set);
-                }
-            }
-            foreach (var set in delMySets)
-            {
-                Simulator.DeleteMySet(set);
-            }
-        }
-
-        // 反映コマンド
+        /// <summary>
+        /// 反映コマンド
+        /// </summary>
         private void InputIdeal()
         {
             if (SelectedIdeal.Value == null)
@@ -314,11 +317,14 @@ namespace RiseSim.ViewModels.SubViews
                 }
             }
             IsOne.Value = ideal.IsOne;
+
+            // ログ
+            SetStatusBar("理想錬成反映完了：" + ideal.DispName);
         }
 
-
-
-        // 上書きコマンド
+        /// <summary>
+        /// 上書きコマンド
+        /// </summary>
         public void UpdateIdeal()
         {
             if (SelectedIdeal.Value == null)
@@ -327,7 +333,7 @@ namespace RiseSim.ViewModels.SubViews
             }
 
             IdealAugmentation ideal = new();
-            ideal.Name = SelectedIdeal.Value.Name;
+            ideal.Name = SelectedIdeal.Value.Original.Name;
             ideal.Table = Table.Value;
             ideal.IsIncludeLower = IsIncludeLower.Value;
             ideal.IsEnabled = SelectedIdeal.Value.IsEnabled.Value;
@@ -364,28 +370,72 @@ namespace RiseSim.ViewModels.SubViews
 
             Simulator.UpdateIdealAugmentation(ideal);
 
-            MainViewModel.Instance.LoadEquips();
+            MainVM.LoadEquips();
 
             // マイセット内容の更新
             Simulator.LoadMySet();
-            MainViewModel.Instance.LoadMySets();
+            MySetTabVM.LoadMySets();
+
+            // ログ
+            SetStatusBar("理想錬成上書き完了：" + ideal.DispName);
         }
 
-
-
+        /// <summary>
+        /// 理想錬成の変更状態を保存
+        /// </summary>
         internal void SaveIdeal()
         {
             Simulator.SaveIdeal();
         }
 
-        // 錬成装備のマスタ情報をVMにロード
+        /// <summary>
+        /// 全有効化
+        /// </summary>
+        private void AllEnable()
+        {
+            SetAllIsEnabled(true);
+            SaveIdeal();
+
+            // ログ
+            SetStatusBar("理想錬成の全有効化完了");
+        }
+
+        /// <summary>
+        /// 全無効化
+        /// </summary>
+        private void AllDisable()
+        {
+            SetAllIsEnabled(false);
+            SaveIdeal();
+
+            // ログ
+            SetStatusBar("理想錬成の全無効化完了");
+        }
+
+        /// <summary>
+        /// 全ての理想錬成に有効無効を設定
+        /// </summary>
+        /// <param name="isEnabled"></param>
+        private void SetAllIsEnabled(bool isEnabled)
+        {
+            foreach (var bindableIdeal in Ideals.Value)
+            {
+                bindableIdeal.IsEnabled.Value = isEnabled;
+            }
+        }
+
+        /// <summary>
+        /// 錬成装備のマスタ情報をVMにロード
+        /// </summary>
         internal void LoadIdealAugmentations()
         {
             // 錬成装備情報の設定
-            Ideals.Value = BindableIdealAugmentation.BeBindableList(Masters.Ideals);
+            Ideals.ChangeCollection(BindableIdealAugmentation.BeBindableList(Masters.Ideals));
         }
 
-        // 説明
+        /// <summary>
+        /// 説明
+        /// </summary>
         private void WriteHowToUse()
         {
             StringBuilder sb = new();

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimModel.Model
+﻿namespace SimModel.Model
 {
-    // 性別
+    /// <summary>
+    /// 性別
+    /// </summary>
     public enum Sex
     {
         all = 0,
@@ -14,9 +10,16 @@ namespace SimModel.Model
         female = 2
     }
 
+    /// <summary>
+    /// Sex拡張メソッド用クラス
+    /// </summary>
     public static class SexExt
     {
-        // 日本語名を返す
+        /// <summary>
+        /// 日本語名を返す
+        /// </summary>
+        /// <param name="kind">Sex</param>
+        /// <returns>日本語名</returns>
         public static string Str(this Sex kind)
         {
             switch (kind)
@@ -30,7 +33,11 @@ namespace SimModel.Model
             }
         }
 
-        // 日本語名をSex型に変換
+        /// <summary>
+        /// 日本語名をSex型に変換
+        /// </summary>
+        /// <param name="sex">日本語名</param>
+        /// <returns>Sex</returns>
         public static Sex StrToSex(this string sex)
         {
             if (Sex.male.Str().Equals(sex))

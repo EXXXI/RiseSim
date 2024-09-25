@@ -1,25 +1,29 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Reactive.Bindings;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.SubViews
 {
-    class LicenseTabViewModel : BindableBase
+    /// <summary>
+    /// ライセンスタブのVM
+    /// </summary>
+    class LicenseTabViewModel : ChildViewModelBase
     {
-        // ライセンス画面の内容
+        /// <summary>
+        /// ライセンス画面の内容
+        /// </summary>
         public ReactivePropertySlim<string> License { get; } = new();
 
-        // ライセンス画面の雑な要約
+        /// <summary>
+        /// ライセンス画面の雑な要約
+        /// </summary>
         public ReactivePropertySlim<string> WhatIsLicense { get; } = new();
 
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public LicenseTabViewModel()
         {
-            // TODO:バージョン毎回変えるのめんどくさいから何かいい方法を考える
+            // TODO:バージョン毎回変えるのめんどくさいから何かいい方法を考えたい
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");
@@ -58,7 +62,7 @@ namespace RiseSim.ViewModels.SubViews
             sb.Append("https://github.com/13-480/lp-doc\n");
             sb.Append('\n');
             sb.Append("・先人のシミュ作成者様\n");
-            sb.Append("特に頑シミュ様のUIに大きく影響を受けています\n");
+            sb.Append("特に頑シミュ様に大きく影響を受けています\n");
             License.Value = sb.ToString();
 
             // ライセンスの雑な説明を表示

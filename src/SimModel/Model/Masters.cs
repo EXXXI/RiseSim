@@ -1,90 +1,141 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimModel.Model
 {
-    // 各種マスタ管理
+    /// <summary>
+    /// 各種マスタ管理
+    /// </summary>
     static public class Masters
     {
-        // スキルマスタ
+        /// <summary>
+        /// スキルマスタ
+        /// </summary>
         public static List<Skill> Skills { get; set; } = new();
 
-        // 理想錬成用スキルマスタ
+        /// <summary>
+        /// 理想錬成用スキルマスタ
+        /// </summary>
         public static List<Equipment> GenericSkills { get; set; } = new();
 
-        // 頭装備マスタ
+        /// <summary>
+        /// 頭装備マスタ
+        /// </summary>
         public static List<Equipment> OriginalHeads { get; set; } = new();
 
-        // 胴装備マスタ
+        /// <summary>
+        /// 胴装備マスタ
+        /// </summary>
         public static List<Equipment> OriginalBodys { get; set; } = new();
 
-        // 腕装備マスタ
+        /// <summary>
+        /// 腕装備マスタ
+        /// </summary>
         public static List<Equipment> OriginalArms { get; set; } = new();
 
-        // 腰装備マスタ
+        /// <summary>
+        /// 腰装備マスタ
+        /// </summary>
         public static List<Equipment> OriginalWaists { get; set; } = new();
 
-        // 足装備マスタ
+        /// <summary>
+        /// 足装備マスタ
+        /// </summary>
         public static List<Equipment> OriginalLegs { get; set; } = new();
 
-        // 錬成装備情報マスタ
+        /// <summary>
+        /// 錬成装備情報マスタ
+        /// </summary>
         public static List<Augmentation> Augmentations { get; set; } = new();
 
-        // 理想錬成装備情報マスタ
+        /// <summary>
+        /// 理想錬成装備情報マスタ
+        /// </summary>
         public static List<IdealAugmentation> Ideals { get; set; } = new();
 
-        // 頭装備マスタ(錬成防具入り)
+        /// <summary>
+        /// 頭装備マスタ(錬成防具入り)
+        /// </summary>
         public static List<Equipment> Heads { get; set; } = new();
 
-        // 胴装備マスタ(錬成防具入り)
+        /// <summary>
+        /// 胴装備マスタ(錬成防具入り)
+        /// </summary>
         public static List<Equipment> Bodys { get; set; } = new();
 
-        // 腕装備マスタ(錬成防具入り)
+        /// <summary>
+        /// 腕装備マスタ(錬成防具入り)
+        /// </summary>
         public static List<Equipment> Arms { get; set; } = new();
 
-        // 腰装備マスタ(錬成防具入り)
+        /// <summary>
+        /// 腰装備マスタ(錬成防具入り)
+        /// </summary>
         public static List<Equipment> Waists { get; set; } = new();
 
-        // 足装備マスタ(錬成防具入り)
+        /// <summary>
+        /// 足装備マスタ(錬成防具入り)
+        /// </summary>
         public static List<Equipment> Legs { get; set; } = new();
 
-        // 頭装備マスタ(理想錬成防具入り)
+        /// <summary>
+        /// 頭装備マスタ(理想錬成防具入り)
+        /// </summary>
         public static List<Equipment> IdealHeads { get; set; } = new();
 
-        // 胴装備マスタ(理想錬成防具入り)
+        /// <summary>
+        /// 胴装備マスタ(理想錬成防具入り)
+        /// </summary>
         public static List<Equipment> IdealBodys { get; set; } = new();
 
-        // 腕装備マスタ(理想錬成防具入り)
+        /// <summary>
+        /// 腕装備マスタ(理想錬成防具入り)
+        /// </summary>
         public static List<Equipment> IdealArms { get; set; } = new();
 
-        // 腰装備マスタ(理想錬成防具入り)
+        /// <summary>
+        /// 腰装備マスタ(理想錬成防具入り)
+        /// </summary>
         public static List<Equipment> IdealWaists { get; set; } = new();
 
-        // 足装備マスタ(理想錬成防具入り)
+        /// <summary>
+        /// 足装備マスタ(理想錬成防具入り)
+        /// </summary>
         public static List<Equipment> IdealLegs { get; set; } = new();
 
-        // 護石マスタ
+        /// <summary>
+        /// 護石マスタ
+        /// </summary>
         public static List<Equipment> Charms { get; set; } = new();
 
-        // 装飾品マスタ
+        /// <summary>
+        /// 装飾品マスタ
+        /// </summary>
         public static List<Equipment> Decos { get; set; } = new();
 
-        // 除外固定マスタ
+        /// <summary>
+        /// 除外固定マスタ
+        /// </summary>
         public static List<Clude> Cludes { get; set; } = new();
 
-        // マイセットマスタ
+        /// <summary>
+        /// マイセットマスタ
+        /// </summary>
         public static List<EquipSet> MySets { get; set; } = new();
 
-        // 最近使ったスキルマスタ
+        /// <summary>
+        /// 最近使ったスキルマスタ
+        /// </summary>
         public static List<string> RecentSkillNames { get; set; } = new();
 
-        // マイ検索条件マスタ
+        /// <summary>
+        /// マイ検索条件マスタ
+        /// </summary>
         public static List<SearchCondition> MyConditions { get; set; } = new();
 
-        // 錬成装備情報を各装備マスタに反映
+        /// <summary>
+        /// 錬成装備情報を各装備マスタに反映
+        /// </summary>
         internal static void RefreshEquipmentMasters()
         {
             Heads = MakeEquipmentMaster(OriginalHeads, EquipKind.head);
@@ -93,15 +144,19 @@ namespace SimModel.Model
             Waists = MakeEquipmentMaster(OriginalWaists, EquipKind.waist);
             Legs = MakeEquipmentMaster(OriginalLegs, EquipKind.leg);
 
-            IdealHeads = MakeIdealEquipmentMaster(Heads, EquipKind.head);
-            IdealBodys = MakeIdealEquipmentMaster(Bodys, EquipKind.body);
-            IdealArms = MakeIdealEquipmentMaster(Arms, EquipKind.arm);
-            IdealWaists = MakeIdealEquipmentMaster(Waists, EquipKind.waist);
-            IdealLegs = MakeIdealEquipmentMaster(Legs, EquipKind.leg);
+            IdealHeads = MakeIdealEquipmentMaster(Heads);
+            IdealBodys = MakeIdealEquipmentMaster(Bodys);
+            IdealArms = MakeIdealEquipmentMaster(Arms);
+            IdealWaists = MakeIdealEquipmentMaster(Waists);
+            IdealLegs = MakeIdealEquipmentMaster(Legs);
         }
 
-        // 理想錬成防具を理想錬成検索用の装備マスタに登録
-        private static List<Equipment> MakeIdealEquipmentMaster(List<Equipment> equips, EquipKind head)
+        /// <summary>
+        /// 理想錬成防具を理想錬成検索用の装備マスタに登録
+        /// </summary>
+        /// <param name="equips">通常防具のリスト</param>
+        /// <returns>錬成装備込みのリスト</returns>
+        private static List<Equipment> MakeIdealEquipmentMaster(List<Equipment> equips)
         {
             List<Equipment> idealEquips = new();
             foreach (Equipment equip in equips)
@@ -209,7 +264,13 @@ namespace SimModel.Model
             return idealEquips;
         }
 
-        // 理想錬成のスキルマイナスパターン計算
+        /// <summary>
+        /// 理想錬成のスキルマイナスパターン計算
+        /// </summary>
+        /// <param name="skillMinuses">欠け位置(不明は0)</param>
+        /// <param name="baseSkillCount">元防具のスキル数</param>
+        /// <param name="minBaseSkillIdx">適用済みのIndex</param>
+        /// <returns>スキルマイナスパターン</returns>
         private static List<List<int>> MakeMinusPatterns(List<int> skillMinuses, int baseSkillCount, int minBaseSkillIdx)
         {
             List<List<int>> result = new();
@@ -241,7 +302,12 @@ namespace SimModel.Model
             return result;
         }
 
-        // 理想錬成のスロット計算
+        /// <summary>
+        /// 理想錬成のスロット計算
+        /// </summary>
+        /// <param name="slot">元のスロット</param>
+        /// <param name="slotIncrement">追加量</param>
+        /// <returns>追加後のスロット</returns>
         private static int[] CalcIdealSlot(int[] slot, int slotIncrement)
         {
             // slotIncrementが0の場合もう増やせないのでそのまま返す
@@ -276,7 +342,12 @@ namespace SimModel.Model
             return slot;
         }
 
-        // 錬成防具を装備マスタに反映
+        /// <summary>
+        /// 錬成防具を装備マスタに反映
+        /// </summary>
+        /// <param name="originalEquips">通常防具</param>
+        /// <param name="kind">防具部位</param>
+        /// <returns>錬成防具込みのリスト</returns>
         private static List<Equipment> MakeEquipmentMaster(List<Equipment> originalEquips, EquipKind kind)
         {
             List<Equipment> equips = new();
@@ -313,13 +384,22 @@ namespace SimModel.Model
             return equips;
         }
 
-        // 装備名から装備を取得
+        /// <summary>
+        /// 装備名から装備を取得
+        /// </summary>
+        /// <param name="equipName">装備名</param>
+        /// <returns>装備</returns>
         public static Equipment GetEquipByName(string equipName)
         {
             return GetEquipByName(equipName, true);
         }
 
-        // 装備名から装備を取得
+        /// <summary>
+        /// 装備名から装備を取得
+        /// </summary>
+        /// <param name="equipName">装備名</param>
+        /// <param name="useIdeal">理想錬成を検索対象にする場合true</param>
+        /// <returns>装備</returns>
         public static Equipment GetEquipByName(string equipName, bool useIdeal)
         {
             string? name = equipName?.Trim();
@@ -401,9 +481,15 @@ namespace SimModel.Model
             return new Equipment();
         }
 
-        // 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
-        // 理想錬成の除外固定検索用
-        // 装備そのものとその理想錬成を全て返す
+        /// <summary>
+        /// 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
+        /// 理想錬成の除外固定検索用
+        /// 装備そのものとその理想錬成を全て返す
+        /// </summary>
+        /// <param name="name">装備名</param>
+        /// <param name="includeIdealAugmentation">理想錬成を検索対象にする場合true</param>
+        /// <returns>取得結果</returns>
+
         public static List<int> GetCludeIndexsByName(string name, bool includeIdealAugmentation)
         {
             List<int> result = new();
@@ -501,7 +587,13 @@ namespace SimModel.Model
             return result;
         }
 
-        // 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
+        /// <summary>
+        /// 装備名から装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)を取得
+        /// </summary>
+        /// <param name="name">装備名</param>
+        /// <param name="includeIdealAugmentation">理想錬成を検索対象にする場合true</param>
+        /// <returns>取得結果</returns>
+        /// <exception cref="ArgumentException"></exception>
         public static int GetEquipIndexByName(string name, bool includeIdealAugmentation)
         {
             List<Equipment> heads, bodys, arms, waists, legs;
@@ -590,7 +682,11 @@ namespace SimModel.Model
             throw new ArgumentException();
         }
 
-        // 錬成防具のデフォルト名作成
+        /// <summary>
+        /// 錬成防具のデフォルト名作成
+        /// </summary>
+        /// <param name="baseName">ベース防具名</param>
+        /// <returns>デフォルト名</returns>
         public static string MakeAugmentaionDefaultDispName(string baseName)
         {
             bool isExist = true;
@@ -611,7 +707,11 @@ namespace SimModel.Model
             return name;
         }
 
-        // 理想錬成防具のデフォルト名作成
+        /// <summary>
+        /// 理想錬成防具のデフォルト名作成
+        /// </summary>
+        /// <param name="table">テーブル番号</param>
+        /// <returns>デフォルト名</returns>
         public static string MakeIdealAugmentaionDefaultDispName(int table)
         {
             bool isExist = true;
@@ -632,8 +732,12 @@ namespace SimModel.Model
             return name;
         }
 
-        // スキル名から最大レベルを算出
-        // マスタに存在しないスキルの場合0
+        /// <summary>
+        /// スキル名から最大レベルを算出
+        /// マスタに存在しないスキルの場合0
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <returns>最大レベル</returns>
         public static int SkillMaxLevel(string name)
         {
             foreach (var skill in Skills)
@@ -646,7 +750,11 @@ namespace SimModel.Model
             return 0;
         }
 
-        // スキル名からコストを算出
+        /// <summary>
+        /// スキル名からコストを算出
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <returns>コスト</returns>
         public static int[]? SkillCost(string name)
         {
             foreach (var skill in GenericSkills)
@@ -659,7 +767,11 @@ namespace SimModel.Model
             return null;
         }
 
-        // スキル名(cxx)からコストを算出
+        /// <summary>
+        /// スキル名(cxx)からコストを算出
+        /// </summary>
+        /// <param name="name">スキル名(cxx)</param>
+        /// <returns>コスト</returns>
         public static int[]? SkillCostByGSkillEquipName(string name)
         {
             foreach (var skill in GenericSkills)
@@ -672,7 +784,11 @@ namespace SimModel.Model
             return null;
         }
 
-        // 正しいスキル名かどうかを判定
+        /// <summary>
+        /// 正しいスキル名かどうかを判定
+        /// </summary>
+        /// <param name="name">スキル名</param>
+        /// <returns>マスタに存在する場合true</returns>
         public static bool IsSkillName(string name)
         {
             foreach (var skill in Skills)

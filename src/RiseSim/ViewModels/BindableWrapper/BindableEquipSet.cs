@@ -1,142 +1,142 @@
-﻿using Prism.Mvvm;
+﻿using Reactive.Bindings;
 using SimModel.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RiseSim.ViewModels.BindableWrapper
 {
-    internal class BindableEquipSet : BindableBase
+    /// <summary>
+    /// バインド用装備セット
+    /// </summary>
+    internal class BindableEquipSet : ChildViewModelBase
     {
-        // 頭装備
-        public BindableEquipment Head { get; set; }
+        /// <summary>
+        /// 頭装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Head { get; } = new();
 
-        // 胴装備
-        public BindableEquipment Body { get; set; }
+        /// <summary>
+        /// 胴装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Body { get; } = new();
 
-        // 腕装備
-        public BindableEquipment Arm { get; set; }
+        /// <summary>
+        /// 腕装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Arm { get; } = new();
 
-        // 腰装備
-        public BindableEquipment Waist { get; set; }
+        /// <summary>
+        /// 腰装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Waist { get; } = new();
 
-        // 足装備
-        public BindableEquipment Leg { get; set; }
+        /// <summary>
+        /// 足装備
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Leg { get; } = new();
 
-        // 護石
-        public BindableEquipment Charm { get; set; }
+        /// <summary>
+        /// 護石
+        /// </summary>
+        public ReactivePropertySlim<BindableEquipment> Charm { get; } = new();
 
-        // 装飾品(リスト)
-        public ObservableCollection<BindableEquipment> Decos { get; set; } = new();
+        /// <summary>
+        /// マイセット用名前
+        /// </summary>
+        public ReactivePropertySlim<string> Name { get; } = new();
 
-        // 理想錬成スキル(リスト)
-        public ObservableCollection<BindableEquipment> GenericSkills { get; set; } = new();
+        /// <summary>
+        /// 最大防御力
+        /// </summary>
+        public ReactivePropertySlim<int> Maxdef { get; } = new();
 
-        // 武器スロ1つ目
-        public int WeaponSlot1 { get; set; }
+        /// <summary>
+        /// 火耐性
+        /// </summary>
+        public ReactivePropertySlim<int> Fire { get; } = new();
 
-        // 武器スロ2つ目
-        public int WeaponSlot2 { get; set; }
+        /// <summary>
+        /// 水耐性
+        /// </summary>
+        public ReactivePropertySlim<int> Water { get; } = new();
 
-        // 武器スロ3つ目
-        public int WeaponSlot3 { get; set; }
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
+        public ReactivePropertySlim<int> Thunder { get; } = new();
 
-        // マイセット用名前
-        public string Name { get; set; }
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
+        public ReactivePropertySlim<int> Ice { get; } = new();
 
-        // 初期防御力
-        public int Mindef { get; set; }
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
+        public ReactivePropertySlim<int> Dragon { get; } = new();
 
-        // 最大防御力
-        public int Maxdef { get; set; }
+        /// <summary>
+        /// 装飾品のCSV表記 3行
+        /// </summary>
+        public ReactivePropertySlim<string> DecoNameCSV { get; } = new();
 
-        // 火耐性
-        public int Fire { get; set; }
+        /// <summary>
+        /// 武器スロの表示用形式(2-2-0など)
+        /// </summary>
+        public ReactivePropertySlim<string> WeaponSlotDisp { get; } = new();
 
-        // 水耐性
-        public int Water { get; set; }
+        /// <summary>
+        /// スキルのCSV形式 3行
+        /// </summary>
+        public ReactivePropertySlim<string> SkillsDisp { get; } = new();
 
-        // 雷耐性
-        public int Thunder { get; set; }
+        /// <summary>
+        /// 説明
+        /// </summary>
+        public ReactivePropertySlim<string> Description { get; } = new();
 
-        // 氷耐性
-        public int Ice { get; set; }
+        /// <summary>
+        /// 空きスロット数
+        /// </summary>
+        public ReactivePropertySlim<string> EmptySlotNum { get; set; } = new();
 
-        // 龍耐性
-        public int Dragon { get; set; }
-
-        // スキル(リスト)
-        public ObservableCollection<BindableSkill> Skills { get; set; } = new();
-
-        // 表示用CSV表記
-        public string SimpleSetName { get; set; }
-
-        // 装飾品のCSV表記 Set可能
-        public string DecoNameCSV { get; set; }
-
-        // 装飾品のCSV表記 3行
-        public string DecoNameCSVMultiLine { get; set; }
-
-        // 武器スロの表示用形式(2-2-0など)
-        public string WeaponSlotDisp { get; set; }
-
-        // スキルのCSV形式
-        public string SkillsDisp { get; set; }
-
-        // スキルのCSV形式 3行
-        public string SkillsDispMultiLine { get; set; }
-
-        // オリジナル
+        /// <summary>
+        /// オリジナル
+        /// </summary>
         public EquipSet Original { get; set; }
 
-        // 説明
-        public string Description { get; set; }
-
-        // 空きスロット数
-        public string EmptySlotNum { get; set; }
-
-        // 理想錬成防具を含むかどうか
-        public bool HasIdeal { get; set; }
-
-        // コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="set"></param>
         public BindableEquipSet(EquipSet set)
         {
-            Head = new BindableEquipment(set.Head);
-            Body = new BindableEquipment(set.Body);
-            Arm = new BindableEquipment(set.Arm);
-            Waist = new BindableEquipment(set.Waist);
-            Leg = new BindableEquipment(set.Leg);
-            Charm = new BindableEquipment(set.Charm);
-            Decos = BindableEquipment.BeBindableList(set.Decos);
-            WeaponSlot1 = set.WeaponSlot1;
-            WeaponSlot2 = set.WeaponSlot2;
-            WeaponSlot3 = set.WeaponSlot3;
-            Name = set.Name;
-            Mindef = set.Mindef;
-            Maxdef = set.Maxdef;
-            Fire = set.Fire;
-            Water = set.Water;
-            Thunder = set.Thunder;
-            Ice = set.Ice;
-            Dragon = set.Dragon;
-            Skills = BindableSkill.BeBindableList(set.Skills);
-            SimpleSetName = set.SimpleSetName;
-            DecoNameCSV = set.DecoNameCSV;
-            DecoNameCSVMultiLine = set.DecoNameCSVMultiLine;
-            WeaponSlotDisp = set.WeaponSlotDisp;
-            SkillsDisp = set.SkillsDisp;
-            SkillsDispMultiLine = set.SkillsDispMultiLine;
-            Description = set.Description;
-            EmptySlotNum = set.EmptySlotNum;
-            GenericSkills = BindableEquipment.BeBindableList(set.GenericSkills);
-            HasIdeal = set.HasIdeal;
+            Head.Value = new BindableEquipment(set.Head);
+            Body.Value = new BindableEquipment(set.Body);
+            Arm.Value = new BindableEquipment(set.Arm);
+            Waist.Value = new BindableEquipment(set.Waist);
+            Leg.Value = new BindableEquipment(set.Leg);
+            Charm.Value = new BindableEquipment(set.Charm);
+            Name.Value = set.Name;
+            Maxdef.Value = set.Maxdef;
+            Fire.Value = set.Fire;
+            Water.Value = set.Water;
+            Thunder.Value = set.Thunder;
+            Ice.Value = set.Ice;
+            Dragon.Value = set.Dragon;
+            DecoNameCSV.Value = set.DecoNameCSVMultiLine;
+            WeaponSlotDisp.Value = set.WeaponSlotDisp;
+            SkillsDisp.Value = set.SkillsDispMultiLine;
+            Description.Value = set.Description;
+            EmptySlotNum.Value = set.EmptySlotNum;
             Original = set;
         }
 
-        // リストをまとめてバインド用クラスに変換
+        /// <summary>
+        /// リストをまとめてバインド用クラスに変換
+        /// </summary>
+        /// <param name="list">変換前リスト</param>
+        /// <returns></returns>
         static public ObservableCollection<BindableEquipSet> BeBindableList(List<EquipSet> list)
         {
             ObservableCollection<BindableEquipSet> bindableList = new ObservableCollection<BindableEquipSet>();

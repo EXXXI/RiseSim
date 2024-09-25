@@ -39,6 +39,9 @@ namespace RiseSim.Views
     /// </summary>
     public partial class MainView : Window
     {
+		/// <summary>
+		/// 起動時処理
+		/// </summary>
         public MainView()
         {
             InitializeComponent();
@@ -53,7 +56,10 @@ namespace RiseSim.Views
 			}
 		}
 
-        // 終了時
+        /// <summary>
+		/// 終了時処理
+		/// </summary>
+		/// <param name="e"></param>
         protected override void OnClosing(CancelEventArgs e)
 		{
 			// ウィンドウサイズ保存
@@ -65,7 +71,9 @@ namespace RiseSim.Views
 			base.OnClosing(e);
 		}
 
-		// ウィンドウサイズ保存
+		/// <summary>
+		/// ウィンドウサイズ保存
+		/// </summary>
 		private void SaveWindowBounds()
 		{
 			var settings = Settings.Default;
@@ -89,7 +97,9 @@ namespace RiseSim.Views
 			settings.Save();
 		}
 
-		// ウィンドウサイズ復元
+		/// <summary>
+		/// ウィンドウサイズ復元
+		/// </summary>
 		private void RecoverWindowBounds()
 		{
 			var settings = Settings.Default;
@@ -117,7 +127,9 @@ namespace RiseSim.Views
 			}
 		}
 
-		// DataGridの列順保存
+		/// <summary>
+		/// DataGridの列順保存
+		/// </summary>
 		private void SaveDataGridColumnIndex()
 		{
 			var settings = Settings.Default;
@@ -131,7 +143,11 @@ namespace RiseSim.Views
 			settings.Save();
 		}
 
-		// DataGridの列順をcsv形式の文字列に変換
+		/// <summary>
+		/// DataGridの列順をcsv形式の文字列に変換
+		/// </summary>
+		/// <param name="grid">グリッドのインスタンス</param>
+		/// <returns></returns>
 		private string GetColumnIndexes(DataGrid grid)
         {
 			bool isFirst = true;
@@ -150,7 +166,10 @@ namespace RiseSim.Views
 			}
 			return indexes.ToString();
         }
-		// DataGridの列順復元
+
+		/// <summary>
+		/// DataGridの列順復元
+		/// </summary>
 		private void RecoverDataGridColumnIndex()
 		{
 			var settings = Settings.Default;
@@ -161,7 +180,11 @@ namespace RiseSim.Views
 			SetColumnIndexes(myset.grid, settings.MySetIndexes);
 		}
 
-		// 前回終了時の列順をDataGridに設定
+		/// <summary>
+		/// 前回終了時の列順をDataGridに設定
+		/// </summary>
+		/// <param name="grid">対象Grid</param>
+		/// <param name="indexes">列順</param>
 		private void SetColumnIndexes(DataGrid grid, string indexes)
 		{
 			if (string.IsNullOrWhiteSpace(indexes))
@@ -190,6 +213,11 @@ namespace RiseSim.Views
 			}
 		}
 
+		/// <summary>
+		/// 標準の列順に設定する
+		/// データに不備がある場合に呼び出されるメソッド
+		/// </summary>
+		/// <param name="grid">対象Grid</param>
 		private void SetDefaultColumnIndexes(DataGrid grid)
         {
 			for (int i = 0; i < grid.Columns.Count; i++)

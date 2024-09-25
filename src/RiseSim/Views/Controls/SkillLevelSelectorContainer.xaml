@@ -1,26 +1,26 @@
-﻿<UserControl x:Class="RiseSim.Views.Controls.SkillPickerContainer"
+﻿<UserControl x:Class="RiseSim.Views.Controls.SkillLevelSelectorContainer"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RiseSim.Views.Controls"
              xmlns:viewModels="clr-namespace:RiseSim.ViewModels.Controls"
-             d:DataContext="{d:DesignInstance Type=viewModels:SkillPickerContainerViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewModels:SkillLevelSelectorContainerViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Expander 
-            HorizontalAlignment="Center" 
+            HorizontalAlignment="Left" 
             Height="Auto" 
             Header="{Binding Path=Header}"
             IsExpanded="True"
             Margin="0,0,0,0" 
             VerticalAlignment="Top" 
-            Width="800"
+            Width="auto"
         >
-        <ItemsControl ItemsSource="{Binding Path=SkillPickerSelectors, Mode=OneWay}">
+        <ItemsControl ItemsSource="{Binding Path=SkillLevelSelectors, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <local:SkillPickerSelector Margin="5"/>
+                    <local:SkillLevelSelector Margin="5"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

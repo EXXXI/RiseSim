@@ -1,0 +1,182 @@
+﻿<UserControl x:Class="RiseSim.Views.SubViews.SkillSelectTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RiseSim.Views.SubViews"
+             xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:SkillSelectTabViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="subtabHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="250"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Margin="10" Height="Auto" Width="Auto" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer VerticalAlignment="Stretch">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding SkillContainerVMs.Value, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ctrl:SkillLevelSelectorContainer/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="230"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="50" Text="武器スロ"/>
+                        <ComboBox x:Name="weaponSlotsBox" ItemsSource="{Binding SlotMaster.Value, Mode=OneWay}" SelectedItem="{Binding WeaponSlots.Value}" Width="115" SelectedIndex="0">
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="40" Text="防御力"/>
+                        <ctrl:FocusTextBox Width="30" Text="{Binding Def.Value}" Margin="0,0,12,0"></ctrl:FocusTextBox>
+                        <TextBlock Width="30" Text="性別"/>
+                        <ComboBox ItemsSource="{Binding SexMaster.Value, Mode=OneWay}" SelectedItem="{Binding SelectedSex.Value}" Width="53" SelectedIndex="0">
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="12" Text="火"/>
+                        <ctrl:FocusTextBox Width="17" Text="{Binding Fire.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
+                        <TextBlock Width="12" Text="水"/>
+                        <ctrl:FocusTextBox Width="17" Text="{Binding Water.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
+                        <TextBlock Width="12" Text="雷"/>
+                        <ctrl:FocusTextBox Width="17" Text="{Binding Thunder.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
+                        <TextBlock Width="12" Text="氷"/>
+                        <ctrl:FocusTextBox Width="17" Text="{Binding Ice.Value}" Margin="0,0,5,0"></ctrl:FocusTextBox>
+                        <TextBlock Width="12" Text="龍"/>
+                        <ctrl:FocusTextBox Width="17" Text="{Binding Dragon.Value}"></ctrl:FocusTextBox>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <CheckBox IsChecked="{Binding IsIncludeIdeal.Value}">理想錬成を使う</CheckBox>
+                    <CheckBox IsChecked="{Binding IsPrioritizeNoIdeal.Value}" IsEnabled="{Binding IsIncludeIdeal.Value}" Margin="7.5,0,0,0">既存装備を優先する</CheckBox>
+                    <CheckBox IsChecked="{Binding IsExcludeAbstract.Value}" IsEnabled="{Binding IsPrioritizeNoIdeal.Value}" Margin="15,0,0,0">同等の既存装備で組める場合を除外</CheckBox>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="50" Text="頑張り度"/>
+                        <ctrl:FocusTextBox x:Name="limitBox" Width="115" Text="{Binding Limit.Value}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <Button x:Name="searchButton" Content="検索する" Command="{Binding SearchCommand}" />
+                    <Button x:Name="searchExtraSkillButton" Content="追加スキル検索する" Command="{Binding SearchExtraSkillCommand}" />
+                    <Button Content="検索条件をリセット" Command="{Binding ClearAllCommand}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <TabControl Grid.Column="1" TabStripPlacement="Right" SelectedIndex="{Binding SelectedTabIndex.Value}">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <TransformGroup>
+                                <RotateTransform Angle="90"/>
+                            </TransformGroup>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="最近使ったスキル" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                                最近検索に使ったスキルがここに並びます。<LineBreak/>
+                                数字のついたボタンはレベルを表しており、ボタンを押すと左画面でそのレベルが選択されます。
+                        </TextBlock>
+                    </Expander>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding RecentSkillVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:SkillAdder Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="追加スキル検索結果" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                                追加スキル検索の結果がここに並びます。<LineBreak/>
+                                数字のついたボタンはレベルを表しており、ボタンを押すと左画面でそのレベルが選択されます。
+                        </TextBlock>
+                    </Expander>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding ExtraSkillVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:SkillAdder Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="マイ検索条件" Style="{StaticResource ResourceKey=subtabHeader}" />
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="説明">
+                        <TextBlock TextWrapping="Wrap">
+                            よく使う検索条件をここに登録できます。<LineBreak/>
+                            登録した検索条件はこの下に並び、「適用」ボタンを押すことで左画面に適用できます。
+                        </TextBlock>
+                    </Expander>
+                    <Button Content="現在の検索条件を保存する" Command="{Binding AddMyConditionCommand}" Grid.Row="1"/>
+                    <ScrollViewer VerticalAlignment="Stretch" Grid.Row="2">
+                        <ItemsControl ItemsSource="{Binding MyConditionVMs.Value, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <ctrl:MyConditionRow Margin="0,0,0,5"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

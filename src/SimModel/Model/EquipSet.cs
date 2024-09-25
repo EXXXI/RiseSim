@@ -1,55 +1,88 @@
 ﻿using SimModel.Config;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SimModel.Model
 {
-    // 装備セット
+    /// <summary>
+    /// 装備セット
+    /// </summary>
     public class EquipSet
     {
+        /// <summary>
+        /// スロット不正時文字列
+        /// </summary>
         private const string InvalidSlot = "invalid";
+
+        /// <summary>
+        /// 錬成コスト不正時文字列
+        /// </summary>
         private const string InvalidGSkill = "invalid";
 
-        // 頭装備
+        /// <summary>
+        /// 頭装備
+        /// </summary>
         public Equipment Head { get; set; } = new Equipment(EquipKind.head);
 
-        // 胴装備
+        /// <summary>
+        /// 胴装備
+        /// </summary>
         public Equipment Body { get; set; } = new Equipment(EquipKind.body);
 
-        // 腕装備
+        /// <summary>
+        /// 腕装備
+        /// </summary>
         public Equipment Arm { get; set; } = new Equipment(EquipKind.arm);
 
-        // 腰装備
+        /// <summary>
+        /// 腰装備
+        /// </summary>
         public Equipment Waist { get; set; } = new Equipment(EquipKind.waist);
 
-        // 足装備
+        /// <summary>
+        /// 足装備
+        /// </summary>
         public Equipment Leg { get; set; } = new Equipment(EquipKind.leg);
 
-        // 護石
+        /// <summary>
+        /// 護石
+        /// </summary>
         public Equipment Charm { get; set; } = new Equipment(EquipKind.charm);
 
-        // 装飾品(リスト)
+        /// <summary>
+        /// 装飾品(リスト)
+        /// </summary>
         public List<Equipment> Decos { get; set; } = new();
 
-        // 理想錬成用のコストでつくスキル
+        /// <summary>
+        /// 理想錬成用のコストでつくスキル
+        /// </summary>
         public List<Equipment> GenericSkills { get; set; } = new();
 
-        // 武器スロ1つ目
+        /// <summary>
+        /// 武器スロ1つ目
+        /// </summary>
         public int WeaponSlot1 { get; set; }
 
-        // 武器スロ2つ目
+        /// <summary>
+        /// 武器スロ2つ目
+        /// </summary>
         public int WeaponSlot2 { get; set; }
 
-        // 武器スロ3つ目
+        /// <summary>
+        /// 武器スロ3つ目
+        /// </summary>
         public int WeaponSlot3 { get; set; }
 
-        // マイセット用名前
+        /// <summary>
+        /// マイセット用名前
+        /// </summary>
         public string Name { get; set; } = LogicConfig.Instance.DefaultMySetName;
 
-        // 合計パラメータ計算用装備一覧
+        /// <summary>
+        /// 合計パラメータ計算用装備一覧
+        /// </summary>
         private List<Equipment> Equipments
         {
             get
@@ -73,7 +106,9 @@ namespace SimModel.Model
             }
         }
 
-        // 初期防御力
+        /// <summary>
+        /// 初期防御力
+        /// </summary>
         public int Mindef
         {
             get
@@ -87,7 +122,9 @@ namespace SimModel.Model
             }
         }
 
-        // 最大防御力
+        /// <summary>
+        /// 最大防御力
+        /// </summary>
         public int Maxdef
         {
             get
@@ -101,7 +138,9 @@ namespace SimModel.Model
             }
         }
 
-        // 火耐性
+        /// <summary>
+        /// 火耐性
+        /// </summary>
         public int Fire
         {
             get
@@ -115,7 +154,9 @@ namespace SimModel.Model
             }
         }
 
-        // 水耐性
+        /// <summary>
+        /// 水耐性
+        /// </summary>
         public int Water
         {
             get
@@ -129,7 +170,9 @@ namespace SimModel.Model
             }
         }
 
-        // 雷耐性
+        /// <summary>
+        /// 雷耐性
+        /// </summary>
         public int Thunder
         {
             get
@@ -143,7 +186,9 @@ namespace SimModel.Model
             }
         }
 
-        // 氷耐性
+        /// <summary>
+        /// 氷耐性
+        /// </summary>
         public int Ice
         {
             get
@@ -157,7 +202,9 @@ namespace SimModel.Model
             }
         }
 
-        // 龍耐性
+        /// <summary>
+        /// 龍耐性
+        /// </summary>
         public int Dragon
         {
             get
@@ -171,7 +218,9 @@ namespace SimModel.Model
             }
         }
 
-        // スキル(リスト)
+        /// <summary>
+        /// スキル(リスト)
+        /// </summary>
         public List<Skill> Skills
         {
             get
@@ -238,7 +287,9 @@ namespace SimModel.Model
         }
 
 
-        // 制約式名称用の、装飾品を除いたCSV表記
+        /// <summary>
+        /// 制約式名称用の、装飾品を除いたCSV表記
+        /// </summary>
         public string GlpkRowName
         {
             get
@@ -260,41 +311,12 @@ namespace SimModel.Model
             }
         }
 
-        // 表示用CSV表記
-        public string SimpleSetName
-        {
-            get
-            {
-                StringBuilder sb = new();
-                sb.Append(Head.DispName);
-                sb.Append(',');
-                sb.Append(Body.DispName);
-                sb.Append(',');
-                sb.Append(Arm.DispName);
-                sb.Append(',');
-                sb.Append(Waist.DispName);
-                sb.Append(',');
-                sb.Append(Leg.DispName);
-                sb.Append(',');
-                sb.Append(Charm.DispName);
-
-                foreach (Equipment deco in Decos)
-                {
-                    sb.Append(',');
-                    sb.Append(deco.DispName);
-                }
-
-                foreach (Equipment gSkill in GenericSkills)
-                {
-                    sb.Append(',');
-                    sb.Append(gSkill.DispName);
-                }
-
-                return sb.ToString();
-            }
-        }
-
-        // 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
+        // TODO: 不格好で危うい実装。だけどsolver.variables().First(v => v.Name().....)とかいちいちやってるとすごく重いのでいい案がない
+        /// <summary>
+        /// 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
+        /// </summary>
+        /// <param name="includeIdealAugmentation">理想錬成を検索する場合true</param>
+        /// <returns>リスト</returns>
         public List<int> EquipIndexsWithOutDecos(bool includeIdealAugmentation)
         {
             List<int> list = new();
@@ -326,7 +348,9 @@ namespace SimModel.Model
         }
 
 
-        // 装飾品のCSV表記 Set可能
+        /// <summary>
+        /// 装飾品のCSV表記 Set可能
+        /// </summary>
         public string DecoNameCSV
         {
             get
@@ -364,7 +388,9 @@ namespace SimModel.Model
             }
         }
 
-        // 装飾品のCSV表記 3行
+        /// <summary>
+        /// 装飾品のCSV表記 3行
+        /// </summary>
         public string DecoNameCSVMultiLine
         {
             get
@@ -398,7 +424,9 @@ namespace SimModel.Model
             }
         }
 
-        // 理想錬成の追加スキルのCSV表記
+        /// <summary>
+        /// 理想錬成の追加スキルのCSV表記
+        /// </summary>
         public string GSkillNameCSV
         {
             get
@@ -436,7 +464,9 @@ namespace SimModel.Model
             }
         }
 
-        // 武器スロの表示用形式(2-2-0など)
+        /// <summary>
+        /// 武器スロの表示用形式(2-2-0など)
+        /// </summary>
         public string WeaponSlotDisp
         {
             get
@@ -445,14 +475,18 @@ namespace SimModel.Model
             }
         }
 
-        // スキルのCSV形式
+        /// <summary>
+        /// スキルのCSV形式
+        /// </summary>
         public string SkillsDisp
         {
             get
             {
+                List<Skill> existSkill = Skills.Where(s => s.Level > 0).ToList();
+
                 StringBuilder sb = new();
                 bool first = true;
-                foreach (var skill in Skills)
+                foreach (var skill in existSkill)
                 {
                     if (skill.Level > 0)
                     {
@@ -469,15 +503,19 @@ namespace SimModel.Model
         }
 
 
-        // 装飾品のCSV表記 3行
+        /// <summary>
+        /// 装飾品のCSV表記 3行
+        /// </summary>
         public string SkillsDispMultiLine
         {
             get
             {
+                List<Skill> existSkill = Skills.Where(s => s.Level > 0).ToList();
+
                 StringBuilder sb = new();
-                int secondLineIdx = Skills.Count / 3;
-                int thirdLineIdx = Skills.Count * 2 / 3;
-                for (int i = 0; i < Skills.Count; i++)
+                int secondLineIdx = existSkill.Count / 3;
+                int thirdLineIdx = existSkill.Count * 2 / 3;
+                for (int i = 0; i < existSkill.Count; i++)
                 {
                     if (i == 0)
                     {
@@ -497,13 +535,15 @@ namespace SimModel.Model
                     {
                         sb.Append(',');
                     }
-                    sb.Append(Skills[i].Description);
+                    sb.Append(existSkill[i].Description);
                 }
                 return sb.ToString();
             }
         }
 
-        // 装備の説明
+        /// <summary>
+        /// 装備の説明
+        /// </summary>
         public string Description
         {
             get
@@ -629,8 +669,10 @@ namespace SimModel.Model
             }
         }
 
-        // 装飾品をはめ込む例
-        // 装飾品情報がソートされていることを前提としている
+        /// <summary>
+        /// 装飾品をはめ込む例
+        /// 装飾品情報がソートされていることを前提としている
+        /// </summary>
         private string DecoExampleSetting
         {
             get
@@ -674,7 +716,14 @@ namespace SimModel.Model
             }
         }
 
-        // 防具に指定レベルのスロットがあったらそこにはめるべき装飾品情報を書き込む
+        /// <summary>
+        /// 防具に指定レベルのスロットがあったらそこにはめるべき装飾品情報を書き込む
+        /// </summary>
+        /// <param name="decoIndex">装飾品の連番</param>
+        /// <param name="slotLv">指定スロットレベル</param>
+        /// <param name="equip">装備</param>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>書き込み後の装飾品の連番</returns>
         private int AppendDecoExample(int decoIndex, int slotLv, Equipment equip, StringBuilder sb)
         {
             if (equip.Slot1 == slotLv && decoIndex < Decos.Count)
@@ -699,7 +748,9 @@ namespace SimModel.Model
         }
 
 
-        // 防具の空きスロット合計
+        /// <summary>
+        /// 防具の空きスロット合計
+        /// </summary>
         public string EmptySlotNum
         {
             get
@@ -757,7 +808,9 @@ namespace SimModel.Model
             }
         }
 
-        // 理想錬成防具の錬成スキルの空き
+        /// <summary>
+        /// 理想錬成防具の錬成スキルの空き
+        /// </summary>
         public string EmptyGSkillNum
         {
             get
@@ -807,7 +860,9 @@ namespace SimModel.Model
             }
         }
 
-        // 装飾品がはめられる状態かチェック
+        /// <summary>
+        /// 装飾品がはめられる状態かチェック
+        /// </summary>
         private bool IsDecoValid
         {
             get
@@ -816,7 +871,9 @@ namespace SimModel.Model
             }
         }
 
-        // 理想錬成の追加スキルが実現可能な状態かチェック
+        /// <summary>
+        /// 理想錬成の追加スキルが実現可能な状態かチェック
+        /// </summary>
         public bool IsGSkillValid
         {
             get
@@ -825,7 +882,9 @@ namespace SimModel.Model
             }
         }
 
-        // 錬成を利用しているかどうかチェック(理想錬成も含む)
+        /// <summary>
+        /// 錬成を利用しているかどうかチェック(理想錬成も含む)
+        /// </summary>
         public bool HasAugmentation
         {
             get
@@ -841,7 +900,9 @@ namespace SimModel.Model
             }
         }
 
-        // 理想錬成を利用しているかどうかチェック
+        /// <summary>
+        /// 理想錬成を利用しているかどうかチェック
+        /// </summary>
         public bool HasIdeal
         {
             get
@@ -857,7 +918,9 @@ namespace SimModel.Model
             }
         }
 
-        // 装飾品のソート
+        /// <summary>
+        /// 装飾品のソート
+        /// </summary>
         public void SortDecos()
         {
             List<Equipment> newDecos = new List<Equipment>();
@@ -874,7 +937,9 @@ namespace SimModel.Model
             Decos = newDecos;
         }
 
-        // 理想錬成スキルのソート
+        /// <summary>
+        /// 理想錬成スキルのソート
+        /// </summary>
         public void SortGSkills()
         {
             List<Equipment> newGSkills = new List<Equipment>();
@@ -892,7 +957,11 @@ namespace SimModel.Model
         }
 
 
-        // 防具のスロット数計算
+        /// <summary>
+        /// 防具のスロット数計算
+        /// </summary>
+        /// <param name="hasSlots">スロット数格納用配列</param>
+        /// <param name="equip">装備</param>
         private static void CalcEquipHasSlot(int[] hasSlots, Equipment equip)
         {
             if (equip.Slot1 > 0)
@@ -909,7 +978,11 @@ namespace SimModel.Model
             }
         }
 
-        // 防具のコスト数計算
+        /// <summary>
+        /// 防具のコスト数計算
+        /// </summary>
+        /// <param name="hasGSkills">コスト数格納用配列</param>
+        /// <param name="equip">装備</param>
         private static void CalcEquipHasGSkill(int[] hasGSkills, Equipment equip)
         {
             for (int i = 0; i < 5; i++)
@@ -918,8 +991,13 @@ namespace SimModel.Model
             }
         }
 
-        // スキルの追加(同名スキルはスキルレベルを加算)
-        // 最大値のチェックはしていない
+        /// <summary>
+        /// スキルの追加(同名スキルはスキルレベルを加算)
+        /// 最大値のチェックはここではしていない
+        /// </summary>
+        /// <param name="baseSkills">スキル一覧</param>
+        /// <param name="newSkills">追加するスキル</param>
+        /// <returns>合わせたスキル一覧</returns>
         private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills)
         {
             foreach (var newSkill in newSkills)
@@ -946,8 +1024,15 @@ namespace SimModel.Model
             return baseSkills;
         }
 
-        // スキルの追加(同名スキルはスキルレベルを加算、錬成の追加スキルは除外)
-        // 最大値のチェックはしていない
+        /// <summary>
+        /// スキルの追加(同名スキルはスキルレベルを加算)
+        ///  最大値のチェックはしていない
+        /// </summary>
+        /// <param name="baseSkills">スキル一覧</param>
+        /// <param name="newSkills">追加するスキル</param>
+        /// <param name="excludeAdditional">錬成の追加スキルは除外する場合true</param>
+        /// <returns></returns>
+        //
         private List<Skill> JoinSkill(List<Skill> baseSkills, List<Skill> newSkills, bool excludeAdditional)
         {
             List<Skill> skills = new();
