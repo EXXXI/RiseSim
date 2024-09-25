@@ -42,7 +42,8 @@ namespace RiseSim.ViewModels.Controls
             items.Add(new SkillLevelSelectorItem(baseSkill.Name, 0));
             for (int i = 1; i <= baseSkill.Level; i++)
             {
-                items.Add(new SkillLevelSelectorItem($"{baseSkill.Name}Lv{i}", i));
+                string dispName = baseSkill.SpecificNames.ContainsKey(i) ? baseSkill.SpecificNames[i] : $"{baseSkill.Name}Lv{i}";
+                items.Add(new SkillLevelSelectorItem(dispName, i));
             }
             return items;
         }

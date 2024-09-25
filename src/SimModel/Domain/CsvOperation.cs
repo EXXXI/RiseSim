@@ -4,6 +4,7 @@ using SimModel.Config;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 
@@ -34,6 +35,7 @@ namespace SimModel.Domain
         private const string SkillMasterHeaderRequiredPoints = @"必要ポイント";
         private const string SkillMasterHeaderCategory = @"カテゴリ";
         private const string SkillMasterHeaderCost = @"コスト";
+        private const string SkillMasterHeaderSpecificName = @"発動スキル";
 
         static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -56,6 +58,20 @@ namespace SimModel.Domain
                 .Select(group => new Skill(group.Key.Name, group.Max(x => x.Level), group.Key.Category))
                 .ToList();
 
+            // 特殊な名称のデータを保持
+            var hasSpecificNames = CsvReader.ReadFromText(csv)
+                .Select(line => new
+                {
+                    Name = line[SkillMasterHeaderName],
+                    Level = ParseUtil.Parse(line[SkillMasterHeaderRequiredPoints]),
+                    Specific = line[SkillMasterHeaderSpecificName]
+                })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Specific));
+            foreach (var item in hasSpecificNames)
+            {
+                Skill skill = Masters.Skills.First(s => s.Name == item.Name);
+                skill.SpecificNames.Add(item.Level, item.Specific);
+            }
 
             // 理想錬成用スキル
             foreach (ICsvLine line in CsvReader.ReadFromText(csv))

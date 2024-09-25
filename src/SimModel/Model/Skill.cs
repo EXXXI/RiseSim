@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimModel.Model
@@ -32,6 +33,11 @@ namespace SimModel.Model
         /// スキルのカテゴリ
         /// </summary>
         public string Category { get; init; }
+
+        /// <summary>
+        /// シリーズスキル等、レベルに特殊な名称がある場合ここに格納
+        /// </summary>
+        public Dictionary<int, string> SpecificNames { get; } = new();
 
         /// <summary>
         /// コンストラクタ
