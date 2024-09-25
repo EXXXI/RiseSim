@@ -1,14 +1,9 @@
-﻿using SimModel.Config;
+﻿using Google.OrTools.LinearSolver;
+using SimModel.Config;
 using SimModel.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Google.OrTools.LinearSolver;
-using System.Threading;
-using System.Windows.Annotations;
-using System.Reflection;
 
 namespace SimModel.Domain
 {
@@ -43,6 +38,9 @@ namespace SimModel.Domain
         /// </summary>
         public SearchCondition Condition { get; set; }
 
+        /// <summary>
+        /// ソルバ
+        /// </summary>
         public Solver SimSolver { get; set; }
 
         /// <summary>
@@ -232,7 +230,6 @@ namespace SimModel.Domain
             numConstraints += Condition.Skills.Count; // 風雷合一：防具スキル存在条件
             numConstraints += Condition.Skills.Count; // 風雷合一：各スキル用フラグ条件
             numConstraints += Masters.Ideals.Count; // 理想錬成：部位制限
-            numConstraints += ResultSets.Count + FailureSets.Count; // 検索済み結果の除外
             numConstraints += Masters.Cludes.Count; // 除外固定装備設定
             if (Condition.AdditionalFixData != null)
             {
@@ -325,19 +322,6 @@ namespace SimModel.Domain
                 }
                 LimitedIdealAugmentationDictionary.Add(ideal.Name, index);
                 y[index++] = solver.MakeConstraint(min, max, ideal.Name);
-            }
-
-            // 検索済み結果の除外
-            FirstResultExcludeRowIndex = index;
-            foreach (var set in ResultSets)
-            {
-                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
-            }
-            foreach (var set in FailureSets)
-            {
-                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                y[index++] = solver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
             }
 
             // 除外固定装備設定
@@ -630,29 +614,6 @@ namespace SimModel.Domain
 
                 }
                 columnIndex++;
-            }
-
-            // 検索済みデータ
-            int resultExcludeRowIndex = FirstResultExcludeRowIndex;
-            foreach (var set in ResultSets)
-            {
-                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                foreach (var index in indexList)
-                {
-                    // 各装備に対応する係数を1とする
-                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
-                }
-                resultExcludeRowIndex++;
-            }
-            foreach (var set in FailureSets)
-            {
-                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
-                foreach (var index in indexList)
-                {
-                    // 各装備に対応する係数を1とする
-                    y[resultExcludeRowIndex].SetCoefficient(x[index], 1);
-                }
-                resultExcludeRowIndex++;
             }
 
             // 除外固定データ
