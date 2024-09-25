@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using Google.OrTools.LinearSolver;
 using System.Threading;
 using System.Windows.Annotations;
+using System.Reflection;
 
 namespace SimModel.Domain
 {
-    internal class Searcher
+    internal class Searcher : IDisposable
     {
         // 定数：各制約式のIndex
         const int HeadRowIndex = 0;
@@ -41,6 +42,8 @@ namespace SimModel.Domain
         /// 検索条件
         /// </summary>
         public SearchCondition Condition { get; set; }
+
+        public Solver SimSolver { get; set; }
 
         /// <summary>
         /// 検索結果
@@ -143,6 +146,20 @@ namespace SimModel.Domain
                 Waists = Masters.Waists;
                 Legs = Masters.Legs;
             }
+
+            SimSolver = Solver.CreateSolver("SCIP");
+
+            // 変数設定
+            Variable[] x = SetVariables(SimSolver);
+
+            // 制約式設定
+            Constraint[] y = SetConstraints(SimSolver);
+
+            // 目的関数設定(防御力)
+            SetObjective(SimSolver, x);
+
+            // 係数設定(防具データ)
+            SetDatas(SimSolver, x, y);
         }
 
         /// <summary>
@@ -157,22 +174,8 @@ namespace SimModel.Domain
 
             while (ResultSets.Count < target)
             {
-                using Solver solver = Solver.CreateSolver("SCIP");
-
-                // 変数設定
-                Variable[] x = SetVariables(solver);
-
-                // 制約式設定
-                Constraint[] y = SetConstraints(solver);
-
-                // 目的関数設定(防御力)
-                SetObjective(solver, x);
-
-                // 係数設定(防具データ)
-                SetDatas(solver, x, y);
-
                 // 計算
-                var result = solver.Solve();
+                var result = SimSolver.Solve();
                 if (!result.Equals(Solver.ResultStatus.OPTIMAL))
                 {
                     // もう結果がヒットしない場合終了
@@ -180,12 +183,24 @@ namespace SimModel.Domain
                 }
 
                 // 計算結果整理
-                bool hasData = MakeSet(x);
-                if (!hasData)
+                EquipSet? set = MakeSet(SimSolver.variables());
+                if (set == null)
                 {
                     // TODO: 計算結果の空データ、何故発生する？
                     // 空データが出現したら終了
                     return true;
+                }
+
+                // 次回検索時用
+                // 検索済み結果の除外
+                var equipIndexes = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                var ny = SimSolver.MakeConstraint(0.0, equipIndexes.Count - 1, set.GlpkRowName);
+                // 検索済みデータ
+                List<int> indexList = set.EquipIndexsWithOutDecos(Condition.IncludeIdealAugmentation);
+                foreach (var index in indexList)
+                {
+                    // 各装備に対応する係数を1とする
+                    ny.SetCoefficient(SimSolver.variables()[index], 1);
                 }
 
                 // 中断確認
@@ -428,7 +443,6 @@ namespace SimModel.Domain
             return x;
         }
 
-        // TODO: 目的関数、防御力以外も対応する？
         /// <summary>
         /// 目的関数設定(防御力)
         /// </summary>
@@ -806,8 +820,8 @@ namespace SimModel.Domain
         /// 計算結果整理
         /// </summary>
         /// <param name="x">変数の配列</param>
-        /// <returns>成功でtrue</returns>
-        private bool MakeSet(Variable[] x)
+        /// <returns>成功時EquipSet、失敗時null</returns>
+        private EquipSet? MakeSet(Variable[] x)
         {
             EquipSet equipSet = new();
             bool hasData = false;
@@ -906,11 +920,11 @@ namespace SimModel.Domain
                 }
 
                 // 成功
-                return true;
+                return equipSet;
             }
 
             // 失敗
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -1369,5 +1383,48 @@ namespace SimModel.Domain
 
             return result;
         }
+
+
+        #region Dispose関連
+
+        /// <summary>
+        /// disposeフラグ
+        /// </summary>
+        private bool _disposed = false;
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing">disposeフラグ</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    SimSolver.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// ファイナライザ
+        /// </summary>
+        ~Searcher()
+        {
+            Dispose(false);
+        }
+
+        #endregion
     }
 }

@@ -311,7 +311,7 @@ namespace SimModel.Model
             }
         }
 
-        // TODO: 消して別の方法にしよう　変数のName()で判別したほうがまだ良い
+        // TODO: 不格好で危うい実装。だけどsolver.variables().First(v => v.Name().....)とかいちいちやってるとすごく重いのでいい案がない
         /// <summary>
         /// 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
         /// </summary>

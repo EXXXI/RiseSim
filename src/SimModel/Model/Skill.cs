@@ -57,7 +57,6 @@ namespace SimModel.Model
             Level = level;
             IsAdditional = isAdditional;
             IsFixed = isFixed;
-            // TODO: Master‚©‚çŽæ“¾‚Å‚«‚È‚¢‚©
             Category = string.IsNullOrEmpty(category) ? @"–¢•ª—Þ" : category;
         }
 

@@ -23,7 +23,7 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         public LicenseTabViewModel()
         {
-            // TODO:バージョン毎回変えるのめんどくさいから何かいい方法を考える
+            // TODO:バージョン毎回変えるのめんどくさいから何かいい方法を考えたい
             // バージョン・ライセンス表示
             StringBuilder sb = new();
             sb.Append("■バージョン\n");

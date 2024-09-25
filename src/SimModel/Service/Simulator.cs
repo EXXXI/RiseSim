@@ -66,6 +66,10 @@ namespace SimModel.Service
             ResetIsCanceling();
 
             // 検索
+            if (Searcher != null)
+            {
+                Searcher.Dispose();
+            }
             Searcher = new Searcher(condition);
             IsSearchedAll = Searcher.ExecSearch(limit);
 
@@ -142,8 +146,7 @@ namespace SimModel.Service
                         if (isNewSkill)
                         {
                             // 頑張り度1で検索
-                            Searcher exSearcher;
-                            exSearcher = new Searcher(exCondition);
+                            using Searcher exSearcher = new Searcher(exCondition);
                             exSearcher.ExecSearch(1);
 
                             // 1件でもヒットすれば追加スキル一覧に追加
@@ -310,8 +313,7 @@ namespace SimModel.Service
                     condition.AdditionalFixData = pattern;
 
                     // 頑張り度1で検索
-                    Searcher exSearcher;
-                    exSearcher = new Searcher(condition);
+                    using Searcher exSearcher = new Searcher(condition);
                     exSearcher.ExecSearch(1);
 
                     // 1件でもヒットすればパターン一覧に追加
