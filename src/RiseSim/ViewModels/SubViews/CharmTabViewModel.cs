@@ -142,8 +142,7 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.DeleteCharm(trueName);
 
             // マスタをリロード
-            // マイセットと除外固定が変更になる可能性があるためそちらもリロード
-            CludeTabVM.LoadCludes();
+            // マイセットが変更になる可能性があるためそちらもリロード
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
 
