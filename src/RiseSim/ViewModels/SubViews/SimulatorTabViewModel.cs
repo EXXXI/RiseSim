@@ -227,15 +227,11 @@ namespace RiseSim.ViewModels.SubViews
             IsBusy.Value = false;
             MainVM.IsIndeterminate.Value = false;
 
+            // もっと検索の表示は出さない
+            IsRemaining.Value = false;
+
             // ログ表示
-            if (Simulator.IsCanceling)
-            {
-                SetStatusBar("処理中断：中断時の検索状態を表示します");
-            }
-            else
-            {
-                SetStatusBar($"錬成パターン検索完了：{result.Count}件");
-            }
+            SetStatusBar($"錬成パターン検索：{result.Count}件");
         }
 
         /// <summary>
