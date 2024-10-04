@@ -1,18 +1,13 @@
 ﻿using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
 using RiseSim.Util;
-using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Model;
 using SimModel.Service;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Security.Claims;
-using System.Windows.Documents;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -21,16 +16,6 @@ namespace RiseSim.ViewModels.SubViews
     /// </summary>
     class CludeTabViewModel : ChildViewModelBase
     {
-        /// <summary>
-        /// 除外・固定画面の登録部品のVM
-        /// </summary>
-        public ReactivePropertySlim<ObservableCollection<EquipSelectRowViewModel>> EquipSelectRowVMs { get; } = new();
-
-        /// <summary>
-        /// 除外・固定画面の一覧表示の各行のVM
-        /// </summary>
-        public ReactivePropertySlim<ObservableCollection<CludeRowViewModel>> CludeRowVMs { get; } = new();
-
         /// <summary>
         /// 除外・固定画面の表表示の各行のVM
         /// </summary>
@@ -46,15 +31,13 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         public ReactivePropertySlim<bool> IsCludeOnlyFilter { get; } = new(false);
 
-
-
         /// <summary>
         /// 除外固定をすべて解除するコマンド
         /// </summary>
         public ReactiveCommand DeleteAllCludeCommand { get; } = new ReactiveCommand();
 
         /// <summary>
-        /// 防具を除外するコマンド
+        /// 錬成防具を除外するコマンド
         /// </summary>
         public ReactiveCommand ExcludeAllAugmentationCommand { get; } = new ReactiveCommand();
 
@@ -86,11 +69,17 @@ namespace RiseSim.ViewModels.SubViews
             ApplyFilterCommand.Subscribe(_ => ApplyFilter());
         }
 
+        /// <summary>
+        /// フィルタを適用
+        /// </summary>
         private void ApplyFilter()
         {
             LoadGridData(FilterName.Value, IsCludeOnlyFilter.Value);
         }
 
+        /// <summary>
+        /// フィルタを解除
+        /// </summary>
         private void ClearFilter()
         {
             LoadGridData();
@@ -120,10 +109,6 @@ namespace RiseSim.ViewModels.SubViews
 
             // 除外
             Simulator.AddExclude(trueName);
-
-            //TODO: 削除
-            // 除外固定のマスタをリロード
-            // LoadCludes();
 
             // 表の該当部分の更新
             CludeGridCellViewModel? target = ShowingEquips.Value
@@ -161,10 +146,6 @@ namespace RiseSim.ViewModels.SubViews
 
             // 固定
             Simulator.AddInclude(trueName);
-
-            //TODO: 削除
-            // 除外固定のマスタをリロード
-            // LoadCludes();
 
             // 表の該当部分の更新
             CludeGridCellViewModel? target = ShowingEquips.Value
@@ -212,10 +193,6 @@ namespace RiseSim.ViewModels.SubViews
             // 解除
             Simulator.DeleteClude(trueName);
 
-            //TODO: 削除
-            // 除外固定のマスタをリロード
-            // LoadCludes();
-
             // 表の該当部分の更新
             CludeGridCellViewModel? target = ShowingEquips.Value
                 .Select(vm => vm.FindByName(trueName))
@@ -236,7 +213,7 @@ namespace RiseSim.ViewModels.SubViews
             // 解除
             Simulator.DeleteAllClude();
 
-            // 除外固定のマスタをリロード
+            // 除外固定のマスタをまとめてリロード
             LoadGridData();
 
             // ログ表示
@@ -251,7 +228,7 @@ namespace RiseSim.ViewModels.SubViews
             // 除外
             Simulator.ExcludeAllAugmentation();
 
-            // 除外固定のマスタをリロード
+            // 除外固定のマスタをまとめてリロード
             LoadGridData();
 
             // ログ表示
@@ -266,7 +243,7 @@ namespace RiseSim.ViewModels.SubViews
             // 除外
             Simulator.ExcludeByRare(9);
 
-            // 除外固定のマスタをリロード
+            // 除外固定のマスタをまとめてリロード
             LoadGridData();
 
             // ログ表示
@@ -278,37 +255,14 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         internal void LoadEquipsForClude()
         {
-            // 除外固定画面用のVMの設定
-            ObservableCollection<EquipSelectRowViewModel> equipList = new();
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.head.StrWithColon(), Masters.Heads));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.body.StrWithColon(), Masters.Bodys));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.arm.StrWithColon(), Masters.Arms));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.waist.StrWithColon(), Masters.Waists));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.leg.StrWithColon(), Masters.Legs));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.charm.StrWithColon(), Masters.Charms));
-            equipList.Add(new EquipSelectRowViewModel(EquipKind.deco.StrWithColon(), Masters.Decos));
-            EquipSelectRowVMs.ChangeCollection(equipList);
-
             LoadGridData();
         }
 
         /// <summary>
-        /// 除外固定のマスタ情報をVMにロード
+        /// 除外固定の表をリロードする
         /// </summary>
-        private void LoadCludes()
-        {
-            LoadGridData();
-
-            // TODO: 最終的に消える手筈
-            // 除外固定画面用のVMの設定
-            ObservableCollection<CludeRowViewModel> cludeList = new();
-            foreach (var clude in Masters.Cludes)
-            {
-                cludeList.Add(new CludeRowViewModel(clude));
-            }
-            CludeRowVMs.ChangeCollection(cludeList);
-        }
-
+        /// <param name="filterName">文字列でフィルタする場合その文字列</param>
+        /// <param name="cludeOnly">設定されているもののみに絞る場合true</param>
         private void LoadGridData(string filterName = "", bool cludeOnly = false)
         {
             // 表示対象
@@ -345,7 +299,10 @@ namespace RiseSim.ViewModels.SubViews
 
             }
 
-            // 一覧用のデータ整理
+            // 一覧用の行データ格納場所
+            ObservableCollection<CludeGridRowViewModel> rows = new();
+
+            // 存在する仮番号をチェック
             List<int> RowNos = new List<int>()
                 .Union(heads.Select(equip => equip.RowNo))
                 .Union(bodys.Select(equip => equip.RowNo))
@@ -355,10 +312,7 @@ namespace RiseSim.ViewModels.SubViews
                 .ToList();
             RowNos.Sort();
 
-            ObservableCollection<CludeGridRowViewModel> rows = new();
-            int charmCount = charms.Count;
-            int decoCount = decos.Count;
-
+            // 仮番号ごとに行データを作成
             foreach (var rowNo in RowNos)
             {
                 var head = heads.Where(equip => equip.RowNo == rowNo);
@@ -368,6 +322,7 @@ namespace RiseSim.ViewModels.SubViews
                 var leg = legs.Where(equip => equip.RowNo == rowNo);
                 int max = new int[] { head.Count(), body.Count(), arm.Count(), waist.Count(), leg.Count() }.Max();
 
+                // 同じ仮番号があったらその分行を増やす
                 for (int i = 0; i < max; i++)
                 {
                     CludeGridRowViewModel row = new();
@@ -376,12 +331,14 @@ namespace RiseSim.ViewModels.SubViews
                     row.Arm.Value = new CludeGridCellViewModel(arm.ElementAtOrDefault(i));
                     row.Waist.Value = new CludeGridCellViewModel(waist.ElementAtOrDefault(i));
                     row.Leg.Value = new CludeGridCellViewModel(leg.ElementAtOrDefault(i));
+                    // 護石と装飾品は単に順番に並べる
                     row.Charm.Value = new CludeGridCellViewModel(charms.ElementAtOrDefault(rows.Count));
                     row.Deco.Value = new CludeGridCellViewModel(decos.ElementAtOrDefault(rows.Count));
                     rows.Add(row);
                 }
             }
 
+            // 防具が終わっても護石と装飾品がまだある場合は追加する
             while (rows.Count < Math.Max(charms.Count, decos.Count))
             {
                 CludeGridRowViewModel row = new();
@@ -395,6 +352,7 @@ namespace RiseSim.ViewModels.SubViews
                 rows.Add(row);
             }
 
+            // 表のリフレッシュ
             ShowingEquips.ChangeCollection(rows);
         }
     }

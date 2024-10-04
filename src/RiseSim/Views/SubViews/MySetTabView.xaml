@@ -44,7 +44,8 @@
                         <MenuItem Header="この装備を除外" Command="{Binding ExcludeCommand}"/>
                         <MenuItem Header="この装備を固定" Command="{Binding IncludeCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="マイセットから削除" Command="{Binding DeleteMySetCommand}"/>
+                    <MenuItem Header="このマイセットを削除" Command="{Binding DeleteMySetCommand}"/>
+                    <MenuItem Header="このマイセットのスキルを検索条件に入力する" Command="{Binding InputMySetConditionCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>

@@ -14,6 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- フィルタ等操作エリア -->
         <StackPanel Orientation="Horizontal">
             <StackPanel>
                 <TextBlock>フィルタ</TextBlock>
@@ -35,31 +36,6 @@
             </StackPanel>
         </StackPanel>
 
-        <!-- 登録 -->
-        <!--
-        <StackPanel Grid.Row="0" Grid.Column="0">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ctrl:EquipSelectRow/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </StackPanel>-->
-        <!-- 一覧 -->
-        <!--<ScrollViewer Grid.Row="0" Grid.Column="1">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding CludeRowVMs.Value, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ctrl:CludeRow/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>-->
         <!-- 一覧 -->
             <DataGrid Grid.Row="1" x:Name="grid" ItemsSource="{Binding ShowingEquips.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True">
             <DataGrid.Columns>
