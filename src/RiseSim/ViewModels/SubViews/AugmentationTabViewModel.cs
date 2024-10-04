@@ -382,8 +382,7 @@ namespace RiseSim.ViewModels.SubViews
             Simulator.DeleteAugmentation(SelectedAugmentation.Value.Original);
 
             // マスタをリロード
-            // マイセット・除外固定が変更になる可能性があるためそちらもリロード
-            CludeTabVM.LoadCludes();
+            // マイセットが変更になる可能性があるためそちらもリロード
             MySetTabVM.LoadMySets();
             MainVM.LoadEquips();
 

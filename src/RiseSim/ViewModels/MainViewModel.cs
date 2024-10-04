@@ -170,7 +170,6 @@ namespace RiseSim.ViewModels
         internal void LoadMasters()
         {
             LoadEquips();
-            CludeTabVM.Value.LoadCludes();
             MySetTabVM.Value.LoadMySets();
         }
 

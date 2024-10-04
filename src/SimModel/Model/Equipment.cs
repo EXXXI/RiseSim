@@ -74,6 +74,11 @@ namespace SimModel.Model
         public int Dragon { get; set; }
 
         /// <summary>
+        /// 仮番号(除外固定画面用)
+        /// </summary>
+        public int RowNo { get; set; } = int.MaxValue;
+
+        /// <summary>
         /// スキル(錬成スキルを別個に扱う)
         /// </summary>
         public List<Skill> Skills { get; set; } = new();

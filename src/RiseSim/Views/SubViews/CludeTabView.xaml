@@ -7,45 +7,88 @@
              xmlns:ctrl="clr-namespace:RiseSim.Views.Controls" xmlns:subviews="clr-namespace:RiseSim.ViewModels.SubViews" d:DataContext="{d:DesignInstance Type=subviews:CludeTabViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid  ShowGridLines="True">
-
+    <Grid>
         <!-- グリッド設定 -->
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
 
-        <!-- 登録 -->
-        <StackPanel Grid.Row="0" Grid.Column="0">
+        <!-- フィルタ等操作エリア -->
+        <StackPanel Orientation="Horizontal">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding EquipSelectRowVMs.Value, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ctrl:EquipSelectRow/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <TextBlock>フィルタ</TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                    <TextBlock>名前：</TextBlock>
+                    <TextBox Width="150" Text="{Binding FilterName.Value}"/>
+                </StackPanel>
+                <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsCludeOnlyFilter.Value}">除外・固定が設定されている装備のみに絞る</CheckBox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding ClearFilterCommand}">クリア</Button>
+                    <Button Command="{Binding ApplyFilterCommand}" Margin="10,0,0,0">フィルタを適用</Button>
+                </StackPanel>
             </StackPanel>
-            <StackPanel>
-                <Button Command="{Binding DeleteAllCludeCommand}">除外・固定を全て解除</Button>
-                <Button Command="{Binding ExcludeAllAugmentationCommand}">錬成防具を全て除外</Button>
-                <Button Command="{Binding ExcludeRare9Command}">レア9以下を全て除外</Button>
+            <StackPanel  Margin="20,0,0,0">
+                <TextBlock>特殊操作(フィルタは解除されます)</TextBlock>
+                <Button Command="{Binding DeleteAllCludeCommand}" Margin="5,0,0,0">除外・固定を全て解除</Button>
+                <Button Command="{Binding ExcludeAllAugmentationCommand}" Margin="5,0,0,0">錬成防具を全て除外</Button>
+                <Button Command="{Binding ExcludeRare9Command}" Margin="5,0,0,0">レア9以下を全て除外</Button>
             </StackPanel>
         </StackPanel>
+
         <!-- 一覧 -->
-        <ScrollViewer Grid.Row="0" Grid.Column="1">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding CludeRowVMs.Value, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
+            <DataGrid Grid.Row="1" x:Name="grid" ItemsSource="{Binding ShowingEquips.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="頭">
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ctrl:CludeRow/>
+                            <ctrl:CludeGridCell DataContext="{Binding Head.Value}"/>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="胴">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Body.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="腕">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Arm.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="腰">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Waist.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="足">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Leg.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="護石">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Charm.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="装飾品">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ctrl:CludeGridCell DataContext="{Binding Deco.Value}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            </DataGrid>
     </Grid>
 </UserControl>

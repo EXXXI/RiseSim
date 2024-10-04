@@ -196,6 +196,7 @@ namespace SimModel.Domain
                 equip.Thunder = ParseUtil.Parse(line[@"雷耐性"]);
                 equip.Ice = ParseUtil.Parse(line[@"氷耐性"]);
                 equip.Dragon = ParseUtil.Parse(line[@"龍耐性"]);
+                equip.RowNo = ParseUtil.Parse(line[@"仮番号"], int.MaxValue);
                 List<Skill> skills = new List<Skill>();
                 for (int i = 1; i <= LogicConfig.Instance.MaxEquipSkillCount; i++)
                 {
