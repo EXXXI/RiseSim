@@ -311,38 +311,36 @@ namespace SimModel.Model
             }
         }
 
-        // TODO: 不格好で危うい実装。だけどsolver.variables().First(v => v.Name().....)とかいちいちやってるとすごく重い。Dictionaryで保持すれば速いかな
         /// <summary>
-        /// 装備のIndex(頭、胴、腕、腰、足、護石の順に全装備に振った連番)リスト
+        /// 存在している装備の名前を返す(GLPK用)
         /// </summary>
-        /// <param name="includeIdealAugmentation">理想錬成を検索する場合true</param>
         /// <returns>リスト</returns>
-        public List<int> EquipIndexsWithOutDecos(bool includeIdealAugmentation)
+        public List<Equipment> ExistingEquipsWithOutDecos()
         {
-            List<int> list = new();
+            List<Equipment> list = new();
             if (!string.IsNullOrWhiteSpace(Head.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Head.Name, includeIdealAugmentation));
+                list.Add(Head);
             }
             if (!string.IsNullOrWhiteSpace(Body.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Body.Name, includeIdealAugmentation));
+                list.Add(Body);
             }
             if (!string.IsNullOrWhiteSpace(Arm.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Arm.Name, includeIdealAugmentation));
+                list.Add(Arm);
             }
             if (!string.IsNullOrWhiteSpace(Waist.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Waist.Name, includeIdealAugmentation));
+                list.Add(Waist);
             }
             if (!string.IsNullOrWhiteSpace(Leg.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Leg.Name, includeIdealAugmentation));
+                list.Add(Leg);
             }
             if (!string.IsNullOrWhiteSpace(Charm.Name))
             {
-                list.Add(Masters.GetEquipIndexByName(Charm.Name, includeIdealAugmentation));
+                list.Add(Charm);
             }
             return list;
         }
