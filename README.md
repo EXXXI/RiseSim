@@ -1,4 +1,4 @@
-# RiseSim
+# RiseSim(気ままに作ったモンハンシミュレータ for MHRise)
 
 ## 概要
 
