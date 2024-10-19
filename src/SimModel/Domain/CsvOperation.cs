@@ -291,7 +291,7 @@ namespace SimModel.Domain
             {
                 Clude clude = new Clude
                 {
-                    Name = line[@"対象"],
+                    Name = ErrataEquipName(line[@"対象"]),
                     Kind = (CludeKind)ParseUtil.Parse(line[@"種別"])
                 };
 
@@ -414,11 +414,11 @@ namespace SimModel.Domain
                 set.WeaponSlot1 = ParseUtil.Parse(line[@"武器スロ1"]);
                 set.WeaponSlot2 = ParseUtil.Parse(line[@"武器スロ2"]);
                 set.WeaponSlot3 = ParseUtil.Parse(line[@"武器スロ3"]);
-                set.Head = Masters.GetEquipByName(line[@"頭"]);
-                set.Body = Masters.GetEquipByName(line[@"胴"]);
-                set.Arm = Masters.GetEquipByName(line[@"腕"]);
-                set.Waist = Masters.GetEquipByName(line[@"腰"]);
-                set.Leg = Masters.GetEquipByName(line[@"足"]);
+                set.Head = Masters.GetEquipByName(ErrataEquipName(line[@"頭"]));
+                set.Body = Masters.GetEquipByName(ErrataEquipName(line[@"胴"]));
+                set.Arm = Masters.GetEquipByName(ErrataEquipName(line[@"腕"]));
+                set.Waist = Masters.GetEquipByName(ErrataEquipName(line[@"腰"]));
+                set.Leg = Masters.GetEquipByName(ErrataEquipName(line[@"足"]));
                 set.Charm = Masters.GetEquipByName(line[@"護石"]);
                 set.Head.Kind = EquipKind.head;
                 set.Body.Kind = EquipKind.body;
@@ -514,7 +514,7 @@ namespace SimModel.Domain
                 }
 
                 Augmentation aug = new Augmentation();
-                aug.BaseName = line[@"ベース装備"];
+                aug.BaseName = ErrataEquipName(line[@"ベース装備"]);
                 // TODO: 例外処理は重いから別の方法で判別できないか
                 try
                 {
@@ -935,6 +935,20 @@ namespace SimModel.Domain
             {
                 return string.Empty;
             }
+        }
+
+        /// <summary>
+        /// 誤植修正
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static string ErrataEquipName(string name)
+        {
+            if (name == "エスピナフォアスト")
+            {
+                return "エスピナファオスト";
+            }
+            return name;
         }
     }
 }
