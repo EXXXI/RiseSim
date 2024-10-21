@@ -8,7 +8,9 @@ using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace RiseSim.ViewModels.SubViews
 {
@@ -132,10 +134,22 @@ namespace RiseSim.ViewModels.SubViews
                 $"護石「{dispName}」を削除します。\nよろしいですか？",
                 "護石削除",
                 MessageBoxButton.YesNo);
-
             if (result != MessageBoxResult.Yes)
             {
                 return;
+            }
+
+            // この護石を使っているマイセットがあったら再度確認する
+            if (Masters.MySets.Where(set => trueName.Equals(set.Charm.Name)).Any())
+            {
+                MessageBoxResult setConfirm = MessageBox.Show(
+                    $"護石「{dispName}」を利用しているマイセットが存在します。\n本当に削除してよろしいですか？\n(該当のマイセットも同時に削除されます。)",
+                    "護石削除",
+                    MessageBoxButton.YesNo);
+                if (setConfirm != MessageBoxResult.Yes)
+                {
+                    return;
+                }
             }
 
             // 護石削除

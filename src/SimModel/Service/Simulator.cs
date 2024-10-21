@@ -53,6 +53,10 @@ namespace SimModel.Service
             // 錬成装備込みのマスタデータ作成&マイセット読み込み
             Masters.RefreshEquipmentMasters();
             CsvOperation.LoadMySetCSV();
+
+            // マイセット利用状況の反映のため護石と錬成に対して書き込み
+            CsvOperation.SaveCharmCSV();
+            CsvOperation.SaveAugmentationCSV();
         }
 
         /// <summary>

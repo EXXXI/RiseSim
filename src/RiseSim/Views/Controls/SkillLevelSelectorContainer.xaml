@@ -11,12 +11,15 @@
     <Expander 
             HorizontalAlignment="Left" 
             Height="Auto" 
-            Header="{Binding Path=Header}"
+            Width="Auto"
             IsExpanded="True"
             Margin="0,0,0,0" 
             VerticalAlignment="Top" 
-            Width="auto"
         >
+        <Expander.Header>
+            <!-- TODO: Width10000はあまりよくないので別の方法があれば変えるべき -->
+            <TextBlock Text="{Binding Path=Header, Mode=OneWay}" Width="10000"/>
+        </Expander.Header>
         <ItemsControl ItemsSource="{Binding Path=SkillLevelSelectors, Mode=OneWay}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -25,7 +28,7 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal"/>
+                    <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
