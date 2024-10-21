@@ -954,6 +954,15 @@ namespace SimModel.Model
             GenericSkills = newGSkills;
         }
 
+        /// <summary>
+        /// 引数指定の装備を利用しているか否か
+        /// </summary>
+        /// <param name="name">装備名</param>
+        /// <returns>装備を利用している場合true</returns>
+        public bool HasEquipment(string name)
+        {
+            return Equipments.Where(equip => equip.Name == name).Any();
+        }
 
         /// <summary>
         /// 防具のスロット数計算

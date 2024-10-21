@@ -10,6 +10,7 @@ using SimModel.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 
 namespace RiseSim.ViewModels.SubViews
@@ -376,6 +377,20 @@ namespace RiseSim.ViewModels.SubViews
             if (result != MessageBoxResult.Yes)
             {
                 return;
+            }
+
+
+            // この錬成装備を使っているマイセットがあったら再度確認する
+            if (Masters.MySets.Where(set => set.HasEquipment(aug.Original.Name)).Any())
+            {
+                MessageBoxResult setConfirm = MessageBox.Show(
+                    $"錬成防具「{aug.DispName}」を利用しているマイセットが存在します。\n本当に削除してよろしいですか？\n(該当のマイセットも同時に削除されます。)",
+                    "護石削除",
+                    MessageBoxButton.YesNo);
+                if (setConfirm != MessageBoxResult.Yes)
+                {
+                    return;
+                }
             }
 
             // 錬成情報を削除

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 
 namespace SimModel.Domain
 {
@@ -317,6 +318,7 @@ namespace SimModel.Domain
                 bodyStrings.Add(charm.Slot2.ToString());
                 bodyStrings.Add(charm.Slot3.ToString());
                 bodyStrings.Add(charm.Name);
+                bodyStrings.Add(Masters.MySets.Where(set => charm.Name.Equals(set.Charm.Name)).Any() ? "マイセット登録中" : string.Empty);
                 body.Add(bodyStrings.ToArray());
             }
             List<string> headStrings = new List<string>();
@@ -329,6 +331,7 @@ namespace SimModel.Domain
             headStrings.Add("スロット2");
             headStrings.Add("スロット3");
             headStrings.Add("内部管理ID");
+            headStrings.Add("マイセット登録有無");
             string[] header = headStrings.ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(CharmCsv, export);
@@ -397,6 +400,10 @@ namespace SimModel.Domain
             string[] header = new string[] { "武器スロ1", "武器スロ2", "武器スロ3", "頭", "胴", "腕", "腰", "足", "護石", "装飾品", "錬成スキル", "名前" };
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(MySetCsv, export);
+
+            // マイセット利用状況の反映のため護石と錬成も書き込み
+            SaveCharmCSV();
+            SaveAugmentationCSV();
         }
 
         /// <summary>
@@ -640,6 +647,7 @@ namespace SimModel.Domain
                 bodyStrings.Add(aug.Slot2.ToString());
                 bodyStrings.Add(aug.Slot3.ToString());
                 bodyStrings.Add(aug.Name);
+                bodyStrings.Add(Masters.MySets.Where(set => set.HasEquipment(aug.Name)).Any() ? "マイセット登録中" : string.Empty);
                 body.Add(bodyStrings.ToArray());
             }
 
@@ -651,7 +659,7 @@ namespace SimModel.Domain
                 header2List.Add(@"スキル値" + i);
             }
             string[] header2 = header2List.ToArray();
-            string[] header3 = new string[] { "名前", "種類", "スロット1", "スロット2", "スロット3", "管理用ID" };
+            string[] header3 = new string[] { "名前", "種類", "スロット1", "スロット2", "スロット3", "管理用ID", "マイセット登録有無" };
             string[] header = header1.Concat(header2).Concat(header3).ToArray();
             string export = CsvWriter.WriteToText(header, body);
             File.WriteAllText(AugmentationCsv, export);
