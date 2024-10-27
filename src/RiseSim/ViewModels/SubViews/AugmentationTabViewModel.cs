@@ -130,6 +130,11 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         public ReactiveCommand UpdateCommand { get; private set; } = new();
 
+        /// <summary>
+        /// ドラッグコマンド
+        /// </summary>
+        public ReactiveCommand RowChangedCommand { get; private set; } = new();
+
 
         /// <summary>
         /// コンストラクタ
@@ -176,6 +181,15 @@ namespace RiseSim.ViewModels.SubViews
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
             InputCommand.Subscribe(_ => InputAugmentation());
             UpdateCommand.Subscribe(_ => UpdateAugmentation());
+            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int dropIndex, int targetIndex)?));
+        }
+
+        private void RowChanged((int dropIndex, int targetIndex)? indexpair)
+        {
+            if (indexpair != null)
+            {
+                Augmentations.Value.Move(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+            }
         }
 
         /// <summary>
