@@ -1,6 +1,7 @@
 ﻿using SimModel.Config;
 using SimModel.Domain;
 using SimModel.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -748,6 +749,11 @@ namespace SimModel.Service
         public void SaveIdeal()
         {
             DataManagement.SaveIdeal();
+        }
+
+        public void MoveAugmentation(int dropIndex, int targetIndex)
+        {
+            DataManagement.MoveAugmentation(dropIndex, targetIndex);
         }
     }
 }

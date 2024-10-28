@@ -181,7 +181,7 @@ namespace RiseSim.ViewModels.SubViews
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
             InputCommand.Subscribe(_ => InputAugmentation());
             UpdateCommand.Subscribe(_ => UpdateAugmentation());
-            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int dropIndex, int targetIndex)?));
+            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int, int)?));
         }
 
         private void RowChanged((int dropIndex, int targetIndex)? indexpair)
@@ -189,6 +189,7 @@ namespace RiseSim.ViewModels.SubViews
             if (indexpair != null)
             {
                 Augmentations.Value.Move(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+                Simulator.MoveAugmentation(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
             }
         }
 

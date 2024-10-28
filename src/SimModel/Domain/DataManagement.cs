@@ -541,5 +541,14 @@ namespace SimModel.Domain
             // 万一更新先が見つからなかった場合は新規登録
             AddMyCondition(newCondition);
         }
+
+        internal static void MoveAugmentation(int dropIndex, int targetIndex)
+        {
+            Augmentation aug = Masters.Augmentations[dropIndex];
+            Masters.Augmentations.RemoveAt(dropIndex);
+            Masters.Augmentations.Insert(targetIndex, aug);
+
+            CsvOperation.SaveAugmentationCSV();
+        }
     }
 }
