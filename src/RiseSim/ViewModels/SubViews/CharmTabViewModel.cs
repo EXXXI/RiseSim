@@ -1,6 +1,7 @@
 ﻿using Reactive.Bindings;
 using RiseSim.Config;
 using RiseSim.Util;
+using RiseSim.ViewModels.BindableWrapper;
 using RiseSim.ViewModels.Controls;
 using SimModel.Config;
 using SimModel.Model;
@@ -35,9 +36,9 @@ namespace RiseSim.ViewModels.SubViews
         public ReactivePropertySlim<ObservableCollection<SkillSelectorViewModel>> CharmSkillSelectorVMs { get; } = new();
 
         /// <summary>
-        /// 護石画面の一覧用部品のVM
+        /// 表示用護石一覧
         /// </summary>
-        public ReactivePropertySlim<ObservableCollection<CharmRowViewModel>> CharmRowVMs { get; } = new();
+        public ReactivePropertySlim<ObservableCollection<BindableCharm>> Charms { get; } = new();
 
         /// <summary>
         /// 護石画面のスロット指定
@@ -53,6 +54,11 @@ namespace RiseSim.ViewModels.SubViews
         /// 護石追加コマンド
         /// </summary>
         public ReactiveCommand AddCharmCommand { get; } = new ReactiveCommand();
+
+        /// <summary>
+        /// ドラッグコマンド
+        /// </summary>
+        public ReactiveCommand RowChangedCommand { get; private set; } = new();
 
         /// <summary>
         /// コンストラクタ
@@ -84,6 +90,7 @@ namespace RiseSim.ViewModels.SubViews
 
             // コマンドを設定
             AddCharmCommand.Subscribe(_ => AddCharm());
+            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int, int)?));
         }
 
         /// <summary>
@@ -115,6 +122,19 @@ namespace RiseSim.ViewModels.SubViews
 
             // ログ表示
             SetStatusBar("護石追加完了：" + added.DispName);
+        }
+
+        /// <summary>
+        /// 順番入れ替え
+        /// </summary>
+        /// <param name="indexpair">(int dropIndex, int targetIndex)</param>
+        private void RowChanged((int dropIndex, int targetIndex)? indexpair)
+        {
+            if (indexpair != null)
+            {
+                Charms.Value.Move(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+                Simulator.MoveCharm(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+            }
         }
 
         /// <summary>
@@ -169,14 +189,9 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         internal void LoadEquipsForCharm()
         {
-
             // 護石画面用のVMの設定
-            ObservableCollection<CharmRowViewModel> charmList = new();
-            foreach (var charm in Masters.Charms)
-            {
-                charmList.Add(new CharmRowViewModel(charm));
-            }
-            CharmRowVMs.ChangeCollection(charmList);
+            ObservableCollection<BindableCharm> charmList = BindableCharm.BeBindableList(Masters.Charms);
+            Charms.ChangeCollection(charmList);
         }
     }
 }
