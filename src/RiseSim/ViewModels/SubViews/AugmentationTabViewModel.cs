@@ -8,7 +8,6 @@ using SimModel.Domain;
 using SimModel.Model;
 using SimModel.Service;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -184,6 +183,10 @@ namespace RiseSim.ViewModels.SubViews
             RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int, int)?));
         }
 
+        /// <summary>
+        /// 順番入れ替え
+        /// </summary>
+        /// <param name="indexpair">(int dropIndex, int targetIndex)</param>
         private void RowChanged((int dropIndex, int targetIndex)? indexpair)
         {
             if (indexpair != null)

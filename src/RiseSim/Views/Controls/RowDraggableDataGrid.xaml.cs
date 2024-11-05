@@ -1,4 +1,5 @@
 ﻿using RiseSim.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,9 +21,20 @@ namespace RiseSim.Views.Controls
         private const int ScrollAreaHeight = 30;
 
         /// <summary>
+        /// ドラッグ処理を開始する縦移動距離
+        /// </summary>
+        private const int DragStartMoveHeight = 2;
+
+        /// <summary>
         /// ドラッグ中か否か
         /// </summary>
         private bool IsRowDragging { get; set; }
+
+        /// <summary>
+        /// ドラッグ開始位置
+        /// ドラッグ処理開始の判定にのみ使用し、処理開始時に初期化する
+        /// </summary>
+        private Point? DragStartPoint { get; set; }
 
         /// <summary>
         /// ドラッグ中の項目
@@ -72,7 +84,7 @@ namespace RiseSim.Views.Controls
 
         /// <summary>
         /// ドラッグ用
-        /// 左クリック時にドラッグ開始
+        /// 左クリック時にドラッグ用の情報を取得
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -91,6 +103,7 @@ namespace RiseSim.Views.Controls
             {
                 DraggedItem = item;
                 IsRowDragging = true;
+                DragStartPoint = e.GetPosition(draggableGrid);
             }
         }
 
@@ -106,7 +119,7 @@ namespace RiseSim.Views.Controls
         }
 
         /// <summary>
-        /// ドラッグ中の表示
+        /// ドラッグ処理
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -116,7 +129,13 @@ namespace RiseSim.Views.Controls
             {
                 return;
             }
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if ((DragStartPoint != null) &&
+                (Math.Abs(DragStartPoint.Value.Y - e.GetPosition(draggableGrid).Y) > DragStartMoveHeight))
+            {
+                DragStartPoint = null;
+            }
+            if ((DragStartPoint == null) &&
+                (e.LeftButton == MouseButtonState.Pressed))
             {
                 DragDrop.DoDragDrop(draggableGrid, DraggedItem, DragDropEffects.Move);
             }

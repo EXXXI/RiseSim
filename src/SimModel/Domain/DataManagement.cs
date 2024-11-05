@@ -542,6 +542,11 @@ namespace SimModel.Domain
             AddMyCondition(newCondition);
         }
 
+        /// <summary>
+        /// 錬成防具の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
         internal static void MoveAugmentation(int dropIndex, int targetIndex)
         {
             Augmentation aug = Masters.Augmentations[dropIndex];
@@ -549,6 +554,34 @@ namespace SimModel.Domain
             Masters.Augmentations.Insert(targetIndex, aug);
 
             CsvOperation.SaveAugmentationCSV();
+        }
+
+        /// <summary>
+        /// 理想錬成防具の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
+        internal static void MoveIdeals(int dropIndex, int targetIndex)
+        {
+            IdealAugmentation ideal = Masters.Ideals[dropIndex];
+            Masters.Ideals.RemoveAt(dropIndex);
+            Masters.Ideals.Insert(targetIndex, ideal);
+
+            CsvOperation.SaveIdealCSV();
+        }
+
+        /// <summary>
+        /// 護石の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
+        internal static void MoveCharm(int dropIndex, int targetIndex)
+        {
+            Equipment charm = Masters.Charms[dropIndex];
+            Masters.Charms.RemoveAt(dropIndex);
+            Masters.Charms.Insert(targetIndex, charm);
+
+            CsvOperation.SaveCharmCSV();
         }
     }
 }

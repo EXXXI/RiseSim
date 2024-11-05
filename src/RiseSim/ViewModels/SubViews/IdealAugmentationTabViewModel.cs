@@ -148,6 +148,11 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         public ReactiveCommand AllEnableCommand { get; private set; } = new();
 
+        /// <summary>
+        /// ドラッグコマンド
+        /// </summary>
+        public ReactiveCommand RowChangedCommand { get; private set; } = new();
+
 
         /// <summary>
         /// コンストラクタ
@@ -187,9 +192,23 @@ namespace RiseSim.ViewModels.SubViews
             UpdateCommand.Subscribe(_ => UpdateIdeal());
             AllDisableCommand.Subscribe(_ => AllDisable());
             AllEnableCommand.Subscribe(_ => AllEnable());
+            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int, int)?));
 
             // 説明
             WriteHowToUse();
+        }
+
+        /// <summary>
+        /// 順番入れ替え
+        /// </summary>
+        /// <param name="indexpair">(int dropIndex, int targetIndex)</param>
+        private void RowChanged((int dropIndex, int targetIndex)? indexpair)
+        {
+            if (indexpair != null)
+            {
+                Ideals.Value.Move(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+                Simulator.MoveIdeals(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+            }
         }
 
         /// <summary>

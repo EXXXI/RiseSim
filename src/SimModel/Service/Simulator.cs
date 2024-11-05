@@ -751,9 +751,35 @@ namespace SimModel.Service
             DataManagement.SaveIdeal();
         }
 
+        /// <summary>
+        /// 錬成防具の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
         public void MoveAugmentation(int dropIndex, int targetIndex)
         {
             DataManagement.MoveAugmentation(dropIndex, targetIndex);
+        }
+
+
+        /// <summary>
+        /// 理想錬成の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
+        public void MoveIdeals(int dropIndex, int targetIndex)
+        {
+            DataManagement.MoveIdeals(dropIndex, targetIndex);
+        }
+
+        /// <summary>
+        /// 護石の順番入れ替え
+        /// </summary>
+        /// <param name="dropIndex">入れ替え元</param>
+        /// <param name="targetIndex">入れ替え先</param>
+        public void MoveCharm(int dropIndex, int targetIndex)
+        {
+            DataManagement.MoveCharm(dropIndex, targetIndex);
         }
     }
 }
