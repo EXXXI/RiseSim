@@ -100,7 +100,7 @@
         </StackPanel>
 
         <!-- 一覧 -->
-        <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Ideals.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedIdeal.Value}">
+        <ctrl:RowDraggableDataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Ideals.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedIdeal.Value}" RowChangedCommand="{Binding RowChangedCommand}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="この理想錬成を削除" Command="{Binding DeleteCommand}"/>
@@ -130,7 +130,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
-        </DataGrid>
+        </ctrl:RowDraggableDataGrid>
 
         <TextBox TextWrapping="Wrap" Grid.Row="0" Grid.Column="2" Text="{Binding HowToUse.Value, Mode=OneWay}" IsReadOnly="True">
         </TextBox>

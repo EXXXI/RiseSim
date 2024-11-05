@@ -8,7 +8,6 @@ using SimModel.Domain;
 using SimModel.Model;
 using SimModel.Service;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -130,6 +129,11 @@ namespace RiseSim.ViewModels.SubViews
         /// </summary>
         public ReactiveCommand UpdateCommand { get; private set; } = new();
 
+        /// <summary>
+        /// ドラッグコマンド
+        /// </summary>
+        public ReactiveCommand RowChangedCommand { get; private set; } = new();
+
 
         /// <summary>
         /// コンストラクタ
@@ -176,6 +180,20 @@ namespace RiseSim.ViewModels.SubViews
             DeleteCommand.Subscribe(_ => DeleteAugmentation());
             InputCommand.Subscribe(_ => InputAugmentation());
             UpdateCommand.Subscribe(_ => UpdateAugmentation());
+            RowChangedCommand.Subscribe(indexpair => RowChanged(indexpair as (int, int)?));
+        }
+
+        /// <summary>
+        /// 順番入れ替え
+        /// </summary>
+        /// <param name="indexpair">(int dropIndex, int targetIndex)</param>
+        private void RowChanged((int dropIndex, int targetIndex)? indexpair)
+        {
+            if (indexpair != null)
+            {
+                Augmentations.Value.Move(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+                Simulator.MoveAugmentation(indexpair.Value.dropIndex, indexpair.Value.targetIndex);
+            }
         }
 
         /// <summary>

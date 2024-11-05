@@ -78,7 +78,7 @@
         </StackPanel>
 
         <!-- 一覧 -->
-        <DataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Augmentations.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAugmentation.Value}">
+        <ctrl:RowDraggableDataGrid x:Name="grid" Grid.Column="1" ItemsSource="{Binding Augmentations.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" SelectedItem="{Binding SelectedAugmentation.Value}" RowChangedCommand="{Binding RowChangedCommand}">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="{Binding SelectedAugmentation.Value.EquipDescription.Value}"/>
@@ -98,7 +98,7 @@
                 <DataGridTextColumn Header="龍" Binding="{Binding Dragon.Value, Mode=OneWay}" />
                 <DataGridTextColumn Header="追加スキル" Binding="{Binding SkillsDisp.Value, Mode=OneWay}" />
             </DataGrid.Columns>
-        </DataGrid>
+        </ctrl:RowDraggableDataGrid>
 
     </Grid>
 </UserControl>

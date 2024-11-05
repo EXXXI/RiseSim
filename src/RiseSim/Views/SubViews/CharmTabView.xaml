@@ -38,16 +38,19 @@
         </StackPanel>
 
         <!-- 一覧 -->
-        <ScrollViewer Grid.Row="0" Grid.Column="1">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding CharmRowVMs.Value, Mode=OneWay}">
-                    <ItemsControl.ItemTemplate>
+        <ctrl:RowDraggableDataGrid Grid.Row="0" Grid.Column="1" x:Name="grid" ItemsSource="{Binding Charms.Value, Mode=OneWay}" IsReadOnly="true" AutoGenerateColumns="False" RowChangedCommand="{Binding RowChangedCommand}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="スキル1" Binding="{Binding Skill1.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="スキル2" Binding="{Binding Skill2.Value, Mode=OneWay}" />
+                <DataGridTextColumn Header="スロット" Binding="{Binding Slot.Value, Mode=OneWay}" />
+                <DataGridTemplateColumn IsReadOnly="True" Header="削除">
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ctrl:CharmRow/>
+                            <Button Command="{Binding DeleteCommand}">削除</Button>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </ctrl:RowDraggableDataGrid>
     </Grid>
 </UserControl>
