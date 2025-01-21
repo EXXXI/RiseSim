@@ -4,6 +4,12 @@
 
 Windows上で動くモンハンライズスキルシミュレータです
 
+## お知らせ
+
+Wilds用も組みました
+
+詳細は[WildsSimのページ](https://github.com/EXXXI/WildsSim)へ
+
 ## 更新・対応状況
 
 本体の対応状況：サンブレイク Var16.0系統に対応
